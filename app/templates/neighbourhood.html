@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}CodeBlog{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>你好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
+    <h5>已有{{ User.query.all().__len__() }}人加入。</h5>
+</div>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            公告板
+        </h3>
+    </div>
+    <div class="panel-body">
+        <span class="badge pull-right">{{ moment(post.timestamp).fromNow() }}</span>
+        {% if post.body_html %}
+            {{ post.body_html | safe }}
+        {% else %}
+            {{ post.body }}
+        {% endif %}
+    </div>
+    <div class="panel-footer">
+        {% if post.is_article %}
+            {% if current_user.is_moderator() %}
+            <a href="{{ url_for('main.edit_Article',id=post.id) }}">
+                <button type="button" class="btn btn-danger">修改[Admin]</button>
+            </a>
+            {% elif current_user == post.author %}
+                <a href="{{ url_for('main.edit_Article',id=post.id) }}">
+                    <button type="button" class="btn btn-warning">修改</button>
+                </a>
+            {% endif %}
+            {% if posts.__len__() != 1 %}
+            <a href="{{ url_for('main.article',id=post.id) }}">
+                <button type="button" class="btn btn-default">详情</button>
+            </a>
+            {% endif %}
+        {% else %}
+            {% if current_user.is_moderator() %}
+            <a href="{{ url_for('main.edit_Article',id=post.id) }}">
+                <button type="button" class="btn btn-danger">修改[Admin]</button>
+            </a>
+            {% endif  %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="panel panel-info" id='neighbourhood'>
+    <div class="panel-heading">
+        <h2 class="panel-title">
+            社区
+        </h2>
+        {% if current_user.is_authenticated %}
+        <ul class="nav nav-tabs">
+            <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('main.show_all') }}">所有</a></li>
+            <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('main.show_followed') }}">关注</a></li>
+        </ul>
+        {% endif %}
+    </div>       
+    <div class="panel-body">   
+       {% include '_posts.html' %}
+    </div>
+    {% if pagination %}
+    <div class="panel-footer">
+        {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}CodeBlog{% endblock %}
+{% block page_content %}
+<div class="inner cover">
+    <h1 class="cover-heading">CodeBlog</h1>
+    <p class="lead"></p>
+    <p class="lead">
+        <a href="{{ url_for( 'main.neighbourhood' ) }}" class="btn btn-lg btn-info">去社区看看</a>
+    </p>
+</div>
+<div class="mastfoot">
+    <div class="inner">
+        <p> <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>, by <a href="http://weibo.com/R34DM3" target="_blank">@LiNweI林瑋</a>.</p>
+    </div>
+</div>
+{% endblock %}

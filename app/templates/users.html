@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Codeblog - {{ title }}{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+</div>
+<table class="table table-hover followers">
+    <thead><tr><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th></tr></thead>
+    {% for user in users %}
+    <tr>
+        <td>
+            <a href="{{ url_for('.user', username = user.user) }}">
+                {{ user.user }}
+            </a>
+        </td>
+        <td>{{ user.name }}</td>
+        <td>{{ moment(user.member_since).format('LL') }}</td>
+        <td>{{ moment(user.last_seen).format('LLL') }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="pagination">
+    {{ macros.pagination_widget(pagination,endpoint) }}
+</div>
+{% endblock %}

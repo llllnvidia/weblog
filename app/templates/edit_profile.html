@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}CodeBlog - 修改资料{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>修改你的资料</h1>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+    <p></p>
+    <a href="{{ url_for('auth.send_confirmation_email') }}"   
+    <span class="btn btn-warning">更改邮箱地址</span>
+    </a>
+    <a href="{{ url_for('auth.password_change') }}"   
+    <span class="btn btn-warning">更改密码</span>
+    </a>
+</div>
+{% endblock %}
