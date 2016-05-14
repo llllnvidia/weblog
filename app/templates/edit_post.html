@@ -1,41 +1,45 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}CodeBlog - Edit Article{% endblock %}
+{% block title %}CodeBlog - Edit{% endblock %}
 {% block page_content %}
-{% if not number %}
-<form action="/edit_new" method="post" role="form">
-{% else %}
-<a href="{{ url_for('.delete_post',id=post.id ) }}"><button class="btn btn-danger">删除</button></a>
-<form action="/edit/{{ number }}" method="post" role="form">
-{% endif %}
-<div class="page-header">
-    <h1>Edit Article</h1>
-</div>
-<div class="container-fluid">
-<div class="row">    
-    <div class="col-lg-max">
-        <div class="form-group">
-            {{ wtf.form_field(form.title) }}
-            <label for="output">正文输入</label>            
-            {{ wtf.form_field(form.body) }}
-        </div>     
+{% if article %}
+    {% if not number %}
+    <form action="/edit_new" method="post" role="form">
+    {% else %}
+    <a href="{{ url_for('.delete_post',id=post.id ) }}"><button class="btn btn-danger">删除</button></a>
+    <form action="/edit/{{ number }}" method="post" role="form">
+    {% endif %}
+    <div class="page-header">
+        <h1>Article</h1>
     </div>
-</div>
-</div>
-<div class="form-footer">
-    <div class="btn-group">
-        <div class="row">
-            <div class="col-lg-12">
-                {{ wtf.form_field(form.is_article) }}
-            </div>
-            <div class="col-lg-1">
-                {{ wtf.form_field(form.submit) }}
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-max">
+            <div class="form-group">
+                {{ wtf.form_field(form.title) }}
+                <label for="output">正文输入</label>
+                {{ wtf.form_field(form.body) }}
             </div>
         </div>
-    </div>      
-</div>
-</form>
+    </div>
+    </div>
+    <div class="form-footer">
+        <div class="btn-group">
+            <div class="row">
+                <div class="col-lg-1">
+                    {{ wtf.form_field(form.submit) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+{% else %}
+    <div class="page-header">
+        <h1>吐槽</h1>
+    </div>
+    {{ wtf.quick_form(form) }}
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

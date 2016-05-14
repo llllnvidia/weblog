@@ -5,7 +5,7 @@ from .. import db
 from ..models import User, Role, Permission, Post, Comment, Category
 from ..email import send_email
 from . import main
-from .forms import PostForm, EditProfileForm, EditProfileAdminForm, CommentForm
+from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm
 from flask.ext.login import current_user, login_required
 from ..decorators import admin_required,permission_required
 
@@ -188,17 +188,16 @@ def article(id):
 @main.route('/edit_new',methods=['GET','POST'])
 @login_required
 def edit_new():
-    form = PostForm()
+    form = ArticleForm()
     if request.method == 'POST' :
         post = Post(body=form.body.data,title=form.title.data,
-                    author=current_user._get_current_object())
-        if form.is_article.data :
-            post.is_article = True
+                    author=current_user._get_current_object(),
+                    is_article = True)
         post.ping()
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.article',id=post.id))
-    return render_template('edit_post.html',form=form,number='')
+    return render_template('edit_post.html',form=form,number='',article=True)
 
 @main.route('/edit/<int:id>',methods=['GET','POST'])
 @login_required
@@ -207,14 +206,11 @@ def edit_Article(id):
     if current_user != post.author and \
             not current_user.can(0x0f):
         abort(403)
-    form = PostForm()
+    form = ArticleForm()
     if request.method == 'POST' :
         post.title = form.title.data
         post.body = form.body.data
-        if form.is_article.data == 1 :
-            post.is_article = True
-        elif form.is_article.data == 0:
-            post.is_article = False
+        post.is_article = True
         post.ping()
         db.session.add(post)
         db.session.commit()
@@ -222,8 +218,7 @@ def edit_Article(id):
         return redirect(url_for('.article',id=post.id))
     form.title.data = post.title
     form.body.data = post.body
-    form.is_article.data = post.is_article
-    return render_template('edit_post.html',form=form,number=int(id),post=post)
+    return render_template('edit_post.html',form=form,number=int(id),article=True,post=post)
 
 @main.route('/delete-post/<int:id>',methods=['GET','POST'])
 @login_required
@@ -304,3 +299,16 @@ def categorys():
 
     return render_template('categorys.html', title="所有栏目",
                            endpoint='.categorys', pagination=pagination, categorys=categorys)
+
+@main.route('/newtalk',methods=['GET','POST'])
+@login_required
+def new_talk():
+    form = TalkForm()
+    if form.validate_on_submit():
+        talk = Post(body=form.body.data,
+                    is_article=False,
+                    author=current_user._get_current_object())
+        db.session.add(talk)
+        db.session.commit()
+        return redirect(url_for('.neighbourhood',id=talk.id))
+    return render_template('edit_post.html',form=form,article=False)

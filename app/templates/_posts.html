@@ -4,9 +4,12 @@
             <a href="{{ url_for('.user', username=post.author.username) }}">
             <h3>{{ post.author.username }}</h3>
             </a>
+            {% if post.is_article %}
             <span class="badge pull-right">last edit : {{ moment(post.last_edit).fromNow() }}</span>
+            {% endif %}
             <span class="label label-info">create : {{ moment(post.timestamp).fromNow() }}</span>
             <div class="post-body">
+                {% if post.is_article %}
                 <a href="{{ url_for('.article',id=post.id) }}#comments">
                 {% if post.comments.count() > 1 %}
                     <span class="label label-info">
@@ -17,19 +20,19 @@
                         {{ post.comments.count() }} Comment
                     </span>
                 {% endif %}
-                </a>
-            <br>
+                </a><br>
+                {% endif %}<br>
                 {% if post.title %}
                     <h3>{{ post.title }}</h3>
                 {% endif %}
-                {% if posts.__len__() == 1 %}
+                {% if posts.__len__() == 1 or not post.is_article %}
                     {% if post.body_html %}
                         {{ post.body_html | safe }}
                     {% else %}
                         {{ post.body }}
                     {% endif %}
                 {% else %}
-                    {% if post.body_html %}
+                    {% if post.summary_html %}
                         {{ post.summary_html | safe }}
                     {% else %}
                         {{ post.summary }}

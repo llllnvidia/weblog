@@ -33,16 +33,15 @@ class EditProfileAdminForm(Form):
                User.query.filter_by(username=field.data).first():
             raise ValidationError('用户名已被使用')
 
-class PostForm(Form):
+class ArticleForm(Form):
     title = StringField('标题')
     body = PageDownField("", validators=[Required()])
-    is_article = SelectField('',coerce=int)
     submit = SubmitField('发表')
 
-    def __init__(self,*args,**kwargs):
-        super(PostForm,self).__init__(*args,**kwargs)
-        self.is_article.choices = [(0,'作为说说发表'),(1,'作为博文发表')]
+class TalkForm(Form):
+    body = StringField("",validators=[Required()])
+    submit = SubmitField("说一说")
 
 class CommentForm(Form):
-    body = StringField('',validators=[Required()])
+    body = StringField('',validators=[Required(),Length(1,200,message="太长了。")])
     submit = SubmitField('提交')
