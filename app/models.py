@@ -63,12 +63,16 @@ class Post(db.Model):
             'img': ['src', 'alt'],
             'code':['class','style']           
         }
+
         a = value.split("\n")
-        b = []
-        for i in range(10):
-            if i < len(a):
-                b.append(a[i])
-        target.summary = '\n'.join(b)
+        if len(a) > 15 :
+            b = []
+            for i in range(15):
+                if i < len(a):
+                    b.append(a[i])
+            target.summary = '\n'.join(b)
+        else :
+            target.summary = ""
         
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value,output_format='html'),

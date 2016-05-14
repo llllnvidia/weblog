@@ -5,19 +5,23 @@
             <h3>{{ post.author.username }}</h3>
             </a>
             {% if post.is_article %}
-            <span class="badge pull-right">last edit : {{ moment(post.last_edit).fromNow() }}</span>
+            <span class="label label-success">last edit : {{ moment(post.last_edit).fromNow() }}</span><br>
             {% endif %}
             <span class="label label-info">create : {{ moment(post.timestamp).fromNow() }}</span>
             <div class="post-body">
                 {% if post.is_article %}
                 <a href="{{ url_for('.article',id=post.id) }}#comments">
                 {% if post.comments.count() > 1 %}
+                    <span class="label label-warning">
+                        Has {{ post.comments.count() }} Comments
+                    </span>
+                {% elif post.comments.count() == 1 %}
                     <span class="label label-info">
-                        {{ post.comments.count() }} Comments
+                        Has 1 Comment
                     </span>
                 {% else %}
-                    <span class="label label-info">
-                        {{ post.comments.count() }} Comment
+                    <span class="label label-default">
+                        Has none
                     </span>
                 {% endif %}
                 </a><br>
@@ -25,7 +29,7 @@
                 {% if post.title %}
                     <h3>{{ post.title }}</h3>
                 {% endif %}
-                {% if posts.__len__() == 1 or not post.is_article %}
+                {% if posts.__len__() == 1 or not post.is_article or not post.summary %}
                     {% if post.body_html %}
                         {{ post.body_html | safe }}
                     {% else %}

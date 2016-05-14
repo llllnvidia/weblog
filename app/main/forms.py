@@ -39,7 +39,7 @@ class ArticleForm(Form):
     submit = SubmitField('发表')
 
 class TalkForm(Form):
-    body = StringField("",validators=[Required()])
+    body = TextAreaField("",validators=[Required()])
     submit = SubmitField("说一说")
 
 class CommentForm(Form):
