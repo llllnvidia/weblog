@@ -4,41 +4,30 @@
 {% block title %}CodeBlog - Edit{% endblock %}
 {% block page_content %}
 {% if article %}
-    {% if not number %}
-    <form action="/edit_new" method="post" role="form">
-    {% else %}
-    <a href="{{ url_for('.delete_post',id=post.id ) }}"><button class="btn btn-danger">删除</button></a>
-    <form action="/edit/{{ number }}" method="post" role="form">
-    {% endif %}
-    <div class="page-header">
-        <h1>Article</h1>
-    </div>
     <div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-max">
-            <div class="form-group">
-                {{ wtf.form_field(form.title) }}
-                <label for="output">正文输入</label>
-                {{ wtf.form_field(form.body) }}
-            </div>
-        </div>
+        <div class="page-header">
+            <h1>Article</h1>
+    {% if not is_new %}
+    <form action="/new_Article" method="post" role="form">
     </div>
+    {% else %}
+    <a href="{{ url_for('.delete_post',id=post.id ) }}"><button class="btn btn-danger btn-sm">删除</button></a>
     </div>
-    <div class="form-footer">
-        <div class="btn-group">
-            <div class="row">
-                <div class="col-lg-1">
-                    {{ wtf.form_field(form.submit) }}
-                </div>
-            </div>
-        </div>
+    <form action="/edit/article/{{ number }}" method="post" role="form">
+    {% endif %}
+        {{ wtf.quick_form(form) }}
     </div>
     </form>
 {% else %}
-    <div class="page-header">
-        <h1>吐槽</h1>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1>吐槽</h1>
+            {% if is_new %}
+            <a href="{{ url_for('.delete_post',id=post.id ) }}"><button class="btn btn-danger btn-sm">删除</button></a>
+            {% endif %}
+        </div>
+        {{ wtf.quick_form(form) }}
     </div>
-    {{ wtf.quick_form(form) }}
 {% endif %}
 {% endblock %}
 

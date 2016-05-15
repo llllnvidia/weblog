@@ -303,7 +303,7 @@ class Category(db.Model):
     name = db.Column(db.String(50))
     parentid = db.Column(db.Integer, db.ForeignKey('category.id'))
     parentcategory = db.relationship('Category', uselist=False, remote_side=[id],
-                                     backref=db.backref('soncategorys', uselist=False))
+                                     backref=db.backref('soncategorys', uselist=True))
 
     def __init__(self, name,parentcategory=None):
         self.name = name

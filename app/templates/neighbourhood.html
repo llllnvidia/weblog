@@ -16,6 +16,7 @@
         </h3>
     </div>
     <div class="panel-body">
+        <h1>{{ post.title }}</h1>
         <span class="badge pull-right">{{ moment(post.timestamp).fromNow() }}</span>
         {% if post.body_html %}
             {{ post.body_html | safe }}

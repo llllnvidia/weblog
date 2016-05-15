@@ -4,7 +4,7 @@ from flask.ext.pagedown.fields import PageDownField
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
-from ..models import Role, User
+from ..models import Role, User, Category
 
 class EditProfileForm(Form):
     name = StringField('真实姓名',validators=[Length(0,64)])
@@ -36,7 +36,12 @@ class EditProfileAdminForm(Form):
 class ArticleForm(Form):
     title = StringField('标题')
     body = PageDownField("", validators=[Required()])
+    category = SelectField("栏目")
     submit = SubmitField('发表')
+
+    def __init__(self,*args,**kwargs):
+        super(ArticleForm, self).__init__(*args, **kwargs)
+        self.category.choices = [(cg.id,cg.name) for cg in Category.query.all()]
 
 class TalkForm(Form):
     body = TextAreaField("",validators=[Required()])

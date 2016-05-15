@@ -185,31 +185,35 @@ def article(id):
     return render_template('article.html',posts=[post],form=form,
                            comments=comments, pagination=pagination,page=page)
 
-@main.route('/edit_new',methods=['GET','POST'])
+@main.route('/new/article',methods=['GET','POST'])
 @login_required
-def edit_new():
+def new_Article():
     form = ArticleForm()
     if request.method == 'POST' :
         post = Post(body=form.body.data,title=form.title.data,
                     author=current_user._get_current_object(),
-                    is_article = True)
+                    is_article = True,category=form.category.data)
         post.ping()
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.article',id=post.id))
-    return render_template('edit_post.html',form=form,number='',article=True)
+    return render_template('edit_post.html',form=form,is_new='',article=True)
 
-@main.route('/edit/<int:id>',methods=['GET','POST'])
+@main.route('/edit/article/<int:id>',methods=['GET','POST'])
 @login_required
 def edit_Article(id):
     post = Post.query.get_or_404(id)
     if current_user != post.author and \
             not current_user.can(0x0f):
         abort(403)
-    form = ArticleForm()
+    if post.category :
+        form = ArticleForm(category=post.category.id)
+    else :
+        form = ArticleForm()
     if request.method == 'POST' :
         post.title = form.title.data
         post.body = form.body.data
+        post.category = Category.query.filter_by(id=form.category.data[0]).first()
         post.is_article = True
         post.ping()
         db.session.add(post)
@@ -218,7 +222,7 @@ def edit_Article(id):
         return redirect(url_for('.article',id=post.id))
     form.title.data = post.title
     form.body.data = post.body
-    return render_template('edit_post.html',form=form,number=int(id),article=True,post=post)
+    return render_template('edit_post.html',form=form,is_new=int(id),article=True,post=post)
 
 @main.route('/delete-post/<int:id>',methods=['GET','POST'])
 @login_required
@@ -290,19 +294,26 @@ def categorys():
         error_out=False)
     categorys = list()
     for item in pagination.items :
-        arg = {'name': item.name ,'parentcategory': Category.query.filter_by(id=item.parentid).first()}
-        if item.soncategorys is not None:
-            arg.update({'soncategorys': ' '.join([Category.query.filter_by(id=id).first() for id in item.soncategorys])})
+        arg = {'name': item.name}
+        if item.parentcategory :
+            arg.update({'parentcategory': Category.query.filter_by(id=item.parentid).first().name})
+        else :
+            arg.update({'parentcategory': 'None'})
+        if item.soncategorys :
+            arg.update({'soncategorys': ' '.join([category.name for category in item.soncategorys])})
         else :
             arg.update({'soncategorys': 'None'})
+
+        arg.update({'count':item.posts.count()})
+
         categorys.append(arg)
 
     return render_template('categorys.html', title="所有栏目",
                            endpoint='.categorys', pagination=pagination, categorys=categorys)
 
-@main.route('/newtalk',methods=['GET','POST'])
+@main.route('/new/talk',methods=['GET','POST'])
 @login_required
-def new_talk():
+def new_Talk():
     form = TalkForm()
     if form.validate_on_submit():
         talk = Post(body=form.body.data,
@@ -312,3 +323,19 @@ def new_talk():
         db.session.commit()
         return redirect(url_for('.neighbourhood',id=talk.id))
     return render_template('edit_post.html',form=form,article=False)
+
+@main.route('/edit/talk/<int:id>',methods=['GET','POST'])
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def edit_Talk(id):
+    talk = Post.query.get_or_404(id)
+    form = TalkForm()
+    if form.validate_on_submit():
+        talk.body = form.body.data
+        talk.ping()
+        db.session.add(talk)
+        db.session.commit()
+        flash("已修改。")
+        return redirect(url_for('main.neighbourhood'))
+    form.body.data = talk.body
+    return render_template('edit_post.html',form=form,is_new=int(id),article=False,post=talk)
