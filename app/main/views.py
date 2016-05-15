@@ -176,7 +176,7 @@ def article(id):
         db.session.add(comment)
         db.session.commit()
         flash('你的评论已提交。')
-        return redirect(url_for('mian.article', id=post.id,page=-1))
+        return redirect(url_for('main.article', id=post.id,page=-1))
     page = request.args.get('page',1,type=int)
     if page == -1:
         page = (post.comments.count() - 1) / \
@@ -195,11 +195,11 @@ def new_Article():
     if request.method == 'POST' :
         post = Post(body=form.body.data,title=form.title.data,
                     author=current_user._get_current_object(),
-                    is_article = True,category=form.category.data)
+                    is_article = True,category=Category.query.filter_by(id=form.category.data[0]).first())
         post.ping()
         db.session.add(post)
         db.session.commit()
-        return redirect(url_for('.article',id=post.id,page=-1))
+        return redirect(url_for('main.article',id=post.id,page=-1))
     return render_template('edit_post.html',form=form,is_new='',article=True)
 
 @main.route('/edit/article/<int:id>',methods=['GET','POST'])
