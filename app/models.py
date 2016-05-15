@@ -320,6 +320,14 @@ class Category(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def posts_count(self):
+        count = self.posts.count()
+        sum = 0
+        for category in self.soncategorys :
+            sum = sum + category.posts_count()
+        count =  count + sum
+        return count
+
 class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
