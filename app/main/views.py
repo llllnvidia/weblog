@@ -259,7 +259,7 @@ def moderate_enable(id):
     comment.disabled = False
     db.session.add(comment)
     db.session.commit()
-    return redirect(url_for('.moderate',
+    return redirect(url_for('main.moderate',
                             id=comment.post_id,page=request.args.get('page',1,type=int)))
                             
 @main.route('/comment/disable/<int:id>')
@@ -270,7 +270,7 @@ def moderate_disable(id):
     comment.disabled = True
     db.session.add(comment)
     db.session.commit()
-    return redirect(url_for('.moderate',
+    return redirect(url_for('main.moderate',
                            id=comment.post_id,page=request.args.get('page',1,type=int)))
                            
 @main.route('/users')
@@ -317,7 +317,7 @@ def categorys():
         new_category.save()
         return redirect(url_for('main.categorys',page=page,form=form))
     return render_template('categorys.html', title="所有栏目",form=form,
-                           endpoint='.categorys', pagination=pagination, categorys=categorys)
+                           endpoint='main.categorys', pagination=pagination, categorys=categorys)
 
 @main.route('/categorys/delete/<int:id>')
 @login_required
