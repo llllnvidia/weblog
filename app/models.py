@@ -312,6 +312,14 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category %r>' % self.name
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)

@@ -17,7 +17,7 @@
     </div>
     <div class="panel-body">
         <h1>{{ post.title }}</h1>
-        <span class="badge pull-right">{{ moment(post.timestamp).fromNow() }}</span>
+        <span class="label label-info">{{ moment(post.timestamp).fromNow() }}</span>
         {% if post.body_html %}
             {{ post.body_html | safe }}
         {% else %}

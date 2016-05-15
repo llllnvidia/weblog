@@ -5,7 +5,7 @@ from .. import db
 from ..models import User, Role, Permission, Post, Comment, Category
 from ..email import send_email
 from . import main
-from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm
+from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm
 from flask.ext.login import current_user, login_required
 from ..decorators import admin_required,permission_required
 
@@ -284,17 +284,18 @@ def users():
     return render_template('users.html',title="所有用户",
         endpoint='.users',pagination=pagination,users=users)
 
-@main.route('/categorys')
+@main.route('/categorys',methods=["GET","POST"])
 @login_required
-@permission_required(0x0f)
+@permission_required(Permission.MODERATE_COMMENTS)
 def categorys():
+    form = CategoryForm()
     page = request.args.get('page', 1, type=int)
     pagination = Category.query.filter_by().paginate(
         page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
         error_out=False)
     categorys = list()
     for item in pagination.items :
-        arg = {'name': item.name}
+        arg = {'id':item.id,'name': item.name}
         if item.parentcategory :
             arg.update({'parentcategory': Category.query.filter_by(id=item.parentid).first().name})
         else :
@@ -307,9 +308,21 @@ def categorys():
         arg.update({'count':item.posts.count()})
 
         categorys.append(arg)
-
-    return render_template('categorys.html', title="所有栏目",
+    if request.method == 'POST' :
+        new_category = Category(form.name.data,Category.query.filter_by(id=form.parent.data[0]).first())
+        new_category.save()
+        return redirect(url_for('main.categorys',page=page,form=form))
+    return render_template('categorys.html', title="所有栏目",form=form,
                            endpoint='.categorys', pagination=pagination, categorys=categorys)
+
+@main.route('/categorys/delete/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def delete_category(id):
+    category = Category.query.filter_by(id=id).first()
+    category.delete()
+    flash("已删除")
+    return redirect(url_for('main.categorys'))
 
 @main.route('/new/talk',methods=['GET','POST'])
 @login_required
