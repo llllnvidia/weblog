@@ -44,9 +44,18 @@ class ArticleForm(Form):
         self.category.choices = [(cg.id,cg.name) for cg in Category.query.all()]
 
 class TalkForm(Form):
-    body = TextAreaField("",validators=[Required()])
+    body = TextAreaField("",validators=[Required(),Length(1,200,message="太长了。")])
     submit = SubmitField("说一说")
 
 class CommentForm(Form):
     body = StringField('',validators=[Required(),Length(1,200,message="太长了。")])
     submit = SubmitField('提交')
+
+class CategoryForm(Form):
+    name = StringField('栏目名称',validators=[Required(),Length(1,10,message='太长了。')])
+    parent = SelectField("父栏目")
+    submit = SubmitField('添加')
+
+    def __init__(self,*args,**kwargs):
+        super(CategoryForm,self).__init__(*args,**kwargs)
+        self.parent.choices = [(cg.id,cg.name) for cg in Category.query.all()]

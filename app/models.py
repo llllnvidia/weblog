@@ -312,6 +312,22 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category %r>' % self.name
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def posts_count(self):
+        count = self.posts.count()
+        sum = 0
+        for category in self.soncategorys :
+            sum = sum + category.posts_count()
+        count =  count + sum
+        return count
+
 class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)

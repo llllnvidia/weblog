@@ -7,7 +7,14 @@
 {% block page_content %}
 <div class="page-header">
     <h1>你好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
-    <h5>已有{{ User.query.all().__len__() }}人加入。</h5>
+    <br>
+    <h6>
+        <i>
+            这里有{{ User.query.all().__len__() }}个伙伴,
+            {{ Post.query.filter_by(is_article=True).all().__len__() }}篇文章,
+            {{ Post.query.filter_by(is_article=False).all().__len__() }}份吐槽。
+        </i>
+    </h6>
 </div>
 <div class="panel panel-primary">
     <div class="panel-heading">
@@ -17,7 +24,7 @@
     </div>
     <div class="panel-body">
         <h1>{{ post.title }}</h1>
-        <span class="badge pull-right">{{ moment(post.timestamp).fromNow() }}</span>
+        <span class="label label-info">{{ moment(post.timestamp).fromNow() }}</span>
         {% if post.body_html %}
             {{ post.body_html | safe }}
         {% else %}
