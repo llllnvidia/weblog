@@ -5,7 +5,7 @@ from .. import db
 from ..models import User, Role, Permission, Post, Comment, Category
 from ..email import send_email
 from . import main
-from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm
+from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm, UploadImagesForm
 from flask.ext.login import current_user, login_required
 from ..decorators import admin_required,permission_required
 
@@ -13,41 +13,36 @@ from ..decorators import admin_required,permission_required
 def index():
     return render_template('index.html')
 
-
-@main.route('/neighbourhood', methods=['GET', 'POST'])
+@main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
+
     Admin = User.query.filter_by(username='Admin').first()
     post = Admin.posts.order_by(Post.timestamp.desc()).first()
+    categorys = Category.query.filter_by(parentid=1).all()
     page = request.args.get('page',1,type=int)
-    show_followed = False
-    if current_user.is_authenticated:
-        show_followed = bool(request.cookies.get('show_followed', ''))
-    if show_followed:
-        query = current_user.followed_posts
+    cur_category = request.args.get('category')
+    show = request.args.get('show_followed')
+
+    if show:
+        show = int(show)
+        if show:
+            query = current_user.followed_posts
+        else:
+            query = Post.query.filter(Post.author_id != Admin.id)
     else:
         query = Post.query.filter(Post.author_id!=Admin.id)
+
+    if cur_category:
+        query = query.filter(Post.category==Category.query.filter_by(name=cur_category).first())
+
     pagination = query.order_by(Post.timestamp.desc()).paginate(
         page,per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
         error_out=False)
+
     posts = pagination.items
     return render_template('neighbourhood.html',post=post,User=User,posts=posts,
-                           Post=Post,
-                           show_followed=show_followed,
+                           Post=Post,categorys=categorys,show_followed=show,
                            pagination=pagination)
-
-@main.route('/all')
-@login_required
-def show_all():
-    resp = make_response(redirect(url_for('.neighbourhood')+'#neighbourhood'))
-    resp.set_cookie('show_followed','',max_age=30*24*60*60)
-    return resp
-
-@main.route('/followed')
-@login_required
-def show_followed():
-    resp = make_response(redirect(url_for('.neighbourhood')+'#neighbourhood'))
-    resp.set_cookie('show_followed','1',max_age=30*24*60*60)
-    return resp
     
 @main.route('/user/<username>')
 def user(username):
@@ -356,3 +351,13 @@ def edit_Talk(id):
         return redirect(url_for('main.neighbourhood'))
     form.body.data = talk.body
     return render_template('edit_post.html',form=form,is_new=int(id),article=False,post=talk)
+
+@main.route('/upload/images', methods=('GET', 'POST'))
+def upload_images():
+    form = UploadImagesForm()
+    if form.validate_on_submit():
+        filename = form.upload.data.filename
+        form.upload.data.save('C:/Users/NHT/PycharmProjects/codeblog/uploads/' + filename)
+    else:
+        filename = None
+    return render_template('upload.html', form=form, filename=filename)

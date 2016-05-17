@@ -2,7 +2,8 @@
 from flask.ext.wtf import Form
 from flask.ext.pagedown.fields import PageDownField
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
-from wtforms.validators import Required, Length, Email, Regexp
+from flask.ext.wtf.file import FileField, FileAllowed, FileRequired
+from wtforms.validators import Required, Length, Email
 from wtforms import ValidationError
 from ..models import Role, User, Category
 
@@ -59,3 +60,10 @@ class CategoryForm(Form):
     def __init__(self,*args,**kwargs):
         super(CategoryForm,self).__init__(*args,**kwargs)
         self.parent.choices = [(cg.id,cg.name) for cg in Category.query.all()]
+
+class UploadImagesForm(Form):
+    upload = FileField('image', validators=[
+        FileRequired(),
+        FileAllowed(['jpg', 'png'], 'Images only!')
+    ])
+    submit = SubmitField("提交")
