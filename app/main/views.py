@@ -26,6 +26,8 @@ def neighbourhood():
     show_followed = request.cookies.get('show_followed', '')
     if show is None:
         show = show_followed
+    if not current_user.is_authenticated:
+        show = None
     if show:
         show = int(show)
         if show:
