@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
 {% block page_content %}
 <div class="page-header">
     <h1>{{ user.username }}</h1>
@@ -38,15 +40,94 @@
     {% endif %}
         <a href="{{ url_for('.followers',username=user.username) }}">
             粉丝: <span class="badge">{{ user.followers.count() - 1 }}</span>
-        </a>
+        </a>&nbsp;
         <a href="{{ url_for('.followed_by',username=user.username) }}">
             关注: <span class="badge">{{ user.followed.count() -1 }}</span>
-        </a>
+        </a>&nbsp;
+        文章: <span class="badge">{{ user.posts.filter_by(is_article=True).count() }}</span>
+        &nbsp;
         {% if current_user.is_authenticated and user != current_user and
             user.is_following(current_user) %}
           | <span class="label label-default">正在关注你</span>
         {% endif %}
-    <h3>Article:</h3>
-    {% include '_posts.html' %}
+    <hr/>
+    <div class="container-fluid">
+    <div class="row" style="margin-left:-30px;margin-right:-30px" id='neighbourhood'>
+        <aside class="col-md-3 hidden-xs">
+        <div class="panel panel-info">
+            <div class="panel-heading">栏目</div>
+            <ul class="list-group" id="listcontrol">
+            {% for category in categorys if not category.name=="公告" %}
+                {% if category.soncategorys %}
+                    <li role="presentation" class="list-group-item">
+                        <span class="badge">{{ category.posts_count() }}</span>
+                        <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
+                        <a data-toggle="collapse" data-parent="#listcontrol"  href="#{{ category.id }}">
+                              <btn class="caret"></btn>
+                        </a>
+                    </li>
+                    <li class="collapse" id="{{ category.id }}">
+                    {% for soncategory in category.soncategorys %}
+                        <lu class="list-group-item">
+                            <span class="badge">{{ soncategory.posts.count() }}</span>
+                            <a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a>
+                        </lu>
+                    {% endfor %}
+                    </li>
+                {% else %}
+                    <li class="list-group-item">
+                        <span class="badge">{{ category.posts.count() }}</span>
+                        <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">标签</div>
+            <div class="panel-body">
+                {% for tag in tags %}
+                    <a href="?tag={{tag.id}}#neighbourhood" class="post-tag">
+                        {% if tag == cur_tag %}
+                        <span class="label label-primary">
+                            {{ tag }}
+                            <small><span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span></small>
+                        </span>
+                        {% else %}
+                        <span class="label label-default">
+                            {{ tag }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    &nbsp;
+                {% endfor %}
+            </div>
+        </div>
+        </aside>
+        <div class="col-md-9">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        文章
+                    </div>
+                </div>
+                <div class="panel-body">
+                    {% include '_posts.html' %}
+                </div>
+                {% if pagination.total//pagination.per_page %}
+                <div class="panel-footer">
+                    {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {% if pagination.total//pagination.per_page %}
+    <div class="panel-footer">
+        {{ macros.pagination_widget(pagination, 'main.user',username=user.username) }}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

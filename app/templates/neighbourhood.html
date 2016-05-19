@@ -65,6 +65,7 @@
         {% for category in categorys if not category.name=="公告" %}
             {% if category.soncategorys %}
                 <li role="presentation" class="list-group-item">
+                    <span class="badge">{{ category.posts_count() }}</span>
                     <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
                     <a data-toggle="collapse" data-parent="#listcontrol"  href="#{{ category.id }}">
                           <btn class="caret"></btn>
@@ -72,11 +73,17 @@
                 </li>
                 <li class="collapse" id="{{ category.id }}">
                 {% for soncategory in category.soncategorys %}
-                    <lu class="list-group-item"><a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a></lu>
+                    <lu class="list-group-item">
+                        <span class="badge">{{ soncategory.posts.count() }}</span>
+                        <a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a>
+                    </lu>
                 {% endfor %}
                 </li>
             {% else %}
-                <li class="list-group-item"><a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a></li>
+                <li class="list-group-item">
+                    <span class="badge">{{ category.posts.count() }}</span>
+                    <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
+                </li>
             {% endif %}
         {% endfor %}
         </ul>
@@ -116,9 +123,9 @@
                 {% endif %}
             </div>
             <div class="panel-body">
-               {% include '_posts.html' %}
+                {% include '_posts.html' %}
             </div>
-            {% if pagination.page > 1 %}
+            {% if pagination.total//pagination.per_page %}
             <div class="panel-footer">
                 {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
             </div>

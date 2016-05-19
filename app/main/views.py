@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, session, redirect, url_for, current_app, flash, \
-                    request, abort, make_response
+    request, abort, make_response
 from .. import db
 from ..models import User, Role, Permission, Post, Comment, Category
 from ..email import send_email
 from . import main
-from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm, UploadImagesForm
+from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm, \
+    UploadImagesForm
 from flask.ext.login import current_user, login_required
-from ..decorators import admin_required,permission_required
+from ..decorators import admin_required, permission_required
 
-@main.route('/',methods=['GET', 'POST'])
+
+@main.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
+
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
-
     Admin = User.query.filter_by(username='Admin').first()
     post = Admin.posts.order_by(Post.timestamp.desc()).first()
     categorys = Category.query.filter_by(parentid=1).all()
-    page = request.args.get('page',1,type=int)
+    page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
     show = request.args.get('show_followed')
 
@@ -30,27 +32,44 @@ def neighbourhood():
         else:
             query = Post.query.filter(Post.author_id != Admin.id)
     else:
-        query = Post.query.filter(Post.author_id!=Admin.id)
+        query = Post.query.filter(Post.author_id != Admin.id)
 
     if cur_category:
-        query = query.filter(Post.category==Category.query.filter_by(name=cur_category).first())
+        query = Category.query.filter_by(name=cur_category).first().posts_query()
 
     pagination = query.order_by(Post.timestamp.desc()).paginate(
-        page,per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
+        page, per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
         error_out=False)
 
     posts = pagination.items
-    return render_template('neighbourhood.html',post=post,User=User,posts=posts,
-                           Post=Post,categorys=categorys,show_followed=show,
+    return render_template('neighbourhood.html', post=post, User=User, posts=posts,
+                           Post=Post, categorys=categorys, show_followed=show,
                            pagination=pagination)
-    
+
+
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         abort(404)
-    posts = user.posts.filter_by(is_article=True).order_by(Post.timestamp.desc()).all()
-    return render_template('user.html',user=user,posts=posts)
+    query = user.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
+    categorys = Category.query.filter_by(parentid=1).all()
+
+    page = request.args.get('page', 1, type=int)
+    cur_category = request.args.get('category')
+    cur_tag = request.args.get('tag')
+
+    if cur_category:
+        query = Category.query.filter_by(name=cur_category).first().posts_query()
+
+    pagination = query.paginate(
+        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('user.html',user=user,posts=posts,
+                            categorys=categorys,pagination=pagination)
+
+
 
 @main.route('/follow/<username>')
 @login_required
@@ -59,13 +78,14 @@ def follow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('需登录。')
-        return redirect( url_for('.neighbourhood'))
+        return redirect(url_for('.neighbourhood'))
     if current_user.is_following(user):
-        flash('你已经关注了%s。'%username)
-        return redirect( url_for('.user',username=username))
+        flash('你已经关注了%s。' % username)
+        return redirect(url_for('.user', username=username))
     current_user.follow(user)
-    flash('你关注了%s。'%username)
-    return redirect( url_for('.user',username=username))
+    flash('你关注了%s。' % username)
+    return redirect(url_for('.user', username=username))
+
 
 @main.route('/unfollow/<username>')
 @login_required
@@ -74,29 +94,31 @@ def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('需登录。')
-        return redirect( url_for('.neighbourhood'))
-    if current_user.is_following(user) :
+        return redirect(url_for('.neighbourhood'))
+    if current_user.is_following(user):
         current_user.unfollow(user)
-        flash('你取消了对%s的关注。'%username)
-    else :
-        flash('你没有关注过%s。'%username)
-        return redirect( url_for('.user',username=username))
-    return redirect( url_for('.user',username=username))
+        flash('你取消了对%s的关注。' % username)
+    else:
+        flash('你没有关注过%s。' % username)
+        return redirect(url_for('.user', username=username))
+    return redirect(url_for('.user', username=username))
+
 
 @main.route('/followers/<username>')
 def followers(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('需登录。')
-        return redirect( url_for('.neighbourhood'))
-    page = request.args.get('page',1,type=int)
+        return redirect(url_for('.neighbourhood'))
+    page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
-        page,per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
         error_out=False)
-    follows = [{'user':item.follower,'timestamp':item.timestamp}
-        for item in pagination.items]
-    return render_template('followers.html',user=user,title="Followers of",
-        endpoint='.followers',pagination=pagination,follows=follows)
+    follows = [{'user': item.follower, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Followers of",
+                           endpoint='.followers', pagination=pagination, follows=follows)
+
 
 @main.route('/followed-by/<username>')
 def followed_by(username):
@@ -114,7 +136,8 @@ def followed_by(username):
                            endpoint='.followed_by', pagination=pagination,
                            follows=follows)
 
-@main.route('/edit-profile',methods=['GET','POST'])
+
+@main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
@@ -125,13 +148,14 @@ def edit_profile():
         db.session.add(current_user)
         db.session.commit()
         flash('你的资料已修改。')
-        return redirect(url_for('.user',username=current_user.username))
+        return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html',form=form)
+    return render_template('edit_profile.html', form=form)
 
-@main.route('/edit-profile/<int:id>',methods=['GET','POST'])
+
+@main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_profile_admin(id):
@@ -148,7 +172,7 @@ def edit_profile_admin(id):
         db.session.add(user)
         db.session.commit()
         flash('资料已修改。')
-        return redirect(url_for('.user',username=user.username))
+        return redirect(url_for('.user', username=user.username))
     form.email.data = user.email
     form.username.data = user.username
     form.confirmed.data = user.confirmed
@@ -156,12 +180,13 @@ def edit_profile_admin(id):
     form.name.data = user.name
     form.location.data = user.location
     form.about_me.data = user.about_me
-    return render_template('edit_profile_admin.html',form=form,user=user)
+    return render_template('edit_profile_admin.html', form=form, user=user)
 
-@main.route('/article/<int:id>', methods=['GET','POST'])
+
+@main.route('/article/<int:id>', methods=['GET', 'POST'])
 def article(id):
     post = Post.query.get_or_404(id)
-    if not post.is_article :
+    if not post.is_article:
         abort(404)
     form = CommentForm()
     if form.validate_on_submit():
@@ -171,8 +196,8 @@ def article(id):
         db.session.add(comment)
         db.session.commit()
         flash('你的评论已提交。')
-        return redirect(url_for('main.article', id=post.id,page=-1))
-    page = request.args.get('page',1,type=int)
+        return redirect(url_for('main.article', id=post.id, page=-1))
+    page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post.comments.count() - 1) / \
                current_app.config['CODEBLOG_COMMENTS_PER_PAGE'] + 1
@@ -180,35 +205,37 @@ def article(id):
         page, per_page=current_app.config['CODEBLOG_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('article.html',posts=[post],form=form,
-                           comments=comments, pagination=pagination,page=page)
+    return render_template('article.html', posts=[post], form=form,
+                           comments=comments, pagination=pagination, page=page)
 
-@main.route('/new/article',methods=['GET','POST'])
+
+@main.route('/new/article', methods=['GET', 'POST'])
 @login_required
 def new_Article():
     form = ArticleForm()
-    if request.method == 'POST' :
-        post = Post(body=form.body.data,title=form.title.data,
+    if request.method == 'POST':
+        post = Post(body=form.body.data, title=form.title.data,
                     author=current_user._get_current_object(),
-                    is_article = True,category=Category.query.filter_by(id=form.category.data[0]).first())
+                    is_article=True, category=Category.query.filter_by(id=form.category.data[0]).first())
         post.ping()
         db.session.add(post)
         db.session.commit()
-        return redirect(url_for('main.article',id=post.id,page=-1))
-    return render_template('edit_post.html',form=form,is_new='',article=True)
+        return redirect(url_for('main.article', id=post.id, page=-1))
+    return render_template('edit_post.html', form=form, is_new='', article=True)
 
-@main.route('/edit/article/<int:id>',methods=['GET','POST'])
+
+@main.route('/edit/article/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_Article(id):
     post = Post.query.get_or_404(id)
     if current_user != post.author and \
             not current_user.can(Permission.MODERATE_COMMENTS):
         abort(403)
-    if post.category :
+    if post.category:
         form = ArticleForm(category=post.category.id)
-    else :
+    else:
         form = ArticleForm()
-    if request.method == 'POST' :
+    if request.method == 'POST':
         post.title = form.title.data
         post.body = form.body.data
         post.category = Category.query.filter_by(id=form.category.data[0]).first()
@@ -217,15 +244,16 @@ def edit_Article(id):
         db.session.add(post)
         db.session.commit()
         flash('该文章已修改。')
-        return redirect(url_for('main.article',id=id,page=-1))
+        return redirect(url_for('main.article', id=id, page=-1))
     form.title.data = post.title
     form.body.data = post.body
-    return render_template('edit_post.html',form=form,is_new=int(id),article=True,post=post)
+    return render_template('edit_post.html', form=form, is_new=int(id), article=True, post=post)
 
-@main.route('/delete-post/<int:id>',methods=['GET','POST'])
+
+@main.route('/delete-post/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_post(id):
-    post = Post.query.get_or_404(id)    
+    post = Post.query.get_or_404(id)
     if current_user != post.author and \
             not current_user.can(0x0f):
         abort(403)
@@ -234,18 +262,20 @@ def delete_post(id):
         flash('已删除！')
         return redirect(url_for('.neighbourhood'))
 
+
 @main.route('/comment')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def moderate():
-    page = request.args.get('page',1,type=int)
+    page = request.args.get('page', 1, type=int)
     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
         page, per_page=current_app.config['CODEBLOG_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
     return render_template('comments.html', comments=comments,
-                           pagination=pagination, page=page )
-        
+                           pagination=pagination, page=page)
+
+
 @main.route('/comment/enable/<int:id>')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
@@ -255,8 +285,9 @@ def moderate_enable(id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('main.moderate',
-                            id=comment.post_id,page=request.args.get('page',1,type=int)))
-                            
+                            id=comment.post_id, page=request.args.get('page', 1, type=int)))
+
+
 @main.route('/comment/disable/<int:id>')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
@@ -266,23 +297,25 @@ def moderate_disable(id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('main.moderate',
-                           id=comment.post_id,page=request.args.get('page',1,type=int)))
-                           
+                            id=comment.post_id, page=request.args.get('page', 1, type=int)))
+
+
 @main.route('/users')
 @login_required
 @permission_required(0x0f)
 def users():
-    page = request.args.get('page',1,type=int)
-    pagination = User.query.filter_by().paginate(
-        page,per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+    page = request.args.get('page', 1, type=int)
+    pagination = User.query.order_by(User.last_seen.desc()).paginate(
+        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
         error_out=False)
-    users = [{'user':item.username,'name':item.name,
-             'member_since':item.member_since,'last_seen':item.last_seen}
-        for item in pagination.items]
-    return render_template('users.html',title="所有用户",
-        endpoint='.users',pagination=pagination,users=users)
+    users = [{'user': item.username, 'name': item.name,
+              'member_since': item.member_since, 'last_seen': item.last_seen}
+             for item in pagination.items]
+    return render_template('users.html', title="所有用户",
+                           endpoint='.users', pagination=pagination, users=users)
 
-@main.route('/categorys',methods=["GET","POST"])
+
+@main.route('/categorys', methods=["GET", "POST"])
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def categorys():
@@ -292,27 +325,27 @@ def categorys():
         page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
         error_out=False)
     categorys = list()
-    for item in pagination.items :
-        arg = {'id':item.id,'name': item.name}
-        if item.parentcategory :
+    for item in pagination.items:
+        arg = {'id': item.id, 'name': item.name}
+        if item.parentcategory:
             arg.update({'parentcategory': Category.query.filter_by(id=item.parentid).first().name})
-        else :
+        else:
             arg.update({'parentcategory': 'None'})
-        if item.soncategorys :
+        if item.soncategorys:
             arg.update({'soncategorys': ' '.join([category.name for category in item.soncategorys])})
             arg.update({'count': item.posts_count()})
-        else :
+        else:
             arg.update({'soncategorys': 'None'})
             arg.update({'count': item.posts_count()})
 
-
         categorys.append(arg)
-    if request.method == 'POST' :
-        new_category = Category(form.name.data,Category.query.filter_by(id=form.parent.data[0]).first())
+    if request.method == 'POST':
+        new_category = Category(form.name.data, Category.query.filter_by(id=form.parent.data[0]).first())
         new_category.save()
-        return redirect(url_for('main.categorys',page=page,form=form))
-    return render_template('categorys.html', title="所有栏目",form=form,
+        return redirect(url_for('main.categorys', page=page, form=form))
+    return render_template('categorys.html', title="所有栏目", form=form,
                            endpoint='main.categorys', pagination=pagination, categorys=categorys)
+
 
 @main.route('/categorys/delete/<int:id>')
 @login_required
@@ -323,7 +356,8 @@ def delete_category(id):
     flash("已删除")
     return redirect(url_for('main.categorys'))
 
-@main.route('/new/talk',methods=['GET','POST'])
+
+@main.route('/new/talk', methods=['GET', 'POST'])
 @login_required
 def new_Talk():
     form = TalkForm()
@@ -333,10 +367,11 @@ def new_Talk():
                     author=current_user._get_current_object())
         db.session.add(talk)
         db.session.commit()
-        return redirect(url_for('.neighbourhood',id=talk.id))
-    return render_template('edit_post.html',form=form,article=False)
+        return redirect(url_for('.neighbourhood', id=talk.id))
+    return render_template('edit_post.html', form=form, article=False)
 
-@main.route('/edit/talk/<int:id>',methods=['GET','POST'])
+
+@main.route('/edit/talk/<int:id>', methods=['GET', 'POST'])
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def edit_Talk(id):
@@ -350,7 +385,8 @@ def edit_Talk(id):
         flash("已修改。")
         return redirect(url_for('main.neighbourhood'))
     form.body.data = talk.body
-    return render_template('edit_post.html',form=form,is_new=int(id),article=False,post=talk)
+    return render_template('edit_post.html', form=form, is_new=int(id), article=False, post=talk)
+
 
 @main.route('/upload/images', methods=('GET', 'POST'))
 def upload_images():
