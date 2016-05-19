@@ -16,14 +16,15 @@
         {% endif %}
     </div>
     {% if moderate %}
-    <div class="panel-footer"> 
+    <div class="footer btn-group" style="margin-left:6px;margin-bottom:4px">
         {% if comment.disabled %}
-        <a class="btn btn-default btn-xs" href="{{ url_for('.moderate_enable',
+        <a class="btn btn-group-xs btn-primary" href="{{ url_for('.moderate_enable',
             id=comment.id, page=page) }}">Enable</a>
         {% else %}
-        <a class="btn btn-danger btn-xs" href="{{ url_for('.moderate_disable',
+        <a class="btn btn-group-xs btn-danger" href="{{ url_for('.moderate_disable',
             id=comment.id, page=page) }}">Disable</a>
-        {% endif %}  
+        {% endif %}
+        <a class="btn btn-group-xs btn-info" href="{{ url_for('main.article',id=comment.post_id) }}">详情</a>
     </div>
     {% endif %}
     </div>
