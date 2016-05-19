@@ -9,10 +9,9 @@
 {{ wtf.quick_form(form) }}
 <p></p>
 {% include '_comments.html' %}
-{% if pagination %}
+{% if pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.article', fragment='#comments', id=posts[0].id) }}
-</div>
 </div>
 {% endif %}
 {% endblock %}

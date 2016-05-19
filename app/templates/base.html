@@ -7,8 +7,7 @@
 {% endblock %}
 
 {% block navbar %}
-<style>body { padding-top: 90px; }</style>
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+<div class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -27,13 +26,29 @@
                   aria-haspopup="true" aria-expanded="false">
                 社区 <span class="caret"></span></a>                    
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('main.show_all') }}#neighbourhood">所有</a></li>
-                        <li><a href="{{ url_for('main.show_followed') }}#neighbourhood">关注</a></li>
+                        <li><a href="/neighbourhood?show_followed=0#neighbourhood">所有</a></li>
+                        <li><a href="/neighbourhood?show_followed=1#neighbourhood">关注</a></li>
                     </ul>     
                 </li>
                 {% else %}
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
                 {% endif %}
+                <li role="presentation" class="dropdown visible-xs"><a class="dropdown-toggle"
+                 data-toggle="dropdown" role="button"
+                  aria-haspopup="true" aria-expanded="false">栏目
+                  <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                        {% for category in categorys if not category.name=="公告" %}
+                            <li><a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a></li>
+                            {% if category.soncategorys %}
+                            {% for soncategory in category.soncategorys %}
+                                <li><a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a></li>
+                            {% endfor %}
+                            {% endif %}
+                            <li role="separator" class="divider"></li>
+                        {% endfor %}
+                        </ul>
+                </li>
                 {% if current_user.is_authenticated %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
@@ -65,7 +80,7 @@
                 {% else %}
                 <a href="{{ url_for('auth.login') }}" type="button" class="btn navbar-btn navbar-right btn-info">登陆</a>
                 {% endif %}
-            </div> 
+            </div>
         </div>
     </div>
 </div>

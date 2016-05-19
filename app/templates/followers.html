@@ -22,7 +22,9 @@
     {% endif %}
     {% endfor %}
 </table>
+{% if pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, endpoint, username = user.username) }}
 </div>
+{% endif %}
 {% endblock %}

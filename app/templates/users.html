@@ -22,7 +22,9 @@
     </tr>
     {% endfor %}
 </table>
+{% if pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination,endpoint) }}
 </div>
+{% endif %}
 {% endblock %}

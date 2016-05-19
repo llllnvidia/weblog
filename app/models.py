@@ -41,13 +41,14 @@ class Post(db.Model):
         self.last_edit = datetime.utcnow()
         db.session.add(self)
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
 
     @staticmethod
     def on_changed_body(target,value,oldvalue,initiator):
@@ -95,6 +96,14 @@ class Role(db.Model):
     def __repr__(self):
         return '<Role %r>' % self.name
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     @staticmethod
     def insert_roles():
         roles = {
@@ -130,6 +139,16 @@ class Follow(db.Model):
     followed_id = db.Column(db.Integer,db.ForeignKey('users.id'),
                             primary_key=True)
     timestamp = db.Column(db.DateTime,default=datetime.utcnow)
+
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class User(UserMixin,db.Model):
     __tablename__ = 'users'
@@ -168,7 +187,14 @@ class User(UserMixin,db.Model):
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
         self.follow(self)
+        self.save()
+
+    def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 
     @staticmethod
@@ -191,7 +217,7 @@ class User(UserMixin,db.Model):
 
     def ping(self):
         self.last_seen = datetime.utcnow()
-        db.session.add(self)
+        self.save()
 
     @property
     def password(self):
@@ -233,21 +259,18 @@ class User(UserMixin,db.Model):
         if data.get('reset') != self.id:
             return False
         self.password = new_password
-        db.session.add(self)
-        db.session.commit()
+        self.save()
         return True
 
     def follow(self,user):
         if not self.is_following(user):
             f = Follow(follower=self,followed=user)
-            db.session.add(f)
-            db.session.commit()
+            f.save()
 
     def unfollow(self,user):
         f = self.followed.filter_by(followed_id=user.id).first()
         if f:
-            db.session.delete(f)
-            db.session.commit()
+            f.delete()
 
     def is_following(self,user):
         return self.followed.filter_by(
@@ -287,6 +310,14 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -328,6 +359,15 @@ class Category(db.Model):
         count =  count + sum
         return count
 
+    def posts_query(self):
+        if self.soncategorys :
+            query = Post.query.filter(Post.category_id == self.id)
+            for soncategory in self.soncategorys:
+                query = query.union( Post.query.filter(Post.category_id==soncategory.id))
+        else :
+            query = Post.query.filter(Post.category_id==self.id)
+        return query
+
 class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
@@ -338,5 +378,9 @@ class Tag(db.Model):
 
     def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 

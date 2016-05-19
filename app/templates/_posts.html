@@ -7,7 +7,7 @@
             {% if post.is_article %}
             <span class="label label-success">Last edit : {{ moment(post.last_edit).fromNow() }}</span>
             {% endif %}
-            <span class="label label-info">Create : {{ moment(post.timestamp).fromNow() }}</span>
+            <span class="label label-info">Create : {{ moment(post.timestamp).format('L') }}</span>
             <div class="post-body">
                 {% if post.title %}
                     <h3>{{ post.title }}</h3>
