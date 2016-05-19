@@ -45,6 +45,7 @@
                                 <span class="badge">{{ query.filter(Post.is_article==False).count() }}</span>
                             </a>
                         </li>
+                        <li role="separator" class="divider"></li>
                         {% for category in categorys if not category.name=="公告" %}
                             <li>
                                 <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}
