@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, session, redirect, url_for, current_app, flash, \
+from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response
-from .. import db
 from ..models import User, Role, Permission, Post, Comment, Category
-from ..email import send_email
 from . import main
 from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm, \
     UploadImagesForm
@@ -18,32 +16,42 @@ def index():
 
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
-    Admin = User.query.filter_by(username='Admin').first()
-    post = Admin.posts.order_by(Post.timestamp.desc()).first()
+    admin = User.query.filter_by(username='Admin').first()
+    post_admin = admin.posts.order_by(Post.timestamp.desc()).first()
     categorys = Category.query.filter_by(parentid=1).all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
+    show_talk = request.args.get('show_talk')
     show = request.args.get('show_followed')
-
+    show_followed = request.cookies.get('show_followed', '')
+    if show is None:
+        show = show_followed
     if show:
         show = int(show)
         if show:
-            query = current_user.followed_posts
+            if not show_followed or show_followed == '0':
+                resp = make_response(redirect(url_for('main.neighbourhood')))
+                resp.set_cookie('show_followed', '1', max_age=60 * 3)
+                return resp
+            query_show = query = current_user.followed_posts
         else:
-            query = Post.query.filter(Post.author_id != Admin.id)
+            if not show_followed or show_followed == '1':
+                resp = make_response(redirect(url_for('main.neighbourhood')))
+                resp.set_cookie('show_followed', '0', max_age=60 * 3)
+                return resp
+            query_show = query = Post.query
     else:
-        query = Post.query.filter(Post.author_id != Admin.id)
-
+        query_show = query = Post.query
+    if show_talk:
+        query = query.filter(Post.is_article == False)
     if cur_category:
-        query = Category.query.filter_by(name=cur_category).first().posts_query()
-
+        query = Category.query.filter_by(name=cur_category).first().posts_query(query)
     pagination = query.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
         error_out=False)
-
     posts = pagination.items
-    return render_template('neighbourhood.html', post=post, User=User, posts=posts,
-                           Post=Post, categorys=categorys, show_followed=show,
+    return render_template('neighbourhood.html', post_admin=post_admin, User=User, posts=posts,
+                           Post=Post, categorys=categorys, show_followed=show, query=query_show,
                            pagination=pagination)
 
 
@@ -54,21 +62,17 @@ def user(username):
         abort(404)
     query = user.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
     categorys = Category.query.filter_by(parentid=1).all()
-
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
     cur_tag = request.args.get('tag')
-
     if cur_category:
         query = Category.query.filter_by(name=cur_category).first().posts_query()
-
     pagination = query.paginate(
         page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
-    return render_template('user.html',user=user,posts=posts,
-                            categorys=categorys,pagination=pagination)
-
+    return render_template('user.html', user=user, posts=posts,
+                           categorys=categorys, pagination=pagination)
 
 
 @main.route('/follow/<username>')
@@ -145,8 +149,7 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
-        db.session.add(current_user)
-        db.session.commit()
+        current_user.save()
         flash('你的资料已修改。')
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
@@ -169,8 +172,7 @@ def edit_profile_admin(id):
         user.name = form.name.data
         user.location = form.location.data
         user.about_me = form.about_me.data
-        db.session.add(user)
-        db.session.commit()
+        user.save()
         flash('资料已修改。')
         return redirect(url_for('.user', username=user.username))
     form.email.data = user.email
@@ -193,8 +195,7 @@ def article(id):
         comment = Comment(body=form.body.data,
                           post=post,
                           author=current_user._get_current_object())
-        db.session.add(comment)
-        db.session.commit()
+        comment.save()
         flash('你的评论已提交。')
         return redirect(url_for('main.article', id=post.id, page=-1))
     page = request.args.get('page', 1, type=int)
@@ -211,22 +212,21 @@ def article(id):
 
 @main.route('/new/article', methods=['GET', 'POST'])
 @login_required
-def new_Article():
+def new_article():
     form = ArticleForm()
     if request.method == 'POST':
         post = Post(body=form.body.data, title=form.title.data,
                     author=current_user._get_current_object(),
                     is_article=True, category=Category.query.filter_by(id=form.category.data[0]).first())
         post.ping()
-        db.session.add(post)
-        db.session.commit()
+        post.save()
         return redirect(url_for('main.article', id=post.id, page=-1))
     return render_template('edit_post.html', form=form, is_new='', article=True)
 
 
 @main.route('/edit/article/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_Article(id):
+def edit_article(id):
     post = Post.query.get_or_404(id)
     if current_user != post.author and \
             not current_user.can(Permission.MODERATE_COMMENTS):
@@ -241,8 +241,7 @@ def edit_Article(id):
         post.category = Category.query.filter_by(id=form.category.data[0]).first()
         post.is_article = True
         post.ping()
-        db.session.add(post)
-        db.session.commit()
+        post.save()
         flash('该文章已修改。')
         return redirect(url_for('main.article', id=id, page=-1))
     form.title.data = post.title
@@ -282,8 +281,7 @@ def moderate():
 def moderate_enable(id):
     comment = Comment.query.get_or_404(id)
     comment.disabled = False
-    db.session.add(comment)
-    db.session.commit()
+    comment.save()
     return redirect(url_for('main.moderate',
                             id=comment.post_id, page=request.args.get('page', 1, type=int)))
 
@@ -294,8 +292,7 @@ def moderate_enable(id):
 def moderate_disable(id):
     comment = Comment.query.get_or_404(id)
     comment.disabled = True
-    db.session.add(comment)
-    db.session.commit()
+    comment.save()
     return redirect(url_for('main.moderate',
                             id=comment.post_id, page=request.args.get('page', 1, type=int)))
 
@@ -337,7 +334,6 @@ def categorys():
         else:
             arg.update({'soncategorys': 'None'})
             arg.update({'count': item.posts_count()})
-
         categorys.append(arg)
     if request.method == 'POST':
         new_category = Category(form.name.data, Category.query.filter_by(id=form.parent.data[0]).first())
@@ -359,29 +355,26 @@ def delete_category(id):
 
 @main.route('/new/talk', methods=['GET', 'POST'])
 @login_required
-def new_Talk():
+def new_talk():
     form = TalkForm()
     if form.validate_on_submit():
         talk = Post(body=form.body.data,
                     is_article=False,
                     author=current_user._get_current_object())
-        db.session.add(talk)
-        db.session.commit()
+        talk.save()
         return redirect(url_for('.neighbourhood', id=talk.id))
     return render_template('edit_post.html', form=form, article=False)
 
 
 @main.route('/edit/talk/<int:id>', methods=['GET', 'POST'])
 @login_required
-@permission_required(Permission.MODERATE_COMMENTS)
-def edit_Talk(id):
+def edit_talk(id):
     talk = Post.query.get_or_404(id)
     form = TalkForm()
     if form.validate_on_submit():
         talk.body = form.body.data
         talk.ping()
-        db.session.add(talk)
-        db.session.commit()
+        talk.save()
         flash("已修改。")
         return redirect(url_for('main.neighbourhood'))
     form.body.data = talk.body

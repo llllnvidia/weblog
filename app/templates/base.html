@@ -33,22 +33,38 @@
                 {% else %}
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
                 {% endif %}
+                {% if categorys and query %}
                 <li role="presentation" class="dropdown visible-xs"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">栏目
                   <span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                        <li>
+                            <a href="?show_talk=1#neighbourhood">吐槽
+                                &nbsp;
+                                <span class="badge">{{ query.filter(Post.is_article==False).count() }}</span>
+                            </a>
+                        </li>
                         {% for category in categorys if not category.name=="公告" %}
-                            <li><a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a></li>
+                            <li>
+                                <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}
+                                &nbsp;
+                                <span class="badge">{{ category.posts_count(query) }}</span></a>
+                            </li>
                             {% if category.soncategorys %}
                             {% for soncategory in category.soncategorys %}
-                                <li><a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a></li>
+                                <li>
+                                    <a href="?category={{ soncategory.name }}#neighbourhood">&nbsp;&nbsp;{{ soncategory.name }}
+                                    &nbsp;
+                                    <span class="badge">{{ soncategory.posts_count(query) }}</span></a>
+                                </li>
                             {% endfor %}
                             {% endif %}
                             <li role="separator" class="divider"></li>
                         {% endfor %}
                         </ul>
                 </li>
+                {% endif %}
                 {% if current_user.is_authenticated %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
@@ -56,8 +72,8 @@
                   <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('main.user',username=current_user.username) }}">主页</a></li>
-                        <li><a href="{{ url_for('main.new_Article') }}">发博文</a></li>
-                        <li><a href="{{ url_for('main.new_Talk') }}">吐槽</a></li>
+                        <li><a href="{{ url_for('main.new_article') }}">发博文</a></li>
+                        <li><a href="{{ url_for('main.new_talk') }}">吐槽</a></li>
                     </ul>
                 </li>
                 {% endif %}
