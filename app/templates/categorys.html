@@ -24,7 +24,9 @@
             {{ category.count }}
         </td>
         <td>
-            <a href="{{ url_for('main.delete_category',id=category.id) }}"><span class="btn btn-sm btn-danger">删除</span></a>
+            {% if category.id != 1 %}
+            <a href="{{ url_for('main.delete_category',id=category.id) }}"><span class="btn btn-xs btn-danger">删除</span></a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}

@@ -23,7 +23,7 @@
     {% endfor %}
     <li{% if not pagination.has_next %} class="disabled"{% endif %}>
         <a href="{% if pagination.has_next %}{{ url_for(endpoint,
-            page = pagination.page +1,**kwargs) }}#neighbourhood{% else %}#{% endif %}">
+            page = pagination.page + 1,**kwargs) }}#neighbourhood{% else %}#{% endif %}">
             &raquo;
         </a>
     </li>

@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app, request
-from . import db , login_manager
-from werkzeug.security import generate_password_hash,check_password_hash
+from flask import current_app
+from . import db, login_manager
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin, AnonymousUserMixin
 from datetime import datetime
 from markdown import markdown
 import bleach
 
 posttags = db.Table('posttags',
-                db.Column('tags_id', db.Integer, db.ForeignKey('tags.id')),
-                db.Column('posts_id', db.Integer, db.ForeignKey('posts.id'))
-                )
+                    db.Column('tags_id', db.Integer, db.ForeignKey('tags.id')),
+                    db.Column('posts_id', db.Integer, db.ForeignKey('posts.id'))
+                    )
+
 
 class Post(db.Model):
     __tablename__ = 'posts'
-    id = db.Column(db.Integer,primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
-    author_id = db.Column(db.Integer,db.ForeignKey('users.id'))
-    is_article = db.Column(db.Boolean,default=False)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    is_article = db.Column(db.Boolean, default=False)
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     title = db.Column(db.Text)
     summary = db.Column(db.Text)
-    summary_html = db.Column(db.Text) 
+    summary_html = db.Column(db.Text)
     last_edit = db.Column(db.DateTime)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category',
@@ -49,47 +50,48 @@ class Post(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
     @staticmethod
-    def on_changed_body(target,value,oldvalue,initiator):
-        allowed_tags = ['a','abbr','acronym','b','blockquote','code',
-                        'em','i','li','ol','pre','strong','ul','img','span',
-                        'h1','h2','h3','p','tr','td','table','tbody','colgroup','col','thead','th']
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'img', 'span',
+                        'h1', 'h2', 'h3', 'p', 'tr', 'td', 'table', 'tbody', 'colgroup', 'col', 'thead', 'th']
         attrs = {
             '*': ['class'],
-            'ol':['class'],
-            'li':['rel'],
-            'span':['class'],
+            'ol': ['class'],
+            'li': ['rel'],
+            'span': ['class'],
             'a': ['href', 'rel'],
             'img': ['src', 'alt'],
-            'code':['class','style']           
+            'code': ['class', 'style']
         }
 
         a = value.split("\n")
-        if len(a) > 15 :
+        if len(a) > 15:
             b = []
             for i in range(15):
                 if i < len(a):
                     b.append(a[i])
             target.summary = '\n'.join(b)
-        else :
+        else:
             target.summary = ""
         
         target.body_html = bleach.linkify(bleach.clean(
-            markdown(value,output_format='html'),
-            tags=allowed_tags,attributes=attrs,strip=True))
-            
+            markdown(value, output_format='html'),
+            tags=allowed_tags, attributes=attrs, strip=True))
+
         target.summary_html = bleach.linkify(bleach.clean(
-            markdown(target.summary,output_format='html'),
-            tags=allowed_tags,attributes=attrs,strip=True))
-          
-db.event.listen(Post.body,'set',Post.on_changed_body)
+            markdown(target.summary, output_format='html'),
+            tags=allowed_tags, attributes=attrs, strip=True))
+
+
+db.event.listen(Post.body, 'set', Post.on_changed_body)
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    default = db.Column(db.Boolean, default=False,index=True)
+    default = db.Column(db.Boolean, default=False, index=True)
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
@@ -107,14 +109,14 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User':(Permission.FOLLOW |
-                    Permission.COMMENT |
-                    Permission.WRITE_ARTICLES,True),
-            'Moderator':(Permission.FOLLOW |
-                         Permission.COMMENT |
-                         Permission.WRITE_ARTICLES |
-                         Permission.MODERATE_COMMENTS,False),
-            'Administrator':(0xff,False)
+            'User': (Permission.FOLLOW |
+                     Permission.COMMENT |
+                     Permission.WRITE_ARTICLES, True),
+            'Moderator': (Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES |
+                          Permission.MODERATE_COMMENTS, False),
+            'Administrator': (0xff, False)
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
@@ -122,8 +124,8 @@ class Role(db.Model):
                 role = Role(name=r)
             role.permissions = roles[r][0]
             role.default = roles[r][1]
-            db.session.add(role)
-        db.session.commit()
+            role.save()
+
 
 class Permission:
     FOLLOW = 0x01
@@ -132,28 +134,28 @@ class Permission:
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
 
+
 class Follow(db.Model):
     __tablename__ = 'follows'
-    follower_id = db.Column(db.Integer,db.ForeignKey('users.id'),
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'),
                             primary_key=True)
-    followed_id = db.Column(db.Integer,db.ForeignKey('users.id'),
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'),
                             primary_key=True)
-    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
-
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     def save(self):
         db.session.add(self)
         db.session.commit()
 
-
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
-class User(UserMixin,db.Model):
+
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64),unique=True,index=True)
+    email = db.Column(db.String(64), unique=True, index=True)
     avatar_hash = db.Column(db.String(32))
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
@@ -163,24 +165,24 @@ class User(UserMixin,db.Model):
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     about_me = db.Column(db.Text())
-    member_since = db.Column(db.DateTime(),default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
-                               backref=db.backref('follower',lazy='joined'),
+                               backref=db.backref('follower', lazy='joined'),
                                lazy='dynamic',
                                cascade='all,delete-orphan')
     followers = db.relationship('Follow',
-                               foreign_keys=[Follow.followed_id],
-                               backref=db.backref('followed',lazy='joined'),
-                               lazy='dynamic',
-                               cascade='all,delete-orphan')
-                                
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed', lazy='joined'),
+                                lazy='dynamic',
+                                cascade='all,delete-orphan')
+
     def __repr__(self):
         return '<User %r>' % self.username
 
-    def __init__(self,**kwargs):
-        super(User,self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
         if self.role is None:
             if self.username == current_app.config['CODEBLOG_ADMIN']:
                 self.role = Role.query.filter_by(permissions=0xff).first()
@@ -205,9 +207,9 @@ class User(UserMixin,db.Model):
                 db.session.add(user)
                 db.session.commit()
 
-    def can(self,permissions):
+    def can(self, permissions):
         return self.role is not None and \
-               (self.role.permissions & permissions)== permissions
+               (self.role.permissions & permissions) == permissions
 
     def is_administrator(self):
         return self.can(0xff)
@@ -224,19 +226,19 @@ class User(UserMixin,db.Model):
         raise AttributeError('密码不可用。')
 
     @password.setter
-    def password(self,password):
+    def password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    def verify_password(self,password):
-        return check_password_hash(self.password_hash,password)
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
-    confirmed = db.Column(db.Boolean,default = False)
+    confirmed = db.Column(db.Boolean, default=False)
 
-    def generate_confirmation_token(self,expiration=3600):
+    def generate_confirmation_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'confirm':self.id})
+        return s.dumps({'confirm': self.id})
 
-    def confirm(self,token):
+    def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
@@ -262,28 +264,29 @@ class User(UserMixin,db.Model):
         self.save()
         return True
 
-    def follow(self,user):
+    def follow(self, user):
         if not self.is_following(user):
-            f = Follow(follower=self,followed=user)
+            f = Follow(follower=self, followed=user)
             f.save()
 
-    def unfollow(self,user):
+    def unfollow(self, user):
         f = self.followed.filter_by(followed_id=user.id).first()
         if f:
             f.delete()
 
-    def is_following(self,user):
+    def is_following(self, user):
         return self.followed.filter_by(
             followed_id=user.id).first() is not None
 
-    def is_followed_by(self,user):
+    def is_followed_by(self, user):
         return self.followers.filter_by(
             follower_id=user.id).first() is not None
 
     @property
     def followed_posts(self):
-        return Post.query.join(Follow,Follow.followed_id == Post.author_id)\
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
             .filter(Follow.follower_id == self.id)
+
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -295,11 +298,14 @@ class AnonymousUser(AnonymousUserMixin):
     def is_administrator(self):
         return False
 
+
 login_manager.anonymous_user = AnonymousUser
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -327,7 +333,9 @@ class Comment(db.Model):
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
 
+
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -336,7 +344,7 @@ class Category(db.Model):
     parentcategory = db.relationship('Category', uselist=False, remote_side=[id],
                                      backref=db.backref('soncategorys', uselist=True))
 
-    def __init__(self, name,parentcategory=None):
+    def __init__(self, name, parentcategory=None):
         self.name = name
         self.parentcategory = parentcategory
 
@@ -348,25 +356,43 @@ class Category(db.Model):
         db.session.commit()
 
     def delete(self):
+        for post in self.posts:
+            post.category_id = 1
+            post.save()
         db.session.delete(self)
         db.session.commit()
 
-    def posts_count(self):
-        count = self.posts.count()
-        sum = 0
-        for category in self.soncategorys :
-            sum = sum + category.posts_count()
-        count =  count + sum
+    def posts_count(self, query=None):
+        if query:
+            count = query.filter(Post.category == self).count()
+            sum = 0
+            for category in self.soncategorys:
+                sum = sum + query.filter(Post.category == category).count()
+        else:
+            count = self.posts.count()
+            sum = 0
+            for category in self.soncategorys:
+                sum = sum + category.posts_count()
+        count = count + sum
         return count
 
-    def posts_query(self):
-        if self.soncategorys :
-            query = Post.query.filter(Post.category_id == self.id)
-            for soncategory in self.soncategorys:
-                query = query.union( Post.query.filter(Post.category_id==soncategory.id))
-        else :
-            query = Post.query.filter(Post.category_id==self.id)
+    def posts_query(self, query=None):
+        if query:
+            if self.soncategorys:
+                query = query.filter(Post.category == self)
+                for soncategory in self.soncategorys:
+                    query = query.union(Post.query.filter(Post.category == soncategory))
+            else:
+                query = query.filter(Post.category == self)
+        else:
+            if self.soncategorys:
+                query = Post.query.filter(Post.category == self)
+                for soncategory in self.soncategorys:
+                    query = query.union(Post.query.filter(Post.category == soncategory))
+            else:
+                query = Post.query.filter(Post.category == self)
         return query
+
 
 class Tag(db.Model):
     __tablename__ = 'tags'
@@ -383,4 +409,3 @@ class Tag(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-

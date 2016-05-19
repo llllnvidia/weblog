@@ -10,9 +10,9 @@
     <br>
     <h6>
         <i>
-            这里有{{ User.query.all().__len__() }}个伙伴,
-            {{ Post.query.filter_by(is_article=True).all().__len__() }}篇文章,
-            {{ Post.query.filter_by(is_article=False).all().__len__() }}份吐槽。
+            这里有{{ User.query.count() }}个伙伴,
+            {{ Post.query.filter_by(is_article=True).count() }}篇文章,
+            {{ Post.query.filter_by(is_article=False).count() }}份吐槽。
         </i>
     </h6>
 </div>
@@ -23,37 +23,18 @@
         </h3>
     </div>
     <div class="panel-body">
-        <h1>{{ post.title }}</h1>
-        <span class="label label-info">{{ moment(post.timestamp).fromNow() }}</span>
-        {% if post.body_html %}
-            {{ post.body_html | safe }}
+        <h1>{{ post_admin.title }}</h1>
+        <span class="label label-info">{{ moment(post_admin.timestamp).fromNow() }}</span>
+        {% if post_admin.body_html %}
+            {{ post_admin.body_html | safe }}
         {% else %}
-            {{ post.body }}
+            {{ post_admin.body }}
         {% endif %}
     </div>
     <div class="panel-footer">
-        {% if post.is_article %}
-            {% if current_user.is_moderator() %}
-            <a href="{{ url_for('main.edit_Article',id=post.id) }}">
-                <button type="button" class="btn btn-danger">修改[Admin]</button>
-            </a>
-            {% elif current_user == post.author %}
-                <a href="{{ url_for('main.edit_Article',id=post.id) }}">
-                    <button type="button" class="btn btn-warning">修改</button>
-                </a>
-            {% endif %}
-            {% if posts.__len__() != 1 %}
-            <a href="{{ url_for('main.article',id=post.id) }}">
-                <button type="button" class="btn btn-default">详情</button>
-            </a>
-            {% endif %}
-        {% else %}
-            {% if current_user.is_moderator() %}
-            <a href="{{ url_for('main.edit_Article',id=post.id) }}">
-                <button type="button" class="btn btn-danger">修改[Admin]</button>
-            </a>
-            {% endif  %}
-        {% endif %}
+        <a href="{{ url_for('main.article',id=post_admin.id) }}">
+            <button type="button" class="btn btn-default">详情</button>
+        </a>
     </div>
 </div>
 <div class="container-fluid">
@@ -62,10 +43,14 @@
     <div class="panel panel-info">
         <div class="panel-heading">栏目</div>
         <ul class="list-group" id="listcontrol">
+            <li role="presentation" class="list-group-item">
+                <span class="badge">{{ query.filter(Post.is_article==False).count() }}</span>
+                <a href="?show_talk=1#neighbourhood">吐槽</a>
+            </li>
         {% for category in categorys if not category.name=="公告" %}
             {% if category.soncategorys %}
                 <li role="presentation" class="list-group-item">
-                    <span class="badge">{{ category.posts_count() }}</span>
+                    <span class="badge">{{ category.posts_count(query) }}</span>
                     <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
                     <a data-toggle="collapse" data-parent="#listcontrol"  href="#{{ category.id }}">
                           <btn class="caret"></btn>
@@ -73,15 +58,15 @@
                 </li>
                 <li class="collapse" id="{{ category.id }}">
                 {% for soncategory in category.soncategorys %}
-                    <lu class="list-group-item">
-                        <span class="badge">{{ soncategory.posts.count() }}</span>
+                    <lu class="list-group-item">&nbsp;&nbsp;
+                        <span class="badge">{{ soncategory.posts_count(query) }}</span>
                         <a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a>
                     </lu>
                 {% endfor %}
                 </li>
             {% else %}
                 <li class="list-group-item">
-                    <span class="badge">{{ category.posts.count() }}</span>
+                    <span class="badge">{{ category.posts_count(query) }}</span>
                     <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
                 </li>
             {% endif %}
