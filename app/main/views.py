@@ -222,7 +222,7 @@ def article(id):
                            comments=comments, pagination=pagination, page=page)
 
 
-@main.route('/new/article', methods=['GET', 'POST'])
+@main.route('/new/article', methods=['GET','POST'])
 @login_required
 def new_article():
     form = ArticleForm()
@@ -233,7 +233,7 @@ def new_article():
         post.ping()
         post.save()
         return redirect(url_for('main.article', id=post.id, page=-1))
-    return render_template('edit_post.html', form=form, is_new='', article=True)
+    return render_template('edit_post.html', form=form, article=True)
 
 
 @main.route('/edit/article/<int:id>', methods=['GET', 'POST'])
@@ -258,10 +258,10 @@ def edit_article(id):
         return redirect(url_for('main.article', id=id, page=-1))
     form.title.data = post.title
     form.body.data = post.body
-    return render_template('edit_post.html', form=form, is_new=int(id), article=True, post=post)
+    return render_template('edit_post.html', form=form, article=True, post=post)
 
 
-@main.route('/delete-post/<int:id>', methods=['GET', 'POST'])
+@main.route('/delete-post/<int:id>')
 @login_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
@@ -294,6 +294,7 @@ def moderate_enable(id):
     comment = Comment.query.get_or_404(id)
     comment.disabled = False
     comment.save()
+    flash("解禁成功")
     return redirect(url_for('main.moderate',
                             id=comment.post_id, page=request.args.get('page', 1, type=int)))
 
@@ -305,6 +306,7 @@ def moderate_disable(id):
     comment = Comment.query.get_or_404(id)
     comment.disabled = True
     comment.save()
+    flash("禁止显示")
     return redirect(url_for('main.moderate',
                             id=comment.post_id, page=request.args.get('page', 1, type=int)))
 
@@ -317,18 +319,27 @@ def users():
     pagination = User.query.order_by(User.last_seen.desc()).paginate(
         page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
         error_out=False)
-    users = [{'user': item.username, 'name': item.name,
+    users = [{'id': item.id, 'user': item.username, 'name': item.name,
               'member_since': item.member_since, 'last_seen': item.last_seen}
              for item in pagination.items]
     return render_template('users.html', title="所有用户",
                            endpoint='.users', pagination=pagination, users=users)
 
 
+@main.route('/users/delete/<int:id>')
+@login_required
+@permission_required(Permission.ADMINISTER)
+def delete_user(id):
+    user = User.query.get_or_404(id)
+    user.delete()
+    flash('已删除！')
+    return redirect(url_for('main.users'))
+
+@main.route('/categorys/edit/<int:id>', methods=["GET", "POST"])
 @main.route('/categorys', methods=["GET", "POST"])
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
-def categorys():
-    form = CategoryForm()
+def categorys(id=None):
     page = request.args.get('page', 1, type=int)
     pagination = Category.query.filter_by().paginate(
         page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
@@ -341,18 +352,33 @@ def categorys():
         else:
             arg.update({'parentcategory': 'None'})
         if item.soncategorys:
-            arg.update({'soncategorys': ' '.join([category.name for category in item.soncategorys])})
+            arg.update({'soncategorys': ' '.join([cg.name for cg in item.soncategorys])})
             arg.update({'count': item.posts_count()})
         else:
             arg.update({'soncategorys': 'None'})
             arg.update({'count': item.posts_count()})
         categorys.append(arg)
-    if request.method == 'POST':
-        new_category = Category(form.name.data, Category.query.filter_by(id=form.parent.data[0]).first())
-        new_category.save()
-        return redirect(url_for('main.categorys', page=page, form=form))
-    return render_template('categorys.html', title="所有栏目", form=form,
-                           endpoint='main.categorys', pagination=pagination, categorys=categorys)
+    if id:
+        category = Category.query.filter_by(id=id).first()
+        form = CategoryForm()
+        if request.method == 'POST':
+            category.name = form.name.data
+            category.save()
+            flash("已修改")
+            return redirect(url_for('main.categorys', page=page, form=form))
+        form.name.data = category.name
+        form.parent.choices = [(0, "不可选")]
+        return render_template('categorys.html', title="所有栏目", form=form,
+                               endpoint='main.categorys', pagination=pagination, categorys=categorys)
+    else:
+        form = CategoryForm()
+        if request.method == 'POST':
+            new_category = Category(form.name.data, Category.query.filter_by(id=form.parent.data[0]).first())
+            new_category.save()
+            flash("已添加")
+            return redirect(url_for('main.categorys', page=page, form=form))
+        return render_template('categorys.html', title="所有栏目", form=form,
+                               endpoint='main.categorys', pagination=pagination, categorys=categorys)
 
 
 @main.route('/categorys/delete/<int:id>')

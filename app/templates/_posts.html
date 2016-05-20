@@ -36,7 +36,7 @@
                 {% endif %}
                 {% endif %}
                 <hr/>
-                {% if posts.__len__() == 1 or not post.is_article or not post.summary %}
+                {% if request.endpoint.find('neighbourhood') == -1 or not post.is_article or not post.summary %}
                     {% if post.body_html %}
                         {{ post.body_html | safe }}
                     {% else %}
@@ -56,27 +56,27 @@
             <div class="btn-group">
                 {% if post.is_article %}
                     {% if current_user == post.author %}
-                        <a href="{{ url_for('main.edit_article',id=post.id) }}">
-                            <button type="button" class="btn btn-default btn-warning">修改</button>
+                        <a type="button" class="btn btn-default btn-warning" href="{{ url_for('main.edit_article',id=post.id) }}">
+                            修改
                         </a>
                     {% elif current_user.is_moderator() %}
-                        <a href="{{ url_for('main.edit_article',id=post.id) }}">
-                            <button type="button" class="btn btn-default btn-danger">修改[Admin]</button>
+                        <a type="button" class="btn btn-default btn-danger" href="{{ url_for('main.edit_article',id=post.id) }}">
+                            修改[Admin]
                         </a>
                     {% endif %}
-                    {% if posts.__len__() != 1 %}
-                    <a href="{{ url_for('main.article',id=post.id) }}">
-                        <button type="button" class="btn btn-default">详情</button>
+                    {% if request.endpoint.find('neighbourhood') != -1 %}
+                    <a type="button" class="btn btn-default" href="{{ url_for('main.article',id=post.id) }}">
+                        详情
                     </a>
                     {% endif %}
                 {% else %}
                     {% if current_user == post.author %}
-                        <a href="{{ url_for('main.edit_talk',id=post.id) }}">
-                            <button type="button" class="btn btn-default btn-warning">修改</button>
+                        <a type="button" class="btn btn-default btn-warning" href="{{ url_for('main.edit_talk',id=post.id) }}">
+                            修改
                         </a>
                     {% elif current_user.is_moderator() %}
-                        <a href="{{ url_for('main.edit_talk',id=post.id) }}">
-                            <button type="button" class="btn btn-danger">修改[Admin]</button>
+                        <a type="button" class="btn btn-danger" href="{{ url_for('main.edit_talk',id=post.id) }}">
+                            修改[Admin]
                         </a>
                     {% endif  %}
                 {% endif %}                  

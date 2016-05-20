@@ -4,7 +4,7 @@
     <div class="panel-body">
         <span class="badge pull-right">{{ moment(comment.timestamp).fromNow() }}</span>
         <div class="comment-author"><a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a></div>
-        {% if comment.disabled %}
+        {% if comment.disabled and not moderate %}
         <p><i>这条评论被管理员禁止显示。</i></p>
         {% endif %}
         {% if current_user.is_moderator() or not comment.disabled %}

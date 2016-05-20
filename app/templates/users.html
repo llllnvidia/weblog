@@ -8,21 +8,29 @@
     <h1>{{ title }}</h1>
 </div>
 <table class="table table-hover followers">
-    <thead><tr><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th></tr></thead>
+    <thead><tr><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th><th>操作</th></tr></thead>
     {% for user in users %}
     <tr>
-        <td>
-            <a href="{{ url_for('.user', username = user.user) }}">
-                {{ user.user }}
-            </a>
-        </td>
+        <td>{{ user.user }}</td>
         <td>{{ user.name }}</td>
         <td>{{ moment(user.member_since).format('LL') }}</td>
         <td>{{ moment(user.last_seen).format('LLL') }}</td>
+        <td>
+            <div class="btn-block">
+            <a class="btn btn-default" href="{{ url_for('.user', username = user.user) }}">
+                详情
+            </a>
+            {% if current_user.is_administrator() %}
+            <a class="btn btn-danger" href="{{ url_for('main.delete_user',id=user.id) }}">
+                删除
+            </a>
+            {% endif %}
+            </div>
+        </td>
     </tr>
     {% endfor %}
 </table>
-{% if pagination.total//pagination.per_page %}
+{% if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination,endpoint) }}
 </div>

@@ -25,13 +25,14 @@
         </td>
         <td>
             {% if category.id != 1 %}
+            <a href="{{ url_for('main.categorys') }}/edit/{{ category.id }}"><span class="btn btn-xs btn-warning">修改</span></a>
             <a href="{{ url_for('main.delete_category',id=category.id) }}"><span class="btn btn-xs btn-danger">删除</span></a>
             {% endif %}
         </td>
     </tr>
     {% endfor %}
 </table>
-{% if pagination.total//pagination.per_page %}
+{% if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination,endpoint) }}
 </div>

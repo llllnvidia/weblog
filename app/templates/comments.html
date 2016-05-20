@@ -9,7 +9,7 @@
 </div>
 {% set moderate = True %}
 {% include '_comments.html' %}
-{% if pagination.total//pagination.per_page %}
+{% if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination,'.moderate') }}
 </div>

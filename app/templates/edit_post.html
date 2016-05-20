@@ -8,21 +8,40 @@
         <div class="page-header">
             <h1>Article</h1>
         </div>
-            {% if not is_new %}
+            {% if request.endpoint == 'main.new_article' %}
             <form action="/new/article" method="post" role="form">
             {% else %}
-            <a href="{{ url_for('.delete_post',id=post.id ) }}"><button class="btn btn-danger btn-sm">删除</button></a>
-            <form action="/edit/article/{{ is_new }}" method="post" role="form">
+            <a href="{{ url_for('main.delete_post',id=post.id ) }}"><button class="btn btn-danger btn-sm">删除</button></a>
+            <hr/>
+            <form action="/edit/article/{{ post.id }}" method="post" role="form">
             {% endif %}
-                {{ wtf.quick_form(form) }}
+                {{ form.hidden_tag() }}
+                {{ wtf.form_errors(form, hiddens="only") }}
+
+                {{ wtf.form_field(form.title) }}
+                <div class="row">
+                    <div class="col-lg-6 hidden-xs">
+                        {{ wtf.form_field(form.body,only_preview=True) }}
+                    </div>
+                    <div class="col-lg-6">
+                        {{ wtf.form_field(form.body,only_input=True, style='overflow:scroll;overflow-y:hidden;overflow-x:hidden',
+                        onfocus="window.activeobj=this;
+                        this.clock=setInterval(
+                        function(){
+                        activeobj.style.height=activeobj.scrollHeight+'px';
+                        },200);") }}
+                    </div>
+                </div>
+                {{ wtf.form_field(form.category) }}
+                {{ wtf.form_field(form.submit) }}
             </form>
     </div>
 {% else %}
     <div class="container-fluid">
         <div class="page-header">
             <h1>吐槽</h1>
-            {% if is_new %}
-            <a href="{{ url_for('.delete_post',id=post.id ) }}"><button class="btn btn-danger btn-sm">删除</button></a>
+            {% if request.endpoint == 'main.edit_talk' %}
+            <a href="{{ url_for('main.delete_post',id=post.id ) }}"><button class="btn btn-danger btn-sm">删除</button></a>
             {% endif %}
         </div>
         {{ wtf.quick_form(form) }}

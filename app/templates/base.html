@@ -33,7 +33,7 @@
                 {% else %}
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
                 {% endif %}
-                {% if categorys and query and post %}
+                {% if request.endpoint == 'main.neighbourhood' %}
                 <li role="presentation" class="dropdown visible-xs"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">栏目
@@ -108,7 +108,7 @@
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <li>{{ message }}</li>
+        <lu>{{ message }}</lu>
     </div>
     {% endfor %}
 
