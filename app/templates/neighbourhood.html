@@ -25,6 +25,7 @@
     <div class="panel-body">
         <h1>{{ post_admin.title }}</h1>
         <span class="label label-info">{{ moment(post_admin.timestamp).fromNow() }}</span>
+        <hr/>
         {% if post_admin.body_html %}
             {{ post_admin.body_html | safe }}
         {% else %}
@@ -47,7 +48,7 @@
                 <span class="badge">{{ query.filter(Post.is_article==False).count() }}</span>
                 <a href="?show_talk=1#neighbourhood">吐槽</a>
             </li>
-        {% for category in categorys if not category.name=="公告" %}
+        {% for category in categorys  %}
             {% if category.soncategorys %}
                 <li role="presentation" class="list-group-item">
                     <span class="badge">{{ category.posts_count(query) }}</span>
@@ -110,7 +111,7 @@
             <div class="panel-body">
                 {% include '_posts.html' %}
             </div>
-            {% if pagination.total//pagination.per_page %}
+            {% if pagination and pagination.total//pagination.per_page %}
             <div class="panel-footer">
                 {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
             </div>

@@ -379,19 +379,25 @@ class Category(db.Model):
     def posts_query(self, query=None):
         if query:
             if self.soncategorys:
-                query = query.filter(Post.category == self)
+                posts = query.filter(Post.category == self)
                 for soncategory in self.soncategorys:
-                    query = query.union(Post.query.filter(Post.category == soncategory))
+                    query = query.filter(Post.category == soncategory)
+                    if query.all() and posts.all():
+                        posts = posts.union(query)
+                    elif query.all():
+                        posts = query
+                    else:
+                        posts = None
             else:
-                query = query.filter(Post.category == self)
+                posts = query.filter(Post.category == self)
         else:
             if self.soncategorys:
-                query = Post.query.filter(Post.category == self)
+                posts = Post.query.filter(Post.category == self)
                 for soncategory in self.soncategorys:
-                    query = query.union(Post.query.filter(Post.category == soncategory))
+                    posts = posts.union(Post.filter(Post.category == soncategory))
             else:
-                query = Post.query.filter(Post.category == self)
-        return query
+                posts = Post.query.filter(Post.category == self)
+        return posts
 
 
 class Tag(db.Model):

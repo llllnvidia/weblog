@@ -59,35 +59,40 @@
         <div class="panel panel-info">
             <div class="panel-heading">栏目</div>
             <ul class="list-group" id="listcontrol">
-            {% for category in categorys if not category.name=="公告" %}
+            {% for category in categorys if category.posts_count(query) %}
                 {% if category.soncategorys %}
                     <li role="presentation" class="list-group-item">
-                        <span class="badge">{{ category.posts_count() }}</span>
+                        <span class="badge">{{ category.posts_count(query) }}</span>
                         <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
                         <a data-toggle="collapse" data-parent="#listcontrol"  href="#{{ category.id }}">
                               <btn class="caret"></btn>
                         </a>
                     </li>
                     <li class="collapse" id="{{ category.id }}">
-                    {% for soncategory in category.soncategorys %}
+                    {% for soncategory in category.soncategorys if soncategory.posts_count(query) %}
                         <lu class="list-group-item">
-                            <span class="badge">{{ soncategory.posts.count() }}</span>
+                            <span class="badge">{{ soncategory.posts_count(query) }}</span>
                             <a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a>
                         </lu>
                     {% endfor %}
                     </li>
                 {% else %}
                     <li class="list-group-item">
-                        <span class="badge">{{ category.posts.count() }}</span>
+                        <span class="badge">{{ category.posts_count(query) }}</span>
                         <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
                     </li>
                 {% endif %}
+            {% else %}
+                <div class="panel-body">
+                    无栏目
+                </div>
             {% endfor %}
             </ul>
         </div>
         <div class="panel panel-info">
             <div class="panel-heading">标签</div>
             <div class="panel-body">
+            {% if tags %}
                 {% for tag in tags %}
                     <a href="?tag={{tag.id}}#neighbourhood" class="post-tag">
                         {% if tag == cur_tag %}
@@ -103,6 +108,9 @@
                     </a>
                     &nbsp;
                 {% endfor %}
+                {% else %}
+                    无标签
+                {% endif %}
             </div>
         </div>
         </aside>
@@ -116,7 +124,7 @@
                 <div class="panel-body">
                     {% include '_posts.html' %}
                 </div>
-                {% if pagination.total//pagination.per_page %}
+                {% if pagination and pagination.total//pagination.per_page %}
                 <div class="panel-footer">
                     {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
                 </div>
@@ -125,11 +133,5 @@
         </div>
     </div>
     </div>
-
-    {% if pagination.total//pagination.per_page %}
-    <div class="panel-footer">
-        {{ macros.pagination_widget(pagination, 'main.user',username=user.username) }}
-    </div>
-    {% endif %}
 </div>
 {% endblock %}

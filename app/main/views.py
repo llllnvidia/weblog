@@ -21,6 +21,8 @@ def neighbourhood():
     categorys = Category.query.filter_by(parentid=1).all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
+    cur_tag = request.args.get('tag')
+    cur_key = request.args.get('key')
     show_talk = request.args.get('show_talk')
     show = request.args.get('show_followed')
     show_followed = request.cookies.get('show_followed', '')
@@ -48,13 +50,17 @@ def neighbourhood():
         query = query.filter(Post.is_article == False)
     if cur_category:
         query = Category.query.filter_by(name=cur_category).first().posts_query(query)
-    pagination = query.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
-        error_out=False)
-    posts = pagination.items
-    return render_template('neighbourhood.html', post_admin=post_admin, User=User, posts=posts,
-                           Post=Post, categorys=categorys, show_followed=show, query=query_show,
-                           pagination=pagination)
+    if query:
+        pagination = query.order_by(Post.timestamp.desc()).paginate(
+            page, per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
+            error_out=False)
+        posts = pagination.items
+        return render_template('neighbourhood.html', post_admin=post_admin, User=User, posts=posts,
+                               Post=Post, categorys=categorys, show_followed=show, query=query_show,
+                               pagination=pagination)
+    else:
+        return render_template('neighbourhood.html', post_admin=post_admin, User=User,
+                               Post=Post, categorys=categorys, show_followed=show, query=query_show)
 
 
 @main.route('/user/<username>')
@@ -62,20 +68,24 @@ def user(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         abort(404)
-    query = user.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
+    query_show = query = user.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
     categorys = Category.query.filter_by(parentid=1).all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
     cur_tag = request.args.get('tag')
+    cur_key = request.args.get('key')
     if cur_category:
-        query = Category.query.filter_by(name=cur_category).first().posts_query()
-    pagination = query.paginate(
-        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
-        error_out=False)
-    posts = pagination.items
-    return render_template('user.html', user=user, posts=posts,
-                           categorys=categorys, pagination=pagination)
-
+        query = Category.query.filter_by(name=cur_category).first().posts_query(query)
+    if query:
+        pagination = query.paginate(
+            page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+            error_out=False)
+        posts = pagination.items
+        return render_template('user.html', user=user, posts=posts,query=query_show,
+                               categorys=categorys, pagination=pagination)
+    else:
+        return render_template('user.html', user=user, query=query_show,
+                               categorys=categorys)
 
 @main.route('/follow/<username>')
 @login_required
