@@ -77,7 +77,7 @@
     <div class="panel panel-info">
         <div class="panel-heading">标签</div>
         <div class="panel-body">
-            {% for tag in tags %}
+            {% for tag in tags if tag %}
                 <a href="?tag={{tag.id}}#neighbourhood" class="post-tag">
                     {% if tag == cur_tag %}
                     <span class="label label-primary">
@@ -91,6 +91,8 @@
                     {% endif %}
                 </a>
                 &nbsp;
+            {% else %}
+                 无标签
             {% endfor %}
         </div>
     </div>
