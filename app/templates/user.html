@@ -40,15 +40,11 @@
                 class="btn btn-default">取消关注</a>
         {% endif %}
     {% endif %}
-        <a href="{{ url_for('.followers',username=user.username) }}">
-            粉丝: <span class="badge">{{ user.followers.count() - 1 }}</span>
-        </a>&nbsp;
-        <a href="{{ url_for('.followed_by',username=user.username) }}">
-            关注: <span class="badge">{{ user.followed.count() - 1 }}</span>
-        </a>&nbsp;
-        <a href="{{ url_for('main.user',username=user.username) }}">
-        文章: <span class="badge">{{ user.posts.filter_by(is_article=True).count() }}</span>
-        </a>&nbsp;
+        &nbsp;
+        <a href="{{ url_for('.followers',username=user.username) }}">粉丝</a>: <span class="badge">{{ user.followers.count() - 1 }}</span>&nbsp;
+        <a href="{{ url_for('.followed_by',username=user.username) }}">关注</a>: <span class="badge">{{ user.followed.count() - 1 }}</span>&nbsp;
+        <a href="{{ url_for('main.user',username=user.username) }}">文章</a>: <span class="badge">{{ user.posts.filter_by(is_article=True).count() }}</span>&nbsp;
+        <a href="#">吐槽</a>: <span class="badge">{{ user.posts.filter_by(is_article=False).count() }}</span>&nbsp;
         {% if current_user.is_authenticated and user != current_user and
             user.is_following(current_user) %}
           | <span class="label label-default">正在关注你</span>
