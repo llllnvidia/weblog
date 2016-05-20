@@ -61,7 +61,7 @@ class CommentForm(Form):
 class CategoryForm(Form):
     name = StringField('栏目名称', validators=[DataRequired(), Length(1, 10, message='太长了。')])
     parent = SelectField("父栏目")
-    submit = SubmitField('添加')
+    submit = SubmitField("提交")
 
     def __init__(self, *args, **kwargs):
         super(CategoryForm, self).__init__(*args, **kwargs)

@@ -87,7 +87,7 @@ def resend_confirmation():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/emailreset')
+@auth.route('/reset/email')
 @login_required
 def send_confirmation_email():
     token = current_user.generate_confirmation_token()
@@ -97,7 +97,8 @@ def send_confirmation_email():
     return redirect(url_for('main.edit_profile', username=current_user.username))
 
 
-@auth.route('/emailreset/<token>', methods=['GET', 'POST'])
+@auth.route('/reset/email/<token>', methods=['GET', 'POST'])
+@login_required
 def email_change_confirm(token):
     form = ChangeEmailForm()
     if form.validate_on_submit() and current_user.confirm(token):
@@ -109,10 +110,10 @@ def email_change_confirm(token):
         send_email(current_user.email, '账户确认',
                    'auth/email/confirm', user=current_user, token=token)
         flash('一封包含身份确认链接的邮件已发往你的邮箱。')
-        return redirect(url_for('main.user', username=current_user.username))
+        return redirect(url_for('main.index'))
     if not current_user.confirm(token):
         flash('确认链接非法或已过期。')
-        return redirect(url_for('main.user', username=current_user.username))
+        return redirect(url_for('main.index'))
     return render_template('auth/change_email.html', form=form)
 
 
@@ -133,7 +134,7 @@ def password_change():
     return render_template('auth/change_password.html', form=form)
 
 
-@auth.route('/reset', methods=['GET', 'POST'])
+@auth.route('/reset/password', methods=['GET', 'POST'])
 def password_reset_request():
     if not current_user.is_anonymous:
         return redirect(url_for('main.index'))
@@ -151,7 +152,7 @@ def password_reset_request():
     return render_template('auth/reset_password.html', form=form)
 
 
-@auth.route('/reset/<token>', methods=['GET', 'POST'])
+@auth.route('/reset/password/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if not current_user.is_anonymous:
         return redirect(url_for('main.index'))

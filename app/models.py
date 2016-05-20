@@ -349,7 +349,9 @@ class Category(db.Model):
         self.parentcategory = parentcategory
 
     def __repr__(self):
-        return '<Category %r>' % self.name
+        return '<Category %s Parent %s Son %s>' % (self.name,
+                                                   Category.query.filter_by(id=self.parentid).first().name,
+                                                   [cg.name for cg in self.soncategorys])
 
     def save(self):
         db.session.add(self)
