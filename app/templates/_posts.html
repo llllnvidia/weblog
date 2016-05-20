@@ -1,4 +1,4 @@
-{% for post in posts %}
+{% for post in posts if post %}
     <div class="panel panel-default">
         <div class="panel-body">
             <a href="{{ url_for('.user', username=post.author.username) }}">
@@ -83,5 +83,7 @@
             </div>
         </div>
     </div>
+{% else %}
+    无文章
 {% endfor %}
 
