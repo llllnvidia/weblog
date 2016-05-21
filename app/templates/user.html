@@ -25,12 +25,14 @@
         Last seen {{ moment(user.last_seen).fromNow() }}.
     </p>
     <hr/>
+    <div class="btn-group">
     {% if user == current_user %}
     <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">修改资料</a>
     {% endif %}
     {% if current_user.is_administrator() %}
     <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin',id=user.id) }}">修改资料[Admin]</a>
     {% endif %}
+    </div>
     {% if current_user.can(Permission.FOLLOW) and user != current_user %}
         {% if not current_user.is_following(user) %}
             <a href="{{ url_for('.follow',username=user.username) }}"
@@ -53,6 +55,16 @@
     <div class="container-fluid">
     <div class="row" style="margin-left:-30px;margin-right:-30px" id='neighbourhood'>
         <aside class="col-md-3 hidden-xs">
+        <form role="search" method="get" id="searchform" action="#neighbourhood">
+            <div class="well input-group">
+                <input type="text" name='key' id="search" class="form-control">
+                <span class="input-group-btn">
+                    <button type="submit" id="searchsubmit" value="" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
+            </div>
+        </form>
         <div class="panel panel-info">
             <div class="panel-heading">栏目</div>
             <ul class="list-group" id="listcontrol">
@@ -89,25 +101,20 @@
         <div class="panel panel-info">
             <div class="panel-heading">标签</div>
             <div class="panel-body">
-            {% if tags %}
-                {% for tag in tags %}
-                    <a href="?tag={{tag.id}}#neighbourhood" class="post-tag">
-                        {% if tag == cur_tag %}
-                        <span class="label label-primary">
-                            {{ tag }}
-                            <small><span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span></small>
-                        </span>
-                        {% else %}
-                        <span class="label label-default">
-                            {{ tag }}
-                        </span>
-                        {% endif %}
-                    </a>
-                    &nbsp;
-                {% endfor %}
+            {% for tag in tags if tag.posts_count(query)%}
+                {% if tag.content == cur_tag %}
+                <a href="?tag=#neighbourhood" class="btn btn-primary btn-xs" style= "margin: 4px">
+                    {{ tag.content }}
+                    <span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span>
+                </a>
                 {% else %}
-                    无标签
+                <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-info btn-xs" style= "margin: 4px">
+                    {{ tag.content }}
+                </a>
                 {% endif %}
+            {% else %}
+                 无标签
+            {% endfor %}
             </div>
         </div>
         </aside>
