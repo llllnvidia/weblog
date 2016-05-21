@@ -12,7 +12,7 @@ class EditProfileForm(Form):
     name = StringField('真实姓名', validators=[Length(0, 64)])
     location = StringField('居住地', validators=[Length(0, 64)])
     about_me = TextAreaField('个人简介')
-    submin = SubmitField('提交')
+    submit = SubmitField('提交')
 
 
 class EditProfileAdminForm(Form):
@@ -37,15 +37,23 @@ class EditProfileAdminForm(Form):
             raise ValidationError('用户名已被使用')
 
 
+def validate_tag(self, field):
+    if field.data.find('，') != -1:
+        raise ValidationError('请使用英文逗号‘,’来分隔标签。')
+
+
 class ArticleForm(Form):
     title = StringField('标题')
     body = PageDownField("", validators=[DataRequired()])
-    category = SelectField("栏目")
+    tags = StringField('标签',validators=[validate_tag])
+    category = SelectField("栏目", coerce=int)
     submit = SubmitField('发表')
 
     def __init__(self, *args, **kwargs):
         super(ArticleForm, self).__init__(*args, **kwargs)
         self.category.choices = [(cg.id, cg.name) for cg in Category.query.all()]
+
+
 
 
 class TalkForm(Form):
@@ -60,7 +68,7 @@ class CommentForm(Form):
 
 class CategoryForm(Form):
     name = StringField('栏目名称', validators=[DataRequired(), Length(1, 10, message='太长了。')])
-    parent = SelectField("父栏目")
+    parent = SelectField("父栏目", coerce=int)
     submit = SubmitField("提交")
 
     def __init__(self, *args, **kwargs):

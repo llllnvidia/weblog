@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+from flask import current_app, session
 from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin, AnonymousUserMixin
@@ -36,7 +36,7 @@ class Post(db.Model):
                            backref=db.backref('posts', lazy='dynamic'))
 
     def __repr__(self):
-        return '<Post %r>' % self.title
+        return '<Post %s Author %s>' % (self.title, User.query.filter_by(id=self.author_id).first().username)
 
     def ping(self):
         self.last_edit = datetime.utcnow()
@@ -49,6 +49,17 @@ class Post(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def tag(self, tag):
+        if not self.is_taging(tag):
+            self.tags.append(tag)
+
+    def untag(self, tag):
+        if self.is_taging(tag):
+            self.tags.remove(tag)
+
+    def is_taging(self, tag):
+        return tag in self.tags
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -417,3 +428,17 @@ class Tag(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def posts_query(self, query=None):
+        if query:
+            posts = query.filter(Post.tags.contains(self))
+        else:
+            posts = self.posts
+        return posts
+
+    def posts_count(self, query=None):
+        if query:
+            count = query.filter(Post.tags.contains(self)).count()
+        else:
+            count = self.posts.count()
+        return count

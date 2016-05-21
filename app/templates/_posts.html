@@ -29,14 +29,23 @@
                     </span>
                 {% endif %}
                 </a>
-                {% if post.category %}
-                    <span class="label label-primary">
+                {% if post.category %}|
+                    <span class="label label-primary" style= "margin-right:4px">
                         {{ post.category.name }}
                     </span>
-                {% endif %}
+                {% endif %}|
+                {% for tag in post.tags %}
+                    <span class="label label-info" style= "margin-right:4px">
+                        {{ tag.content }}
+                    </span>
+                {% else %}
+                    <span class="label label-default" style= "margin-right:4px">
+                        无标签
+                    </span>
+                {% endfor %}
                 {% endif %}
                 <hr/>
-                {% if request.endpoint.find('neighbourhood') == -1 or not post.is_article or not post.summary %}
+                {% if request.endpoint == 'main.article' or not post.is_article or not post.summary %}
                     {% if post.body_html %}
                         {{ post.body_html | safe }}
                     {% else %}
@@ -56,15 +65,15 @@
             <div class="btn-group">
                 {% if post.is_article %}
                     {% if current_user == post.author %}
-                        <a type="button" class="btn btn-default btn-warning" href="{{ url_for('main.edit_article',id=post.id) }}">
+                        <a type="button" class="btn btn-warning" href="{{ url_for('main.edit_article',id=post.id) }}">
                             修改
                         </a>
                     {% elif current_user.is_moderator() %}
-                        <a type="button" class="btn btn-default btn-danger" href="{{ url_for('main.edit_article',id=post.id) }}">
+                        <a type="button" class="btn btn-danger" href="{{ url_for('main.edit_article',id=post.id) }}">
                             修改[Admin]
                         </a>
                     {% endif %}
-                    {% if request.endpoint.find('neighbourhood') != -1 %}
+                    {% if request.endpoint != 'main.article' %}
                     <a type="button" class="btn btn-default" href="{{ url_for('main.article',id=post.id) }}">
                         详情
                     </a>

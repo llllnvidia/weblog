@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response
-from ..models import User, Role, Permission, Post, Comment, Category
+from ..models import User, Role, Permission, Post, Comment, Category, Tag
 from . import main
 from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm, \
     UploadImagesForm
@@ -19,6 +19,7 @@ def neighbourhood():
     admin = User.query.filter_by(username='Admin').first()
     post_admin = admin.posts.order_by(Post.timestamp.desc()).first()
     categorys = Category.query.filter_by(parentid=1).all()
+    tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
     cur_tag = request.args.get('tag')
@@ -50,17 +51,21 @@ def neighbourhood():
         query = query.filter(Post.is_article == False)
     if cur_category:
         query = Category.query.filter_by(name=cur_category).first().posts_query(query)
+    if cur_tag:
+        query = Tag.query.filter_by(content=cur_tag).first().posts_query(query)
+    if cur_key:
+        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
     if query:
         pagination = query.order_by(Post.timestamp.desc()).paginate(
             page, per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
-        return render_template('neighbourhood.html', post_admin=post_admin, User=User, posts=posts,
-                               Post=Post, categorys=categorys, show_followed=show, query=query_show,
+        return render_template('neighbourhood.html', post_admin=post_admin, User=User, posts=posts, cur_tag=cur_tag,
+                               Post=Post, categorys=categorys, tags=tags, show_followed=show, query=query_show,
                                pagination=pagination)
     else:
-        return render_template('neighbourhood.html', post_admin=post_admin, User=User,
-                               Post=Post, categorys=categorys, show_followed=show, query=query_show)
+        return render_template('neighbourhood.html', post_admin=post_admin, User=User, cur_tag=cur_tag,
+                               Post=Post, categorys=categorys, tags=tags, show_followed=show, query=query_show)
 
 
 @main.route('/user/<username>')
@@ -70,21 +75,26 @@ def user(username):
         abort(404)
     query_show = query = user.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
     categorys = Category.query.filter_by(parentid=1).all()
+    tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
     cur_tag = request.args.get('tag')
     cur_key = request.args.get('key')
     if cur_category:
         query = Category.query.filter_by(name=cur_category).first().posts_query(query)
+    if cur_tag:
+        query = Tag.query.filter_by(content=cur_tag).first().posts_query(query)
+    if cur_key:
+        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
     if query:
         pagination = query.paginate(
             page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
-        return render_template('user.html', user=user, posts=posts,query=query_show,
+        return render_template('user.html', user=user, posts=posts, query=query_show, tags=tags, cur_tag=cur_tag,
                                categorys=categorys, pagination=pagination)
     else:
-        return render_template('user.html', user=user, query=query_show,
+        return render_template('user.html', user=user, query=query_show, tags=tags, cur_tag=cur_tag,
                                categorys=categorys)
 
 @main.route('/follow/<username>')
@@ -226,10 +236,18 @@ def article(id):
 @login_required
 def new_article():
     form = ArticleForm()
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
         post = Post(body=form.body.data, title=form.title.data,
                     author=current_user._get_current_object(),
-                    is_article=True, category=Category.query.filter_by(id=form.category.data[0]).first())
+                    is_article=True, category=Category.query.filter_by(id=form.category.data).first())
+        tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
+        if tags:
+            for tag in tags:
+                new_tag = Tag.query.filter_by(content=tag).first()
+                if not new_tag:
+                    new_tag = Tag(tag)
+                    new_tag.save()
+                post.tag(new_tag)
         post.ping()
         post.save()
         return redirect(url_for('main.article', id=post.id, page=-1))
@@ -247,17 +265,33 @@ def edit_article(id):
         form = ArticleForm(category=post.category.id)
     else:
         form = ArticleForm()
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
         post.title = form.title.data
         post.body = form.body.data
-        post.category = Category.query.filter_by(id=form.category.data[0]).first()
+        post.category = Category.query.filter_by(id=form.category.data).first()
         post.is_article = True
+        tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
+        if tags:
+            for tag in post.tags:
+                if tag.content not in tags:
+                    post.untag(tag)
+            for tag in tags:
+                new_tag = Tag.query.filter_by(content=tag).first()
+                if not new_tag:
+                    new_tag = Tag(tag)
+                    new_tag.save()
+                if new_tag not in post.tags:
+                    post.tag(new_tag)
+        else:
+            for tag in post.tags:
+                    post.untag(tag)
         post.ping()
         post.save()
         flash('该文章已修改。')
         return redirect(url_for('main.article', id=id, page=-1))
     form.title.data = post.title
     form.body.data = post.body
+    form.tags.data = ','.join([str(tag.content) for tag in post.tags])
     return render_template('edit_post.html', form=form, article=True, post=post)
 
 
@@ -361,19 +395,20 @@ def categorys(id=None):
     if id:
         category = Category.query.filter_by(id=id).first()
         form = CategoryForm()
-        if request.method == 'POST':
+        if request.method == 'POST' and form.validate():
             category.name = form.name.data
             category.save()
             flash("已修改")
             return redirect(url_for('main.categorys', page=page, form=form))
         form.name.data = category.name
-        form.parent.choices = [(0, "不可选")]
+        form.parent.choices = [(category.parentid,
+                                Category.query.filter_by(id=category.parentid).first().name)]
         return render_template('categorys.html', title="所有栏目", form=form,
                                endpoint='main.categorys', pagination=pagination, categorys=categorys)
     else:
         form = CategoryForm()
-        if request.method == 'POST':
-            new_category = Category(form.name.data, Category.query.filter_by(id=form.parent.data[0]).first())
+        if request.method == 'POST' and form.validate():
+            new_category = Category(form.name.data, Category.query.filter_by(id=form.parent.data).first())
             new_category.save()
             flash("已添加")
             return redirect(url_for('main.categorys', page=page, form=form))
