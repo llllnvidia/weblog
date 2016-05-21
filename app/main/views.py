@@ -7,7 +7,7 @@ from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm,
     UploadImagesForm
 from flask.ext.login import current_user, login_required
 from ..decorators import admin_required, permission_required
-
+from datetime import date
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
@@ -16,8 +16,6 @@ def index():
 
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
-    admin = User.query.filter_by(username='Admin').first()
-    post_admin = admin.posts.order_by(Post.timestamp.desc()).first()
     categorys = Category.query.filter_by(parentid=1).all()
     tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
@@ -60,11 +58,11 @@ def neighbourhood():
             page, per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
-        return render_template('neighbourhood.html', post_admin=post_admin, User=User, posts=posts, cur_tag=cur_tag,
+        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts, cur_tag=cur_tag,
                                Post=Post, categorys=categorys, tags=tags, show_followed=show, query=query_show,
                                pagination=pagination)
     else:
-        return render_template('neighbourhood.html', post_admin=post_admin, User=User, cur_tag=cur_tag,
+        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, cur_tag=cur_tag,
                                Post=Post, categorys=categorys, tags=tags, show_followed=show, query=query_show)
 
 

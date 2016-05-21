@@ -5,38 +5,16 @@
 {% block title %}CodeBlog{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>你好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
-    <br>
-    <h6>
-        <i>
-            这里有{{ User.query.count() }}个伙伴,
-            {{ Post.query.filter_by(is_article=True).count() }}篇文章,
+<div class="row">
+    <h4 align="center">
+        <br><br>
+            从{{ moment(time).format('LL') }}到现在，<br><br>
+            已经过去了{{moment(time).fromNow()}}。<br><br>
+            现在这里有{{ User.query.count() }}个伙伴，
+            {{ Post.query.filter_by(is_article=True).count() }}篇文章，
             {{ Post.query.filter_by(is_article=False).count() }}份吐槽。
-        </i>
-    </h6>
-</div>
-<div class="panel panel-info">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            公告板
-        </h3>
-    </div>
-    <div class="panel-body">
-        <h1>{{ post_admin.title }}</h1>
-        <span class="label label-info">{{ moment(post_admin.timestamp).fromNow() }}</span>
-        <hr/>
-        {% if post_admin.body_html %}
-            {{ post_admin.body_html | safe }}
-        {% else %}
-            {{ post_admin.body }}
-        {% endif %}
-    </div>
-    <div class="panel-footer">
-        <a href="{{ url_for('main.article',id=post_admin.id) }}">
-            <button type="button" class="btn btn-default">详情</button>
-        </a>
-    </div>
+    </h4>
+    <hr/>
 </div>
 <div class="row" id='neighbourhood'>
     <aside class="col-md-3 hidden-xs">
