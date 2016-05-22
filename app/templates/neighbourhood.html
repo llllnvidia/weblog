@@ -9,7 +9,7 @@
     <h4 align="center">
         <br><br>
             从{{ moment(time).format('LL') }}到现在，<br><br>
-            已经过去了{{ moment().fromTime(time)}}。<br><br>
+            已经过去了{{ moment().fromTime(time,1) }}。<br><br>
             现在这里有{{ User.query.count() }}个伙伴，
             {{ Post.query.filter_by(is_article=True).count() }}篇文章，
             {{ Post.query.filter_by(is_article=False).count() }}份吐槽。
