@@ -3,11 +3,11 @@
 from flask import render_template, redirect, request, url_for, flash
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from . import auth
-from .. import db
 from ..models import User
 from .forms import LoginForm, RegistrationForm, ChangeEmailForm, ChangePasswordForm, PasswordResetRequestForm, \
     PasswordResetForm
 from ..email import send_email
+from datetime import datetime
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -36,9 +36,9 @@ def register():
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     username=form.username.data,
-                    password=form.password.data)
-        db.session.add(user)
-        db.session.commit()
+                    password=form.password.data,
+                    member_since=datetime.utcnow)
+        user.save()
         token = user.generate_confirmation_token()
         send_email(user.email, '账户确认',
                    'auth/email/confirm', user=user, token=token)
@@ -69,8 +69,7 @@ def confirm(token):
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
         current_user.confirmed = True
-        db.session.add(current_user)
-        db.session.commit()
+        current_user.save()
         flash('已确认你的身份，欢迎加入我们。')
     else:
         flash('确认链接非法或已过期。')
@@ -124,8 +123,7 @@ def password_change():
     if form.validate_on_submit():
         if current_user.verify_password(form.old_password.data):
             current_user.password = form.password.data
-            db.session.add(current_user)
-            db.session.commit()
+            current_user.save()
             flash('修改成功。')
             return redirect(url_for('main.user', username=current_user.username))
         else:
