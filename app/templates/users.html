@@ -7,32 +7,38 @@
 <div class="page-header">
     <h1>{{ title }}</h1>
 </div>
-<table class="table table-hover followers">
-    <thead><tr><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th><th>操作</th></tr></thead>
-    {% for user in users %}
-    <tr>
-        <td>{{ user.user }}</td>
-        <td>{{ user.name }}</td>
-        <td>{{ moment(user.member_since).format('LL') }}</td>
-        <td>{{ moment(user.last_seen).format('LLL') }}</td>
-        <td>
-            <div class="btn-block">
-            <a class="btn btn-default" href="{{ url_for('.user', username = user.user) }}">
-                详情
-            </a>
-            {% if current_user.is_administrator() %}
-            <a class="btn btn-danger" href="{{ url_for('main.delete_user',id=user.id) }}">
-                删除
-            </a>
-            {% endif %}
-            </div>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% if pagination and pagination.total//pagination.per_page %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination,endpoint) }}
+<div class="container-fluid">
+    <div class="row">
+    <div class="panel panel-default">
+    <table class="table table-hover followers">
+        <thead><tr><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th><th>操作</th></tr></thead>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.user }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ moment(user.member_since).format('LL') }}</td>
+            <td>{{ moment(user.last_seen).format('LLL') }}</td>
+            <td>
+                <div class="btn-block">
+                <a class="btn btn-default" href="{{ url_for('.user', username = user.user) }}">
+                    详情
+                </a>
+                {% if current_user.is_administrator() %}
+                <a class="btn btn-danger" href="{{ url_for('main.delete_user',id=user.id) }}">
+                    删除
+                </a>
+                {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+    </div>
+    {% if pagination and pagination.total//pagination.per_page %}
+        <div class="pagination-right">
+        {{ macros.pagination_widget(pagination,endpoint) }}
+        </div>
+    {% endif %}
 </div>
-{% endif %}
 {% endblock %}

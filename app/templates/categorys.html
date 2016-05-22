@@ -11,27 +11,34 @@
 <div class="form">
     {{ wtf.quick_form(form) }}
 </div>
-<table class="table table-hover followers">
-    <thead><tr><th>栏目</th><th>父栏目</th><th>子栏目</th><th>文章数</th><th>操作</th></tr></thead>
-    {% for category in categorys %}
-    <tr>
-        <td>{{ category.name }}</td>
-        <td>{{ category.parentcategory }}</td>
-        <td>
-            {{  category.soncategorys }}
-        </td>
-        <td>
-            {{ category.count }}
-        </td>
-        <td>
-            {% if category.id != 1 %}
-            <a href="{{ url_for('main.categorys') }}/edit/{{ category.id }}"><span class="btn btn-xs btn-warning">修改</span></a>
-            <a href="{{ url_for('main.delete_category',id=category.id) }}"><span class="btn btn-xs btn-danger">删除</span></a>
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<br>
+<div class="container-fluid">
+    <div class="row">
+    <div class="panel panel-default">
+    <table class="table table-hover followers">
+        <thead><tr><th>栏目</th><th>父栏目</th><th>子栏目</th><th>文章数</th><th>操作</th></tr></thead>
+        {% for category in categorys %}
+        <tr>
+            <td>{{ category.name }}</td>
+            <td>{{ category.parentcategory }}</td>
+            <td>
+                {{  category.soncategorys }}
+            </td>
+            <td>
+                {{ category.count }}
+            </td>
+            <td>
+                {% if category.id != 1 %}
+                <a href="{{ url_for('main.categorys') }}/edit/{{ category.id }}"><span class="btn btn-xs btn-warning">修改</span></a>
+                <a href="{{ url_for('main.delete_category',id=category.id) }}"><span class="btn btn-xs btn-danger">删除</span></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+    </div>
+</div>
 {% if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination,endpoint) }}
