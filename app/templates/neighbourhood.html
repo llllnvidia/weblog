@@ -5,7 +5,8 @@
 {% block title %}CodeBlog{% endblock %}
 
 {% block page_content %}
-<div class="row">
+<div class="container">
+<div class="jumbotron" style="background-color: transparent">
     <h4 align="center">
         <br><br>
             从{{ moment(time).format('LL') }}到现在，<br><br>
@@ -14,7 +15,7 @@
             {{ Post.query.filter_by(is_article=True).count() }}篇文章，
             {{ Post.query.filter_by(is_article=False).count() }}份吐槽。
     </h4>
-    <hr/>
+</div>
 </div>
 <div class="row" id='neighbourhood'>
     <aside class="col-md-3 hidden-xs">
