@@ -20,7 +20,7 @@
             <td>{{ moment(user.last_seen).format('LLL') }}</td>
             <td>
                 <div class="btn-block">
-                <a class="btn btn-default" href="{{ url_for('.user', username = user.user) }}">
+                <a class="btn btn-default" href="{{ url_for('main.user', username = user.user) }}">
                     详情
                 </a>
                 {% if current_user.is_administrator() %}

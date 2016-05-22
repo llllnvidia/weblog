@@ -100,9 +100,6 @@ def user(username):
 @permission_required(Permission.FOLLOW)
 def follow(username):
     user = User.query.filter_by(username=username).first()
-    if user is None:
-        flash('需登录。')
-        return redirect(url_for('.neighbourhood'))
     if current_user.is_following(user):
         flash('你已经关注了%s。' % username)
         return redirect(url_for('.user', username=username))
@@ -116,9 +113,6 @@ def follow(username):
 @permission_required(Permission.FOLLOW)
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
-    if user is None:
-        flash('需登录。')
-        return redirect(url_for('.neighbourhood'))
     if current_user.is_following(user):
         current_user.unfollow(user)
         flash('你取消了对%s的关注。' % username)
@@ -132,8 +126,7 @@ def unfollow(username):
 def followers(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('需登录。')
-        return redirect(url_for('.neighbourhood'))
+        abort(404)
     page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
         page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
@@ -148,8 +141,7 @@ def followers(username):
 def followed_by(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('需登录。')
-        return redirect(url_for('.neighbourhood'))
+        abort(404)
     page = request.args.get('page', 1, type=int)
     pagination = user.followed.paginate(
         page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
@@ -212,9 +204,12 @@ def article(id):
         abort(404)
     form = CommentForm()
     if form.validate_on_submit():
+        if not current_user.is_authenticated:
+            flash("请先登录")
+            return redirect(url_for('auth.login', next=str(request.url)))
         comment = Comment(body=form.body.data,
                           post=post,
-                          author=current_user._get_current_object())
+                          author=current_user)
         comment.save()
         flash('你的评论已提交。')
         return redirect(url_for('main.article', id=post.id, page=-1))

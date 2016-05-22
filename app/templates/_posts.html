@@ -1,7 +1,7 @@
 {% for post in posts if post %}
     <div class="panel panel-default">
         <div class="panel-body">
-            <a href="{{ url_for('.user', username=post.author.username) }}">
+            <a href="{{ url_for('main.user', username=post.author.username) }}">
             <h3>{{ post.author.username }}</h3>
             </a>
             {% if post.is_article %}
@@ -14,19 +14,26 @@
                     <h3>{{ post.title }}</h3>
                 {% endif %}
                 {% if post.is_article %}
-                <a href="{{ url_for('.article',id=post.id) }}#comments">
-                {% if post.comments.count() > 1 %}
-                    <span class="label label-warning" style= "margin-right:4px">
-                        Has {{ post.comments.count() }} Comments
-                    </span>
-                {% elif post.comments.count() == 1 %}
-                    <span class="label label-info" style= "margin-right:4px">
-                        Has 1 Comment
-                    </span>
-                {% else %}
-                    <span class="label label-default" style= "margin-right:4px">
-                        Has none
-                    </span>
+                    {% if post.comments.count() > 20 %}
+                        <a class="label label-danger" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                            {{ post.comments.count() }} Comments
+                        </a>
+                    {% elif post.comments.count() > 10 %}
+                        <a class="label label-warning" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                            {{ post.comments.count() }} Comments
+                        </a>
+                    {% elif post.comments.count() > 1 %}
+                        <a class="label label-info" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                            {{ post.comments.count() }} Comments
+                        </a>
+                    {% elif post.comments.count() == 1 %}
+                        <a class="label label-info" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                            Comment
+                        </a>
+                    {% else %}
+                        <a class="label label-default" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                            none
+                        </a>
                 {% endif %}
                 </a>
                 {% if post.category %}|
