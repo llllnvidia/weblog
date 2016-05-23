@@ -23,7 +23,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                {% if current_user.is_authenticated() %}
+                {% if current_user.is_authenticated %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">
@@ -69,7 +69,7 @@
                         </ul>
                 </li>
                 {% endif %}
-                {% if current_user.is_authenticated() %}
+                {% if current_user.is_authenticated %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">个人
@@ -81,7 +81,7 @@
                     </ul>
                 </li>
                 {% endif %}
-                {% if current_user.is_authenticated() and current_user.is_moderator() %}
+                {% if current_user.is_authenticated and current_user.is_moderator() %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">管理
@@ -95,7 +95,7 @@
                 {% endif %}
             </ul>
             <div>
-                {% if current_user.is_authenticated() %}
+                {% if current_user.is_authenticated %}
                 <a href="{{ url_for('auth.logout') }}" type="button" class="btn navbar-btn navbar-right btn-info">注销</a>
                 {% else %}
                 <a href="{{ url_for('auth.login') }}?next={{ request.url }}" type="button" class="btn navbar-btn navbar-right btn-info">登陆</a>
