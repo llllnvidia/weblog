@@ -27,7 +27,7 @@ def neighbourhood():
     show_followed = request.cookies.get('show_followed', '')
     if show is None:
         show = show_followed
-    if not current_user.is_authenticated:
+    if not current_user.is_authenticated():
         show = None
     if show:
         show = int(show)
@@ -204,7 +204,7 @@ def article(id):
         abort(404)
     form = CommentForm()
     if form.validate_on_submit():
-        if not current_user.is_authenticated:
+        if not current_user.is_authenticated():
             flash("请先登录")
             return redirect(url_for('auth.login', next=str(request.url)))
         comment = Comment(body=form.body.data,

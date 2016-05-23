@@ -88,7 +88,7 @@
                 <div class="panel-title">
                     社区
                 </div>
-                {% if current_user.is_authenticated %}
+                {% if current_user.is_authenticated() %}
                 <ul class="nav nav-tabs" style="margin-top: 4px">
                     <li role="presentation"{% if not show_followed %} class="active"{% endif %}><a href="?show_followed=0#neighbourhood">All</a></li>
                     <li role="presentation"{% if show_followed %} class="active"{% endif %}><a href="?show_followed=1#neighbourhood">Follow</a></li>
