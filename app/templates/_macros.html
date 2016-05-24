@@ -1,6 +1,6 @@
 {% macro pagination_widget(pagination,endpoint) %}
 <ul class="pagination">
-    {% set args_memory = request.url.split('?')[1].split('&').[0] %}
+    {% set args_memory = request.url.split('?')[1] %}
     <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
         <a href="{% if pagination.has_prev %}{{ url_for(endpoint,page = pagination.page - 1,**kwargs) }}{% if args_memory %}&{{ args_memory }}{% endif %}#neighbourhood{% else %}#{% endif %}">
             &laquo;
