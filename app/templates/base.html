@@ -10,8 +10,6 @@
     <style>body {background: url({{ url_for('static', filename='background.png')}})repeat}</style>
 {% endblock %}
 {% block navbar %}
-{% set next_memory = request.url_root[1] %}
-
 <div class="navbar navbar-default" role="navigation" style="opacity: 0.8">
     <div class="container">
         <div class="navbar-header">
@@ -100,7 +98,7 @@
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('auth.logout') }}" type="button" class="btn navbar-btn navbar-right btn-info">注销</a>
                 {% else %}
-                <a href="{{ url_for('auth.login') }}?next={{ next_memory }}" type="button" class="btn navbar-btn navbar-right btn-info">登陆</a>
+                <a href="{{ url_for('auth.login') }}" type="button" class="btn navbar-btn navbar-right btn-info">登陆</a>
                 {% endif %}
             </div>
         </div>
