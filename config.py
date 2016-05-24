@@ -5,27 +5,26 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'badass'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'bshghadasssdfjaskdjfhaklsfasdjfl'
     SQLALCEMY_COMMIT_ON_TEARDOWN = True
-    CODEBLOG_MAIL_SUBJECT_PREFIX = '[CodeBlog]'
-    CODEBLOG_MAIL_SENDER = 'Shuanmu <13275009504@163.com>'
-    CODEBLOG_ADMIN = os.environ.get('CODEBLOG_ADMIN')
+    MAIL_SUBJECT_PREFIX = '[CodeBlog]'
+    MAIL_SENDER = 'Admin <Admin@163.com>'
+    ADMIN = os.environ.get('ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    CODEBLOG_POSTS_PER_PAGE = 10
-    CODEBLOG_FOLLOWERS_PER_PAGE = 10
-    CODEBLOG_COMMENTS_PER_PAGE = 10
+    POSTS_PER_PAGE = 10
+    FOLLOWERS_PER_PAGE = 10
+    COMMENTS_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):
         pass
 
-
 class DevelopmentConfig(Config):
     DEBUG = True
     MAIL_SERVER = 'smtp.163.com'
     MAIL_PORT = 25
-    MAIL_USERNAME = os.environ.get('CODEBLOG_MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('CODEBLOG_MAIL_PASSWORD')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
