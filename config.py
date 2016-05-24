@@ -29,7 +29,7 @@ class DevelopmentConfig(Config):
                               'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
                              
                              
-class DebugConfig(DevelopmentConfig):
+class DebugConfig(Config):
     DEBUG = True
     MAIL_SERVER = 'smtp.163.com'
     MAIL_PORT = 25
