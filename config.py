@@ -31,7 +31,12 @@ class DevelopmentConfig(Config):
                              
 class DebugConfig(DevelopmentConfig):
     DEBUG = True
-
+    MAIL_SERVER = 'smtp.163.com'
+    MAIL_PORT = 25
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
+                              'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
 class TestingConfig(Config):
     TESTING = True
