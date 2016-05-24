@@ -7,7 +7,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.pagedown import PageDown
 from config import config
-from werkzeug.contrib.fixers import ProxyFix
+
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -23,7 +23,6 @@ login_manager.login_message = '你必须登录才能到达此页面。'
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-    app.wsgi_app = ProxyFix(app.wsgi_app)
     config[config_name].init_app(app)
 
     bootstrap.init_app(app)
