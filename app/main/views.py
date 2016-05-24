@@ -54,7 +54,7 @@ def neighbourhood():
         query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
     if query:
         pagination = query.order_by(Post.timestamp.desc()).paginate(
-            page, per_page=current_app.config['CODEBLOG_POSTS_PER_PAGE'],
+            page, per_page=current_app.config['POSTS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
         return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts, cur_tag=cur_tag,
@@ -85,7 +85,7 @@ def user(username):
         query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
     if query:
         pagination = query.paginate(
-            page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+            page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
         return render_template('user.html', user=user, posts=posts, query=query_show, tags=tags, cur_tag=cur_tag,
@@ -128,7 +128,7 @@ def followers(username):
         abort(404)
     page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
-        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
     follows = [{'user': item.follower, 'timestamp': item.timestamp}
                for item in pagination.items]
@@ -143,7 +143,7 @@ def followed_by(username):
         abort(404)
     page = request.args.get('page', 1, type=int)
     pagination = user.followed.paginate(
-        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
     follows = [{'user': item.followed, 'timestamp': item.timestamp}
                for item in pagination.items]
@@ -215,7 +215,7 @@ def article(id):
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post.comments.count() - 1) / \
-               current_app.config['CODEBLOG_COMMENTS_PER_PAGE'] + 1
+               current_app.config['COMMENTS_PER_PAGE'] + 1
     pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
         page, per_page=current_app.config['CODEBLOG_COMMENTS_PER_PAGE'],
         error_out=False)
@@ -306,7 +306,7 @@ def delete_post(id):
 def moderate():
     page = request.args.get('page', 1, type=int)
     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-        page, per_page=current_app.config['CODEBLOG_COMMENTS_PER_PAGE'],
+        page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
     return render_template('comments.html', comments=comments,
@@ -343,7 +343,7 @@ def moderate_disable(id):
 def users():
     page = request.args.get('page', 1, type=int)
     pagination = User.query.order_by(User.last_seen.desc()).paginate(
-        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
     users = [{'id': item.id, 'user': item.username, 'name': item.name,
               'member_since': item.member_since, 'last_seen': item.last_seen}
@@ -368,7 +368,7 @@ def delete_user(id):
 def categorys(id=None):
     page = request.args.get('page', 1, type=int)
     pagination = Category.query.filter_by().paginate(
-        page, per_page=current_app.config['CODEBLOG_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
     categorys = list()
     for item in pagination.items:
