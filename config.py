@@ -30,7 +30,7 @@ class DevelopmentConfig(Config):
                              
                              
 class DebugConfig(DevelopmentConfig):
-    debug = True
+    DEBUG = True
 
 
 class TestingConfig(Config):
