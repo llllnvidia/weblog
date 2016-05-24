@@ -21,8 +21,8 @@
         <p>{{ user.about_me }}</p>
     {% endif %}
     <p>        
-        {{ moment(user.member_since).format('L') }}那一天来到这个网站，
-        最后一次出没在 {{ moment(user.last_seen).fromNow() }}。
+        {{ moment(user.member_since).format('LL') }}那一天来到这个网站，
+        最后一次出没在{{ moment(user.last_seen).fromNow(1) }}前。
     </p>
     <hr/>
     <div class="btn-group">
