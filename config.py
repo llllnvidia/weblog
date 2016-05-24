@@ -8,7 +8,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'bshghadasssdfjaskdjfhaklsfasdjfl'
     SQLALCEMY_COMMIT_ON_TEARDOWN = True
     MAIL_SUBJECT_PREFIX = '[CodeBlog]'
-    MAIL_SENDER = 'Admin <Admin@163.com>'
+    MAIL_SENDER = 'Admin <' + str(os.environ.get('MAIL_USERNAME','admin@codeblog.com')) + '>'
     ADMIN = os.environ.get('ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     POSTS_PER_PAGE = 10
