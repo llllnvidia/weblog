@@ -13,7 +13,6 @@ from datetime import date
 def index():
     return render_template('index.html')
 
-
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
     categorys = Category.query.filter_by(parentid=1).all()
@@ -231,7 +230,7 @@ def new_article():
     form = ArticleForm()
     if request.method == 'POST' and form.validate():
         post = Post(body=form.body.data, title=form.title.data,
-                    author=current_user._get_current_object(),
+                    author=current_user,
                     is_article=True, category=Category.query.filter_by(id=form.category.data).first())
         tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
         if tags:
