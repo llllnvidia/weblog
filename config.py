@@ -21,7 +21,8 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True
+    threaded=True
+    DEBUG = False
     MAIL_SERVER = 'smtp.163.com'
     MAIL_PORT = 25
     MAIL_USERNAME = os.environ.get('CODEBLOG_MAIL_USERNAME')
