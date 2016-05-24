@@ -20,6 +20,6 @@ RUN pip install -r /usr/src/app/requirements.txt
 
 COPY . /usr/src/app
 RUN ln -s /usr/src/app/codeblog_nginx.conf /etc/nginx/sites-enabled
-EXPOSE 8000 5000
+EXPOSE 8000 5000 25
 
 CMD ["/usr/local/bin/supervisord", "-n"]
