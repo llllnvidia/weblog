@@ -37,7 +37,7 @@ def register():
         user = User(email=form.email.data,
                     username=form.username.data,
                     password=form.password.data,
-                    member_since=datetime.utcnow)
+                    member_since=datetime.utcnow())
         user.save()
         token = user.generate_confirmation_token()
         send_email(user.email, '账户确认',
