@@ -18,12 +18,12 @@ def neighbourhood():
     categorys = Category.query.filter_by(parentid=1).all()
     tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
-    cur_category = request.args.get('category')
-    cur_tag = request.args.get('tag')
-    cur_key = request.args.get('key')
-    show_talk = request.args.get('show_talk')
-    show = request.args.get('show_followed')
-    show_followed = request.cookies.get('show_followed', '')
+    cur_category = request.args.get('category', None)
+    cur_tag = request.args.get('tag', None)
+    cur_key = request.args.get('key', None)
+    show_talk = request.args.get('show_talk', None)
+    show = request.args.get('show_followed', None)
+    show_followed = request.cookies.get('show_followed', None)
     if show is None:
         show = show_followed
     if not current_user.is_authenticated:

@@ -19,14 +19,13 @@ manager = Manager(app)
 def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role, Post=Post, Category=Category)
 
-
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 manager.add_command("runserver", Server(
-    use_debugger = True,
-    use_reloader = True,
-    host = '0.0.0.0',
-    port = 5000)
+    use_debugger=True,
+    use_reloader=True,
+    host='127.0.0.1',
+    port=5000)
 )
 
 @manager.command
