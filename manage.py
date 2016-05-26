@@ -54,7 +54,7 @@ def deploy():
         User.add_self_follows()
         User.add_admin()
         Category.add_none()
-    print 'Done!'
+    print 'Deploy!'
 
 if __name__ == '__main__':
     manager.run()
