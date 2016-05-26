@@ -35,6 +35,26 @@ def test():
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
+@manager.command
+def deploy():
+    """Run deployment task"""
+    from flask.ext.migrate import upgrade, init
+    if os.path.isfile(app.config['SQLALCHEMY_DATABASE_URI'][10:]):
+        if os.path.isdir(os.getenv('MIGRATIONS', 'migrations')):
+            upgrade(directory=os.getenv('MIGRATIONS', 'migrations'))
+            Role.insert_roles()
+            User.add_self_follows()
+        else:
+            init(directory=os.getenv('MIGRATIONS', 'migrations'))
+            Role.insert_roles()
+            User.add_self_follows()
+    else:
+        db.create_all()
+        Role.insert_roles()
+        User.add_self_follows()
+        User.add_admin()
+        Category.add_none()
+    print 'Done!'
 
 if __name__ == '__main__':
     manager.run()

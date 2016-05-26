@@ -75,7 +75,8 @@ class CategoryForm(Form):
         super(CategoryForm, self).__init__(*args, **kwargs)
         category = Category.query.filter(Category.name == 'None').first()
         choices = [(category.id, category.name)]
-        choices.extend([(cg.id, cg.name) for cg in Category.query.filter(Category.parentid == 1).all()])
+        if Category.query.filter(Category.parentid == 1).count():
+            choices.extend([(cg.id, cg.name) for cg in Category.query.filter(Category.parentid == 1).all()])
         self.parent.choices = choices
 
 

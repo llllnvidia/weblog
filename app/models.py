@@ -215,8 +215,17 @@ class User(UserMixin, db.Model):
         for user in User.query.all():
             if not user.is_following(user):
                 user.follow(user)
-                db.session.add(user)
-                db.session.commit()
+                user.save()
+
+    @staticmethod
+    def add_admin():
+        admin = User(email=u'Admin@CodeBlog.com',
+                     username=u'管理员',
+                     password=u'1234',
+                     role=Role.query.filter_by(permissions=0xff).first(),
+                     confirmed=True,
+                     member_since=datetime.utcnow())
+        admin.save()
 
     def can(self, permissions):
         return self.role is not None and \
@@ -363,6 +372,11 @@ class Category(db.Model):
         return '<Category %s Parent %s Son %s>' % (self.name,
                                                    Category.query.filter_by(id=self.parentid).first().name,
                                                    [cg.name for cg in self.soncategorys])
+
+    @staticmethod
+    def add_none():
+        none = Category(name=u'None')
+        none.save()
 
     def save(self):
         db.session.add(self)

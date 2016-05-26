@@ -18,6 +18,7 @@ login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 login_manager.login_message = '你必须登录才能到达此页面。'
+import os
 
 
 def create_app(config_name):

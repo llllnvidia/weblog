@@ -9,7 +9,7 @@ class Config:
     SQLALCEMY_COMMIT_ON_TEARDOWN = True
     ADMIN = os.environ.get('ADMIN')
     MAIL_SUBJECT_PREFIX = '[CodeBlog]'
-    MAIL_SENDER = str(ADMIN) + ' <' + str(os.environ.get('MAIL_USERNAME','admin@codeblog.com')) + '>'
+    MAIL_SENDER = str(ADMIN) + ' <' + str(os.environ.get('MAIL_USERNAME', 'admin@codeblog.com')) + '>'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     POSTS_PER_PAGE = 10
     FOLLOWERS_PER_PAGE = 10
