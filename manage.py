@@ -7,6 +7,9 @@ from app import create_app, db
 from app.models import User, Role, Post, Category
 from flask.ext.script import Manager, Shell, Server
 from flask.ext.migrate import Migrate, MigrateCommand
+from datetime import datetime
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -15,6 +18,7 @@ app = create_app(os.getenv('CODEBLOG_CONFIG') or 'default')
 
 migrate = Migrate(app, db)
 manager = Manager(app)
+
 
 def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role, Post=Post, Category=Category)
@@ -28,6 +32,7 @@ manager.add_command("runserver", Server(
     port=5000)
 )
 
+
 @manager.command
 def test():
     """Run the unit tests."""
@@ -35,26 +40,66 @@ def test():
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
+
 @manager.command
 def deploy():
     """Run deployment task"""
-    from flask.ext.migrate import upgrade, init
-    if os.path.isfile(app.config['SQLALCHEMY_DATABASE_URI'][10:]):
-        if os.path.isdir(os.getenv('MIGRATIONS', 'migrations')):
-            upgrade(directory=os.getenv('MIGRATIONS', 'migrations'))
-            Role.insert_roles()
-            User.add_self_follows()
-        else:
-            init(directory=os.getenv('MIGRATIONS', 'migrations'))
-            Role.insert_roles()
-            User.add_self_follows()
-    else:
+    if not os.path.isfile(app.config['SQLALCHEMY_DATABASE_URI'][10:]):
         db.create_all()
+        print 'Datebase created.'
         Role.insert_roles()
+        print 'insert Roles.'
         User.add_self_follows()
+        print 'User config.'
         User.add_admin()
+        print 'add admin :'\
+            '\nemail=Admin@CodeBlog.com'\
+            '\npassword=1234'
         Category.add_none()
-    print 'Deploy!'
+        print 'Category insert None.'
+    else:
+        print 'database already exists!'
+
+
+@manager.command
+def init_migrations():
+    from flask.ext.migrate import init
+    if not os.path.isdir(os.getenv('MIGRATIONS', basedir+'/migrations')):
+        init(directory=os.getenv('MIGRATIONS',  basedir+'/migrations'))
+        print 'create migration :' + os.getenv('MIGRATIONS', basedir+'/migrations')
+    else:
+        print 'migration already exists! path:' + os.getenv('MIGRATIONS', basedir+'/migrations')
+
+
+@manager.command
+def migrate_migrations():
+    from flask.ext.migrate import migrate
+    if os.path.exists(os.getenv('MIGRATIONS', basedir + '/migrations')):
+        migrate(directory=os.getenv('MIGRATIONS', basedir + '/migrations'),message=str(datetime.utcnow()))
+        print 'migrate database :' + os.getenv('MIGRATIONS', basedir + '/migrations')
+    else:
+        print 'Can\'t find :' + os.getenv('MIGRATIONS', basedir + '/migrations')
+
+
+@manager.command
+def upgrade_migrations():
+    from flask.ext.migrate import upgrade
+    if os.path.exists(os.getenv('MIGRATIONS', basedir+'/migrations')):
+        upgrade(directory=os.getenv('MIGRATIONS', basedir+'/migrations'))
+        print 'upgrade database :' + os.getenv('MIGRATIONS', basedir+'/migrations')
+    else:
+        print 'Can\'t find :' + os.getenv('MIGRATIONS', basedir+'/migrations')
+
+
+@manager.command
+def downgrade_migrations():
+    from flask.ext.migrate import downgrade
+    if os.path.exists(os.getenv('MIGRATIONS', basedir+'/migrations')):
+        downgrade(directory=os.getenv('MIGRATIONS', basedir+'/migrations'))
+        print 'downgrade database :' + os.getenv('MIGRATIONS', basedir+'/migrations')
+    else:
+        print 'Can\'t find :' + os.getenv('MIGRATIONS', basedir+'/migrations')
+
 
 if __name__ == '__main__':
     manager.run()
