@@ -42,6 +42,11 @@ class Dialogue(db.Model):
         self.timestamp = datetime.utcnow()
         self.save()
 
+    def new_chat(self, *args):
+        chat = Chat(*args)
+        chat.appointment = self
+        chat.save()
+
 
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
