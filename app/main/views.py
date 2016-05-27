@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
+from datetime import date
+
 from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response
-from ..models import User, Role, Permission, Post, Comment, Category, Tag
+from flask.ext.login import current_user, login_required
+
+from app.models.post import Post, Comment, Category, Tag
+from app.models.account import Role, Permission, User
 from . import main
 from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm, \
     UploadImagesForm
-from flask.ext.login import current_user, login_required
 from ..decorators import admin_required, permission_required
-from datetime import date
+
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
@@ -447,6 +451,7 @@ def edit_talk(id):
 
 
 @main.route('/upload/images', methods=('GET', 'POST'))
+@login_required
 def upload_images():
     form = UploadImagesForm()
     if form.validate_on_submit():
@@ -455,3 +460,9 @@ def upload_images():
     else:
         filename = None
     return render_template('upload.html', form=form, filename=filename)
+
+
+@main.route('/dialogue/<int:id>', methods=('GET', 'POST'))
+@login_required
+def chat(id):
+    invited = User.query.get_or_404(id)

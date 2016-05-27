@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from models import Permission
 from functools import wraps
+
 from flask import abort
 from flask.ext.login import current_user
+
+from app.models.account import Permission
 
 
 def permission_required(permission):

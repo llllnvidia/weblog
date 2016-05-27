@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from ..models import Permission
 from flask import Blueprint
+
+from app.models.account import Permission
 
 main = Blueprint('main', __name__)
 

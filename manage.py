@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
 
-import sys
 import os
-from app import create_app, db
-from app.models import User, Role, Post, Category
-from flask.ext.script import Manager, Shell, Server
-from flask.ext.migrate import Migrate, MigrateCommand
+import sys
 from datetime import datetime
+
+from flask.ext.migrate import Migrate, MigrateCommand
+from flask.ext.script import Manager, Shell, Server
+
+from app import create_app, db
+from app.models.post import User, Post, Category
+from app.models.account import Role, User
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

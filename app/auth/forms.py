@@ -2,9 +2,10 @@
 
 from flask.ext.wtf import Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
 from wtforms import ValidationError
-from ..models import User
+from wtforms.validators import DataRequired, Length, Email, EqualTo
+
+from app.models.account import User
 
 
 class LoginForm(Form):
@@ -20,7 +21,7 @@ class RegistrationForm(Form):
                                              Email(message="请输入合法的邮箱地址。")])
     username = StringField('用户名', validators=[DataRequired(), Length(1, 64)])
     password = PasswordField('密码', validators=[DataRequired(),
-                                               EqualTo('password2', message='两个密码必须相同')])
+                                                 EqualTo('password2', message='两个密码必须相同')])
     password2 = PasswordField('密码确认', validators=[DataRequired()])
     submit = SubmitField('注册')
 

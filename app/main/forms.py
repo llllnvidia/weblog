@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from flask.ext.wtf import Form
 from flask.ext.pagedown.fields import PageDownField
-from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
+from flask.ext.wtf import Form
 from flask.ext.wtf.file import FileField, FileAllowed, FileRequired
-from wtforms.validators import DataRequired, Length, Email
+from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
 from wtforms import ValidationError
-from ..models import Role, User, Category
+from wtforms.validators import DataRequired, Length, Email
+
+from app.models.post import Category
+from app.models.account import Role, User
 
 
 class EditProfileForm(Form):
@@ -54,8 +56,6 @@ class ArticleForm(Form):
         self.category.choices = [(cg.id, cg.name) for cg in Category.query.all()]
 
 
-
-
 class TalkForm(Form):
     body = TextAreaField("", validators=[DataRequired(), Length(1, 200, message="太长了。")])
     submit = SubmitField("说一说")
@@ -86,3 +86,7 @@ class UploadImagesForm(Form):
         FileAllowed(['jpg', 'png'], 'Images only!')
     ])
     submit = SubmitField("提交")
+
+
+class Chat(Form):
+    context = StringField('', validators=[DataRequired(), Length(1, 200, message="太长了。")])
