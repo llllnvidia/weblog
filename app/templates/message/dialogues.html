@@ -42,7 +42,11 @@
         <div class="panel panel-info">
             <div class="panel-heading">
                 <div class="panel-title">
-                    消息
+                    {% if dialogue %}
+                    {{ dialogue.name(current_user) }}
+                    {% else %}
+                        消息
+                    {% endif %}
                 </div>
             </div>
             <div class="panel-body">

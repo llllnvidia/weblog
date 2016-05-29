@@ -491,7 +491,7 @@ def dialogues(id=None):
             page, per_page=current_app.config['DIALOGUE_PER_PAGE'],
             error_out=False)
         chats = pagination.items
-        return render_template('message/dialogues.html', form=form, dialogues=dialogue_list,
+        return render_template('message/dialogues.html', form=form, dialogues=dialogue_list, dialogue=dialogue,
                                chats=chats, pagination=pagination)
     else:
         return render_template('message/dialogues.html', dialogues=dialogue_list)

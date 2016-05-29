@@ -39,8 +39,10 @@
                 class="btn btn-primary">关注</a>
         {% else %}
             <a href="{{ url_for('.unfollow',username=user.username) }}"
-                class="btn btn-default">取消关注</a>
+                class="btn btn-warning">取消关注</a>
         {% endif %}
+            <a href="{{ url_for('main.new_dialogue',username=user.username) }}"
+               class="btn btn-primary">发消息</a>
     {% endif %}
         &nbsp;
         <a href="{{ url_for('.followers',username=user.username) }}">粉丝</a>: <span class="badge">{{ user.followers.count() - 1 }}</span>&nbsp;
