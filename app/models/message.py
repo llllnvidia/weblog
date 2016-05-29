@@ -48,6 +48,13 @@ class Gallery(db.Model):
                 users.append(gallery.user.username)
         return ' '.join(users)
 
+    @property
+    def having_new_chats(self):
+        if self.dialogue.chats.count() > self.count:
+            return self.dialogue.chats.count() - self.count
+        else:
+            return 0
+
 
 class Dialogue(db.Model):
     __tablename__ = 'dialogues'
@@ -112,7 +119,7 @@ class Dialogue(db.Model):
             gallery.delete()
 
     def is_joining(self, user):
-        if self.galleries.filter_by(user_id=user.id).first():
+        if self.galleries.filter_by(user=user).first():
             return True
         else:
             return False

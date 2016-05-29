@@ -15,7 +15,7 @@
             {% for dialogue in dialogues if dialogue.get_gallery(current_user).show %}
                 <li class="list-group-item">
                     {% if dialogue.having_new_chats(current_user) %}
-                    <span class="badge">{{ dialogue.having_new_chats(current_user) }} +</span>
+                    <span class="badge">{{ dialogue.having_new_chats(current_user) }}</span>
                     <a href="/dialogues/{{ dialogue.id }}">
                         {{ dialogue.name(current_user) }}
                     </a>

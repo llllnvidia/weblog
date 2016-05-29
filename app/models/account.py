@@ -104,6 +104,7 @@ class User(UserMixin, db.Model):
                                 backref=db.backref('user', lazy='joined'),
                                 lazy='dynamic',
                                 cascade='all,delete-orphan')
+    new_messages_count = db.Column(db.Integer)
 
     def __repr__(self):
         return '<User %s ID %d>' % (self.username, self.id)
@@ -172,7 +173,10 @@ class User(UserMixin, db.Model):
         return self.can(0x0f)
 
     def ping(self):
+        self.new_messages_count = 0
         self.last_seen = datetime.utcnow()
+        for gallery in self.galleries:
+            self.new_messages_count = self.new_messages_count + gallery.having_new_chats
         self.save()
 
     @property

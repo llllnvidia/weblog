@@ -18,6 +18,7 @@ from ..decorators import admin_required, permission_required
 def index():
     return render_template('index.html')
 
+
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
     categorys = Category.query.filter_by(parentid=1).all()

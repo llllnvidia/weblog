@@ -29,17 +29,31 @@
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
                 {% endif %}
                 {% if current_user.is_authenticated %}
+                {% if current_user.new_messages_count %}
+                <li role="presentation" class="dropdown"><a class="dropdown-toggle"
+                 data-toggle="dropdown" role="button"
+                  aria-haspopup="true" aria-expanded="false">个人 <span class="badge xs">{{ current_user.new_messages_count }}</span>
+                  <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('main.user',username=current_user.username) }}">主页</a></li>
+                        <li><a href="{{ url_for('main.dialogues') }}">消息 <span class="badge xs">{{ current_user.new_messages_count }}</span></a></li>
+                        <li><a href="{{ url_for('main.new_article') }}">发博文</a></li>
+                        <li><a href="{{ url_for('main.new_talk') }}">吐槽</a></li>
+                    </ul>
+                </li>
+                {% else %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">个人
                   <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('main.user',username=current_user.username) }}">主页</a></li>
-                        <li><a href="{{ url_for('main.dialogues') }}">消息</a> </li>
+                        <li><a href="{{ url_for('main.dialogues') }}">消息</a></li>
                         <li><a href="{{ url_for('main.new_article') }}">发博文</a></li>
                         <li><a href="{{ url_for('main.new_talk') }}">吐槽</a></li>
                     </ul>
                 </li>
+                {% endif %}
                 {% endif %}
                 {% if current_user.is_authenticated and current_user.is_moderator() %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
