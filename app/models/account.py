@@ -114,8 +114,11 @@ class User(UserMixin, db.Model):
             self.role = Role.query.filter_by(default=True).first()
         self.save()
         self.follow(self)
-        if self.id != 1:
-            Dialogue(User.query.get(1), self, u'系统消息')
+        admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
+        if admin:
+            Dialogue(admin, self, u'系统消息')
+        else:
+            pass
         self.save()
 
     def save(self):
