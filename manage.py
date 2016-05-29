@@ -17,7 +17,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-app = create_app(os.getenv('CODEBLOG_CONFIG') or 'default')
+app = create_app(os.getenv('CODEBLOG_CONFIG', 'default'))
 
 migrate = Migrate(app, db)
 manager = Manager(app)
@@ -51,10 +51,9 @@ def deploy():
         db.create_all()
         print 'Datebase created.'
         Role.insert_roles()
-        print 'insert Roles.'
         User.add_self_follows()
-        print 'User config.'
         User.add_admin()
+        User.add_test_user()
         print 'add admin :'\
             '\nemail=Admin@CodeBlog.com'\
             '\npassword=1234'
@@ -62,6 +61,16 @@ def deploy():
         print 'Category insert None.'
     else:
         print 'database already exists!'
+#    Role.insert_roles()
+#    print 'insert Roles.'
+    id = input('admin_id:')
+    while True:
+        if User.query.get(id):
+            User.add_admin_dialogue(id)
+            break
+        else:
+            id = input('get admin error!\nadmin_id:')
+        print 'User config.'
 
 
 @manager.command

@@ -7,7 +7,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login_manager
-from app.models.message import Dialogue
+from app.models.message import Dialogue, Gallery
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -99,25 +99,23 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all,delete-orphan')
     chats = db.relationship('Chat', backref='author', lazy='dynamic')
-    dialogue_host = db.relationship('Dialogue',
-                                    foreign_keys=[Dialogue.host_id],
-                                    backref=db.backref('invited', lazy='joined'),
-                                    lazy='dynamic',
-                                    cascade='all,delete-orphan')
-    dialogue_invited = db.relationship('Dialogue',
-                                       foreign_keys=[Dialogue.invited_id],
-                                       backref=db.backref('host', lazy='joined'),
-                                       lazy='dynamic',
-                                       cascade='all,delete-orphan')
+    galleries = db.relationship('Gallery',
+                                foreign_keys=[Gallery.user_id],
+                                backref=db.backref('user', lazy='joined'),
+                                lazy='dynamic',
+                                cascade='all,delete-orphan')
 
     def __repr__(self):
-        return '<User %s Role %s>' % (self.username, self.role.name)
+        return '<User %s ID %d>' % (self.username, self.id)
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
             self.role = Role.query.filter_by(default=True).first()
+        self.save()
         self.follow(self)
+        if self.id != 1:
+            Dialogue(User.query.get(1), self, u'系统消息')
         self.save()
 
     def save(self):
@@ -140,10 +138,25 @@ class User(UserMixin, db.Model):
         admin = User(email=u'Admin@CodeBlog.com',
                      username=u'管理员',
                      password=u'1234',
-                     role=Role.query.filter_by(permissions=0xff).first(),
                      confirmed=True,
                      member_since=datetime.utcnow())
+        admin.role = Role.query.filter_by(name='Administrator').first()
         admin.save()
+
+    @staticmethod
+    def add_test_user():
+        user = User(email=u'user@CodeBlog.com',
+                    username=u'测试员',
+                    password=u'1234',
+                    confirmed=True,
+                    member_since=datetime.utcnow())
+        user.save()
+
+    @staticmethod
+    def add_admin_dialogue(id):
+        for user in User.query.all():
+            if user.id != id:
+                Dialogue(User.query.get(id), user, name=u'系统消息')
 
     def can(self, permissions):
         return self.role is not None and \
@@ -226,33 +239,20 @@ class User(UserMixin, db.Model):
         return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
             .filter(Follow.follower_id == self.id)
 
-    def is_host(self, user):
-        return self.dialogue_host.filter_by(
-            invited_id=user.id).first() is not None
-
-    def is_invited(self, user):
-        return self.dialogue_invited.filter_by(
-            host_id=user.id).first() is not None
-
     @property
-    def host_dialogues(self):
-        return Dialogue.query.filter(Dialogue.host_id == self.id)
-
-    @property
-    def invited_dialogues(self):
-        return Dialogue.query.filter(Dialogue.invited_id == self.id)
+    def dialogues(self):
+        return Dialogue.query.join(Gallery, Gallery.dialogue_id == Dialogue.id) \
+            .filter(Gallery.user_id == self.id)
 
 
 class AnonymousUser(AnonymousUserMixin):
-    @staticmethod
+
     def can(self, permissions):
         return False
 
-    @staticmethod
     def is_moderator(self):
         return False
 
-    @staticmethod
     def is_administrator(self):
         return False
 

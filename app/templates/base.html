@@ -76,6 +76,7 @@
                   <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('main.user',username=current_user.username) }}">主页</a></li>
+                        <li><a href="{{ url_for('main.dialogues') }}">消息</a> </li>
                         <li><a href="{{ url_for('main.new_article') }}">发博文</a></li>
                         <li><a href="{{ url_for('main.new_talk') }}">吐槽</a></li>
                     </ul>

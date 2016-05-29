@@ -14,6 +14,7 @@ class Config:
     POSTS_PER_PAGE = 10
     FOLLOWERS_PER_PAGE = 10
     COMMENTS_PER_PAGE = 10
+    DIALOGUE_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):

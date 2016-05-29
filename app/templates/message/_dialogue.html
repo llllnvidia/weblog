@@ -1,0 +1,26 @@
+{% for chat in chats %}
+    {% if chat.author_id != current_user.id %}
+        <br>
+        <div class="chat_host" align="left">
+        <div class="chat_heading">
+            <a href="{{ url_for('main.user', username=chat.author.username) }}" style="font-size: large">{{ chat.author.username }}</a>
+            <i style="font-size: smaller">{{ moment(chat.timestamp).format('YY-MM-DD hh:mm') }}</i>
+        </div>
+        <div class="chat_body">
+            {{ chat.content }}
+        </div>
+        </div>
+    {% else %}
+        <br>
+        <div class="chat_host" align="right">
+        <div class="chat_heading">
+            <a href="{{ url_for('main.user', username=chat.author.username) }}" style="font-size: large">{{ chat.author.username }}</a>
+            <i style="font-size: smaller">{{ moment(chat.timestamp).format('YY-MM-DD hh:mm') }}</i>
+        </div>
+        <div class="chat_body">
+            {{ chat.content }}
+        </div>
+        </div>
+    {% endif %}
+{% endfor %}
+

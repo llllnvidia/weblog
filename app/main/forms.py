@@ -88,5 +88,6 @@ class UploadImagesForm(Form):
     submit = SubmitField("提交")
 
 
-class Chat(Form):
-    context = StringField('', validators=[DataRequired(), Length(1, 200, message="太长了。")])
+class ChatForm(Form):
+    content = StringField('', validators=[DataRequired(), Length(1, 200, message="太长了。")])
+    submit = SubmitField('发送')

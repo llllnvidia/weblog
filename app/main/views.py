@@ -7,9 +7,10 @@ from flask.ext.login import current_user, login_required
 
 from app.models.post import Post, Comment, Category, Tag
 from app.models.account import Role, Permission, User
+from app.models.message import Dialogue
 from . import main
 from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm, ArticleForm, CategoryForm, \
-    UploadImagesForm
+    UploadImagesForm, ChatForm
 from ..decorators import admin_required, permission_required
 
 
@@ -365,6 +366,7 @@ def delete_user(id):
     flash('已删除！')
     return redirect(url_for('main.users'))
 
+
 @main.route('/categorys/edit/<int:id>', methods=["GET", "POST"])
 @main.route('/categorys', methods=["GET", "POST"])
 @login_required
@@ -462,7 +464,49 @@ def upload_images():
     return render_template('upload.html', form=form, filename=filename)
 
 
-@main.route('/dialogue/<int:id>', methods=('GET', 'POST'))
+@main.route('/dialogues/<int:id>', methods=('GET', 'POST'))
+@main.route('/dialogues')
 @login_required
-def chat(id):
-    invited = User.query.get_or_404(id)
+def dialogues(id=None):
+    dialogue_list = current_user.dialogues
+    if id:
+        delete_true = request.args.get('delete_true', False, type=bool)
+        dialogue = Dialogue.query.get_or_404(id)
+        if not dialogue.is_joining(current_user) or not dialogue.get_gallery(current_user).show:
+            abort(404)
+        if delete_true:
+            dialogue = dialogue.get_gallery(current_user)
+            dialogue.show = False
+            dialogue.save()
+            return redirect(url_for('main.dialogues'))
+        dialogue.update_chats(current_user)
+        form = ChatForm()
+        page = request.args.get('page', 1, type=int)
+        if form.validate_on_submit():
+            dialogue.new_chat(author=current_user, content=form.content.data)
+            dialogue.update_show()
+            flash('消息发送成功。')
+            return redirect(url_for('main.dialogues', id=id))
+        pagination = dialogue.chats.filter_by().paginate(
+            page, per_page=current_app.config['DIALOGUE_PER_PAGE'],
+            error_out=False)
+        chats = pagination.items
+        return render_template('message/dialogues.html', form=form, dialogues=dialogue_list,
+                               chats=chats, pagination=pagination)
+    else:
+        return render_template('message/dialogues.html', dialogues=dialogue_list)
+
+
+@main.route('/dialogues/new/<username>', methods=('GET', 'POST'))
+@login_required
+def new_dialogue(username):
+    user = User.query.filter_by(username=username).first()
+    if Dialogue.is_together(user, current_user):
+        dialogue = Dialogue.get_dialogue(user, current_user)
+        gallery = dialogue.get_gallery(current_user)
+        gallery.show = True
+        gallery.save()
+        return redirect(url_for('main.dialogues', id=dialogue.id))
+    else:
+        dialogue = Dialogue(current_user, user)
+        return redirect(url_for('main.dialogues', id=dialogue.id))
