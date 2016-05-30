@@ -251,6 +251,18 @@ class User(UserMixin, db.Model):
         return Dialogue.query.join(Gallery, Gallery.dialogue_id == Dialogue.id) \
             .filter(Gallery.user_id == self.id)
 
+    def get_message_from_admin(self, content, link_id=None, link_type=None):
+        admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
+        if self.id == admin.id:
+            admin = User.query.filter_by(role=Role.query.filter_by(name='Administrator').first()).first()
+            dialogue = Dialogue.get_dialogue(admin, self)
+        else:
+            dialogue = Dialogue.get_dialogue(admin, self)
+        if link_id and link_type:
+            dialogue.new_chat(author=admin, content=content, link_id=link_id, link_type=link_type)
+        else:
+            dialogue.new_chat(author=admin, content=content)
+
 
 class AnonymousUser(AnonymousUserMixin):
 

@@ -177,6 +177,7 @@ class Dialogue(db.Model):
 
     def new_chat(self, author, content, **kwargs):
         chat = Chat(dialogue=self, author=author, content=content, **kwargs)
+        self.update_chats(author)
         chat.save()
 
 
@@ -185,15 +186,23 @@ class Chat(db.Model):
     dialogue_id = db.Column(db.Integer, db.ForeignKey('dialogues.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     content = db.Column(db.Text)
-    link_comment = db.Column(db.Integer)
+    link = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
 
-    def __init__(self, dialogue, author, content, link_comment=None):
+    def __init__(self, dialogue, author, content, link_id=None, link_type=None):
         self.dialogue = dialogue
         self.author = author
         self.content = content
-        if link_comment:
-            self.link_comment = link_comment
+        if link_id:
+            from flask import url_for
+            if link_type == 'comment':
+                self.link = url_for('main.article', id=link_id) + '#comments'
+            elif link_type == 'user':
+                self.link = url_for('main.user', username=link_id)
+            elif link_type == 'post':
+                self.link = url_for('main.article', id=link_id)
+            else:
+                pass
 
     def save(self):
         db.session.add(self)

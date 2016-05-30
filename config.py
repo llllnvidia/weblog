@@ -7,7 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'bshghadasssdfjaskdjfhaklsfasdjfl'
     SQLALCEMY_COMMIT_ON_TEARDOWN = True
-    ADMIN = os.environ.get('ADMIN')
+    ADMIN = os.environ.get('ADMIN', 'Admin')
     MAIL_SUBJECT_PREFIX = '[CodeBlog]'
     MAIL_SENDER = str(ADMIN) + ' <' + str(os.environ.get('MAIL_USERNAME', 'admin@codeblog.com')) + '>'
     SQLALCHEMY_TRACK_MODIFICATIONS = True

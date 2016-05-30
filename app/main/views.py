@@ -100,6 +100,7 @@ def user(username):
         return render_template('user.html', user=user, query=query_show, tags=tags, cur_tag=cur_tag,
                                categories=categories)
 
+
 @main.route('/follow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -109,6 +110,7 @@ def follow(username):
         flash('你已经关注了%s。' % username)
         return redirect(url_for('.user', username=username))
     current_user.follow(user)
+    user.get_message_from_admin(content=u'你有一个新粉丝。', link_id=current_user.username, link_type='user')
     flash('你关注了%s。' % username)
     return redirect(url_for('.user', username=username))
 
@@ -120,6 +122,7 @@ def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if current_user.is_following(user):
         current_user.unfollow(user)
+        user.get_message_from_admin(content=u'你失去了一位粉丝。', link_id=current_user.username, link_type='user')
         flash('你取消了对%s的关注。' % username)
     else:
         flash('你没有关注过%s。' % username)
@@ -215,6 +218,7 @@ def article(id):
         comment = Comment(body=form.body.data,
                           post=post,
                           author=current_user)
+        post.author.get_message_from_admin(content=u'你收到了一条评论。', link_id=post.id, link_type='comment')
         comment.save()
         flash('你的评论已提交。')
         return redirect(url_for('main.article', id=post.id, page=-1))
@@ -483,15 +487,16 @@ def dialogues(id=None):
         dialogue.update_chats(current_user)
         form = ChatForm()
         page = request.args.get('page', 1, type=int)
-        if form.validate_on_submit():
-            dialogue.new_chat(author=current_user, content=form.content.data)
-            dialogue.update_show()
-            flash('消息发送成功。')
-            return redirect(url_for('main.dialogues', id=id))
         pagination = dialogue.chats.filter_by().paginate(
             page, per_page=current_app.config['DIALOGUE_PER_PAGE'],
             error_out=False)
         chats = pagination.items
+        if form.validate_on_submit():
+            dialogue.new_chat(author=current_user, content=form.content.data)
+            dialogue.update_show()
+            dialogue.update_chats(current_user)
+            flash('消息发送成功。')
+            return redirect(url_for('main.dialogues', id=id)+'?page=' + str(pagination.pages))
         return render_template('message/dialogues.html', form=form, dialogues=dialogue_list, dialogue=dialogue,
                                chats=chats, pagination=pagination)
     else:
