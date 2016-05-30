@@ -49,14 +49,14 @@
                             </a>
                         </li>
                         <li role="separator" class="divider"></li>
-                        {% for category in categorys %}
+                        {% for category in categories %}
                             <li>
                                 <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}
                                 &nbsp;
                                 <span class="badge">{{ category.posts_count(query) }}</span></a>
                             </li>
-                            {% if category.soncategorys %}
-                            {% for soncategory in category.soncategorys %}
+                            {% if category.soncategories %}
+                            {% for soncategory in category.soncategories %}
                                 <li>
                                     <a href="?category={{ soncategory.name }}#neighbourhood">&nbsp;&nbsp;{{ soncategory.name }}
                                     &nbsp;
@@ -73,11 +73,11 @@
                 {% if current_user.new_messages_count %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
-                  aria-haspopup="true" aria-expanded="false">个人 <span class="badge xs">{{ current_user.new_messages_count }}</span>
+                  aria-haspopup="true" aria-expanded="false">个人 <span class="badge badge-xs">{{ current_user.new_messages_count }}</span>
                   <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('main.user',username=current_user.username) }}">主页</a></li>
-                        <li><a href="{{ url_for('main.dialogues') }}">消息 <span class="badge xs">{{ current_user.new_messages_count }}</span></a></li>
+                        <li><a href="{{ url_for('main.dialogues') }}">消息 <span class="badge badge-xs">{{ current_user.new_messages_count }}</span></a></li>
                         <li><a href="{{ url_for('main.new_article') }}">发博文</a></li>
                         <li><a href="{{ url_for('main.new_talk') }}">吐槽</a></li>
                     </ul>
@@ -104,7 +104,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('main.users') }}">所有用户</a></li>
                         <li><a href="{{ url_for('main.moderate')}}">所有评论</a></li>
-                        <li><a href="{{ url_for('main.categorys')}}">所有栏目</a></li>
+                        <li><a href="{{ url_for('main.categories')}}">所有栏目</a></li>
                     </ul>
                 </li>
                 {% endif %}

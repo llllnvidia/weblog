@@ -21,7 +21,7 @@ def index():
 
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
-    categorys = Category.query.filter_by(parentid=1).all()
+    categories = Category.query.filter_by(parentid=1).all()
     tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category', None)
@@ -64,11 +64,11 @@ def neighbourhood():
             error_out=False)
         posts = pagination.items
         return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts, cur_tag=cur_tag,
-                               Post=Post, categorys=categorys, tags=tags, show_followed=show, query=query_show,
+                               Post=Post, categories=categories, tags=tags, show_followed=show, query=query_show,
                                pagination=pagination)
     else:
         return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, cur_tag=cur_tag,
-                               Post=Post, categorys=categorys, tags=tags, show_followed=show, query=query_show)
+                               Post=Post, categories=categories, tags=tags, show_followed=show, query=query_show)
 
 
 @main.route('/user/<username>')
@@ -77,7 +77,7 @@ def user(username):
     if user is None:
         abort(404)
     query_show = query = user.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
-    categorys = Category.query.filter_by(parentid=1).all()
+    categories = Category.query.filter_by(parentid=1).all()
     tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
@@ -95,10 +95,10 @@ def user(username):
             error_out=False)
         posts = pagination.items
         return render_template('user.html', user=user, posts=posts, query=query_show, tags=tags, cur_tag=cur_tag,
-                               categorys=categorys, pagination=pagination)
+                               categories=categories, pagination=pagination)
     else:
         return render_template('user.html', user=user, query=query_show, tags=tags, cur_tag=cur_tag,
-                               categorys=categorys)
+                               categories=categories)
 
 @main.route('/follow/<username>')
 @login_required
@@ -368,29 +368,29 @@ def delete_user(id):
     return redirect(url_for('main.users'))
 
 
-@main.route('/categorys/edit/<int:id>', methods=["GET", "POST"])
-@main.route('/categorys', methods=["GET", "POST"])
+@main.route('/categories/edit/<int:id>', methods=["GET", "POST"])
+@main.route('/categories', methods=["GET", "POST"])
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
-def categorys(id=None):
+def categories(id=None):
     page = request.args.get('page', 1, type=int)
     pagination = Category.query.filter_by().paginate(
         page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
-    categorys = list()
+    categories_list = list()
     for item in pagination.items:
         arg = {'id': item.id, 'name': item.name}
-        if item.parentcategory:
-            arg.update({'parentcategory': Category.query.filter_by(id=item.parentid).first().name})
+        if item.parent_category:
+            arg.update({'parent_category': Category.query.filter_by(id=item.parentid).first().name})
         else:
-            arg.update({'parentcategory': 'None'})
-        if item.soncategorys:
-            arg.update({'soncategorys': ' '.join([cg.name for cg in item.soncategorys])})
+            arg.update({'parent_category': 'None'})
+        if item.son_categories:
+            arg.update({'son_categories': ' '.join([cg.name for cg in item.son_categories])})
             arg.update({'count': item.posts_count()})
         else:
-            arg.update({'soncategorys': 'None'})
+            arg.update({'son_categories': 'None'})
             arg.update({'count': item.posts_count()})
-        categorys.append(arg)
+        categories_list.append(arg)
     if id:
         category = Category.query.filter_by(id=id).first()
         form = CategoryForm()
@@ -398,31 +398,31 @@ def categorys(id=None):
             category.name = form.name.data
             category.save()
             flash("已修改")
-            return redirect(url_for('main.categorys', page=page, form=form))
+            return redirect(url_for('main.categories', page=page, form=form))
         form.name.data = category.name
         form.parent.choices = [(category.parentid,
                                 Category.query.filter_by(id=category.parentid).first().name)]
-        return render_template('categorys.html', title="所有栏目", form=form,
-                               endpoint='main.categorys', pagination=pagination, categorys=categorys)
+        return render_template('categories.html', title="所有栏目", form=form,
+                               endpoint='main.categories', pagination=pagination, categories=categories_list)
     else:
         form = CategoryForm()
         if request.method == 'POST' and form.validate():
             new_category = Category(form.name.data, Category.query.filter_by(id=form.parent.data).first())
             new_category.save()
             flash("已添加")
-            return redirect(url_for('main.categorys', page=page, form=form))
-        return render_template('categorys.html', title="所有栏目", form=form,
-                               endpoint='main.categorys', pagination=pagination, categorys=categorys)
+            return redirect(url_for('main.categories', page=page, form=form))
+        return render_template('categories.html', title="所有栏目", form=form,
+                               endpoint='main.categories', pagination=pagination, categories=categories_list)
 
 
-@main.route('/categorys/delete/<int:id>')
+@main.route('/categories/delete/<int:id>')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def delete_category(id):
     category = Category.query.filter_by(id=id).first()
     category.delete()
     flash("已删除")
-    return redirect(url_for('main.categorys'))
+    return redirect(url_for('main.categories'))
 
 
 @main.route('/new/talk', methods=['GET', 'POST'])
