@@ -253,7 +253,7 @@ class User(UserMixin, db.Model):
 
     def get_message_from_admin(self, content, link_id=None, link_type=None):
         admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
-        if self.id == admin.id:
+        if self.id == admin.id or not admin:
             admin = User.query.filter_by(role=Role.query.filter_by(name='Administrator').first()).first()
             dialogue = Dialogue.get_dialogue(admin, self)
         else:
