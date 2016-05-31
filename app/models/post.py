@@ -132,18 +132,18 @@ db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    parentid = db.Column(db.Integer, db.ForeignKey('category.id'))
-    parentcategory = db.relationship('Category', uselist=False, remote_side=[id],
-                                     backref=db.backref('soncategorys', uselist=True))
+    parent_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    parent_category = db.relationship('Category', uselist=False, remote_side=[id],
+                                      backref=db.backref('son_categories', uselist=True))
 
-    def __init__(self, name, parentcategory=None):
+    def __init__(self, name, parent_category=None):
         self.name = name
-        self.parentcategory = parentcategory
+        self.parent_category = parent_category
 
     def __repr__(self):
         return '<Category %s Parent %s Son %s>' % (self.name,
-                                                   Category.query.filter_by(id=self.parentid).first().name,
-                                                   [cg.name for cg in self.soncategorys])
+                                                   Category.query.filter_by(id=self.parent_id).first().name,
+                                                   [cg.name for cg in self.son_categories])
 
     @staticmethod
     def add_none():
@@ -164,23 +164,23 @@ class Category(db.Model):
     def posts_count(self, query=None):
         if query:
             count = query.filter(Post.category == self).count()
-            sum = 0
-            for category in self.soncategorys:
-                sum = sum + query.filter(Post.category == category).count()
+            sum_posts_count = 0
+            for category in self.son_categories:
+                sum_posts_count = sum_posts_count + query.filter(Post.category == category).count()
         else:
             count = self.posts.count()
-            sum = 0
-            for category in self.soncategorys:
-                sum = sum + category.posts_count()
-        count = count + sum
+            sum_posts_count = 0
+            for category in self.son_categories:
+                sum_posts_count = sum_posts_count + category.posts_count()
+        count = count + sum_posts_count
         return count
 
     def posts_query(self, query=None):
         if query:
-            if self.soncategorys:
+            if self.son_categories:
                 posts = query.filter(Post.category == self)
-                for soncategory in self.soncategorys:
-                    query = query.filter(Post.category == soncategory)
+                for son_category in self.son_categories:
+                    query = query.filter(Post.category == son_category)
                     if query.all() and posts.all():
                         posts = posts.union(query)
                     elif query.all():
@@ -190,10 +190,10 @@ class Category(db.Model):
             else:
                 posts = query.filter(Post.category == self)
         else:
-            if self.soncategorys:
+            if self.son_categories:
                 posts = Post.query.filter(Post.category == self)
-                for soncategory in self.soncategorys:
-                    posts = posts.union(Post.filter(Post.category == soncategory))
+                for son_category in self.son_categories:
+                    posts = posts.union(Post.filter(Post.category == son_category))
             else:
                 posts = Post.query.filter(Post.category == self)
         return posts

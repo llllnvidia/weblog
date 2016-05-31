@@ -30,8 +30,12 @@
             </td>
             <td>
                 {% if category.id != 1 %}
-                <a href="{{ url_for('main.categories') }}/edit/{{ category.id }}"><span class="btn btn-xs btn-warning">修改</span></a>
-                <a href="{{ url_for('main.delete_category',id=category.id) }}"><span class="btn btn-xs btn-danger">删除</span></a>
+                <a href="{{ url_for('main.categories') }}/edit/{{ category.id }}">
+                    <span class="btn btn-xs btn-warning">修改</span>
+                </a>
+                <a href="{{ url_for('main.delete_category',category_id=category.id) }}">
+                    <span class="btn btn-xs btn-danger">删除</span>
+                </a>
                 {% endif %}
             </td>
         </tr>

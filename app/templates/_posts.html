@@ -15,23 +15,23 @@
                 {% endif %}
                 {% if post.is_article %}
                     {% if post.comments.count() > 20 %}
-                        <a class="label label-danger" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                        <a class="label label-danger" style= "margin-right:4px" href="{{ url_for('main.article',post_id=post.id) }}#comments">
                             {{ post.comments.count() }} Comments
                         </a>
                     {% elif post.comments.count() > 10 %}
-                        <a class="label label-warning" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                        <a class="label label-warning" style= "margin-right:4px" href="{{ url_for('main.article',post_id=post.id) }}#comments">
                             {{ post.comments.count() }} Comments
                         </a>
                     {% elif post.comments.count() > 1 %}
-                        <a class="label label-info" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                        <a class="label label-info" style= "margin-right:4px" href="{{ url_for('main.article',post_id=post.id) }}#comments">
                             {{ post.comments.count() }} Comments
                         </a>
                     {% elif post.comments.count() == 1 %}
-                        <a class="label label-info" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                        <a class="label label-info" style= "margin-right:4px" href="{{ url_for('main.article',post_id=post.id) }}#comments">
                             Comment
                         </a>
                     {% else %}
-                        <a class="label label-default" style= "margin-right:4px" href="{{ url_for('main.article',id=post.id) }}#comments">
+                        <a class="label label-default" style= "margin-right:4px" href="{{ url_for('main.article',post_id=post.id) }}#comments">
                             none
                         </a>
                 {% endif %}
@@ -71,26 +71,26 @@
             <div class="btn-group">
                 {% if post.is_article %}
                     {% if current_user == post.author %}
-                        <a type="button" class="btn btn-warning" href="{{ url_for('main.edit_article',id=post.id) }}">
+                        <a type="button" class="btn btn-warning" href="{{ url_for('main.edit_article',post_id=post.id) }}">
                             修改
                         </a>
                     {% elif current_user.is_moderator() %}
-                        <a type="button" class="btn btn-danger" href="{{ url_for('main.edit_article',id=post.id) }}">
+                        <a type="button" class="btn btn-danger" href="{{ url_for('main.edit_article',post_id=post.id) }}">
                             修改[Admin]
                         </a>
                     {% endif %}
                     {% if request.endpoint != 'main.article' %}
-                    <a type="button" class="btn btn-default" href="{{ url_for('main.article',id=post.id) }}">
+                    <a type="button" class="btn btn-default" href="{{ url_for('main.article',post_id=post.id) }}">
                         详情
                     </a>
                     {% endif %}
                 {% else %}
                     {% if current_user == post.author %}
-                        <a type="button" class="btn btn-default btn-warning" href="{{ url_for('main.edit_talk',id=post.id) }}">
+                        <a type="button" class="btn btn-default btn-warning" href="{{ url_for('main.edit_talk',post_id=post.id) }}">
                             修改
                         </a>
                     {% elif current_user.is_moderator() %}
-                        <a type="button" class="btn btn-danger" href="{{ url_for('main.edit_talk',id=post.id) }}">
+                        <a type="button" class="btn btn-danger" href="{{ url_for('main.edit_talk',post_id=post.id) }}">
                             修改[Admin]
                         </a>
                     {% endif  %}

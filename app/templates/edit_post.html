@@ -11,7 +11,7 @@
             {% if request.endpoint == 'main.new_article' %}
             <form action="/new/article" method="post" role="form">
             {% else %}
-            <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',id=post.id ) }}">删除</a>
+            <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',post_id=post.id ) }}">删除</a>
             <hr/>
             <form action="/edit/article/{{ post.id }}" method="post" role="form">
             {% endif %}
@@ -24,8 +24,9 @@
                         {{ wtf.form_field(form.body,only_preview=True) }}
                     </div>
                     <div class="col-lg-6">
-                        {{ wtf.form_field(form.body,only_input=True, style='overflow:scroll;overflow-y:hidden;overflow-x:hidden',
-                        onfocus="window.activeobj=this;
+                        {{ wtf.form_field(form.body,only_input=True,
+                         style='overflow:scroll;overflow-y:hidden;overflow-x:hidden',
+                         onfocus="window.activeobj=this;
                         this.clock=setInterval(
                         function(){
                         activeobj.style.height=activeobj.scrollHeight+'px';
@@ -43,7 +44,7 @@
             <h1>吐槽</h1>
         </div>
         {% if request.endpoint == 'main.edit_talk' %}
-        <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',id=post.id ) }}">删除</a>
+        <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',post_id=post.id ) }}">删除</a>
         <hr/>
         {% endif %}
         {{ wtf.quick_form(form) }}

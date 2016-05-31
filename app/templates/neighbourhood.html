@@ -46,10 +46,10 @@
                     </a>
                 </li>
                 <li class="collapse" id="{{ category.id }}">
-                {% for soncategory in category.son_categories %}
+                {% for son_category in category.son_categories %}
                     <lu class="list-group-item">&nbsp;&nbsp;
-                        <span class="badge">{{ soncategory.posts_count(query) }}</span>
-                        <a href="?category={{ soncategory.name }}#neighbourhood">{{ soncategory.name }}</a>
+                        <span class="badge">{{ son_category.posts_count(query) }}</span>
+                        <a href="?category={{ son_category.name }}#neighbourhood">{{ son_category.name }}</a>
                     </lu>
                 {% endfor %}
                 </li>

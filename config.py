@@ -20,6 +20,7 @@ class Config:
     def init_app(app):
         pass
 
+
 class DevelopmentConfig(Config):
     DEBUG = False
     MAIL_SERVER = 'smtp.163.com'
@@ -32,6 +33,7 @@ class DevelopmentConfig(Config):
                              
 class DebugConfig(DevelopmentConfig):
     DEBUG = True
+
 
 class TestingConfig(Config):
     TESTING = True

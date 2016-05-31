@@ -24,7 +24,7 @@
                     详情
                 </a>
                 {% if current_user.is_administrator() %}
-                <a class="btn btn-danger" href="{{ url_for('main.delete_user',id=user.id) }}">
+                <a class="btn btn-danger" href="{{ url_for('main.delete_user',user_id=user.id) }}">
                     删除
                 </a>
                 {% endif %}
