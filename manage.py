@@ -37,7 +37,7 @@ manager.add_command("runserver", Server(
 
 
 @manager.command
-def test():
+def test(coverage=False):
     """Run the unit tests."""
     import unittest
     tests = unittest.TestLoader().discover('tests')
@@ -63,13 +63,13 @@ def deploy():
         print 'database already exists!'
 #    Role.insert_roles()
 #    print 'insert Roles.'
-    id = input('admin_id:')
+    admin_id = input('admin_id:')
     while True:
-        if User.query.get(id):
-            User.add_admin_dialogue(id)
+        if User.query.get(admin_id):
+            User.add_admin_dialogue(admin_id)
             break
         else:
-            id = input('get admin error!\nadmin_id:')
+            admin_id = input('get admin error!\nadmin_id:')
         print 'User config.'
 
 

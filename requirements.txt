@@ -16,3 +16,4 @@ requests==2.10.0
 SQLAlchemy==1.0.12
 Werkzeug==0.11.9
 WTForms==2.1
+coverage==4.1

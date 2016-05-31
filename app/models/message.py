@@ -11,7 +11,7 @@ class Gallery(db.Model):
     name = db.Column(db.String)
     count = db.Column(db.Integer, default=0)
     show = db.Column(db.Boolean, default=True)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __init__(self, dialogue, user, name=None):
         self.dialogue = dialogue
@@ -187,7 +187,7 @@ class Chat(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     content = db.Column(db.Text)
     link = db.Column(db.Integer)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __init__(self, dialogue, author, content, link_id=None, link_type=None):
         self.dialogue = dialogue
