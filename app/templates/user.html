@@ -35,10 +35,10 @@
     </div>
     {% if current_user.can(Permission.FOLLOW) and user != current_user %}
         {% if not current_user.is_following(user) %}
-            <a href="{{ url_for('.follow',username=user.username) }}"
+            <a href="{{ url_for('main.follow',username=user.username) }}"
                 class="btn btn-primary">关注</a>
         {% else %}
-            <a href="{{ url_for('.unfollow',username=user.username) }}"
+            <a href="{{ url_for('main.not_follow',username=user.username) }}"
                 class="btn btn-warning">取消关注</a>
         {% endif %}
             <a href="{{ url_for('main.new_dialogue',username=user.username) }}"

@@ -77,7 +77,7 @@ def user(username):
     if user_showed is None:
         abort(404)
     query_show = query = user_showed.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
-    categories = Category.query.filter_by(parent_id=1).all()
+    categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category')
@@ -95,10 +95,10 @@ def user(username):
             error_out=False)
         posts = pagination.items
         return render_template('user.html', user=user_showed, posts=posts, query=query_show, tags=tags, cur_tag=cur_tag,
-                               categories=categories, pagination=pagination)
+                               categories=categories_list, pagination=pagination)
     else:
         return render_template('user.html', user=user_showed, query=query_show, tags=tags, cur_tag=cur_tag,
-                               categories=categories)
+                               categories=categories_list)
 
 
 @main.route('/follow/<username>')
@@ -115,10 +115,10 @@ def follow(username):
     return redirect(url_for('.user', username=username))
 
 
-@main.route('/unfollow/<username>')
+@main.route('/not_follow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
-def unfollow(username):
+def not_follow(username):
     user_not_follow = User.query.filter_by(username=username).first()
     if current_user.is_following(user_not_follow):
         current_user.unfollow(user_not_follow)

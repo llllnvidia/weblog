@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 import time
 from datetime import datetime
@@ -18,32 +19,32 @@ class UserModelTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_password_setter(self):
+    def test_00_password_setter(self):
         u = User(password='cat')
         self.assertTrue(u.password_hash is not None)
 
-    def test_no_password_getter(self):
+    def test_01_no_password_getter(self):
         u = User(password='cat')
         with self.assertRaises(AttributeError):
             u.password
 
-    def test_password_verification(self):
+    def test_02_password_verification(self):
         u = User(password='cat')
         self.assertTrue(u.verify_password('cat'))
         self.assertFalse(u.verify_password('dog'))
 
-    def test_password_salts_are_random(self):
+    def test_03_password_salts_are_random(self):
         u = User(password='cat')
         u2 = User(password='cat')
         self.assertTrue(u.password_hash != u2.password_hash)
 
-    def test_valid_confirmation_token(self):
+    def test_04_valid_confirmation_token(self):
         u = User(password='cat')
         u.save()
         token = u.generate_confirmation_token()
         self.assertTrue(u.confirm(token))
 
-    def test_invalid_confirmation_token(self):
+    def test_05_invalid_confirmation_token(self):
         u1 = User(password='cat')
         u2 = User(password='dog')
         u1.save()
@@ -51,21 +52,21 @@ class UserModelTestCase(unittest.TestCase):
         token = u1.generate_confirmation_token()
         self.assertFalse(u2.confirm(token))
 
-    def test_expired_confirmation_token(self):
+    def test_06_expired_confirmation_token(self):
         u = User(password='cat')
         u.save()
         token = u.generate_confirmation_token(1)
         time.sleep(2)
         self.assertFalse(u.confirm(token))
 
-    def test_valid_reset_token(self):
+    def test_07_valid_reset_token(self):
         u = User(password='cat')
         u.save()
         token = u.generate_reset_token()
         self.assertTrue(u.reset_password(token, 'dog'))
         self.assertTrue(u.verify_password('dog'))
 
-    def test_invalid_reset_token(self):
+    def test_08_invalid_reset_token(self):
         u1 = User(password='cat')
         u2 = User(password='dog')
         u1.save()
@@ -74,16 +75,16 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u2.reset_password(token, 'horse'))
         self.assertTrue(u2.verify_password('dog'))
 
-    def test_roles_and_permissions(self):
+    def test_09_roles_and_permissions(self):
         u = User(email='john@example.com', password='cat')
         self.assertTrue(u.can(Permission.WRITE_ARTICLES))
         self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
 
-    def test_anonymous_user(self):
+    def test_10_anonymous_user(self):
         u = AnonymousUser()
         self.assertFalse(u.can(Permission.FOLLOW))
 
-    def test_timestamps(self):
+    def test_11_timestamps(self):
         u = User(password='cat')
         u.save()
         self.assertTrue(
@@ -91,7 +92,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(
             (datetime.utcnow() - u.last_seen).total_seconds() < 5)
 
-    def test_ping(self):
+    def test_12_ping(self):
         u = User(password='cat')
         u.save()
         time.sleep(2)
@@ -99,7 +100,7 @@ class UserModelTestCase(unittest.TestCase):
         u.ping()
         self.assertTrue(u.last_seen > last_seen_before)
 
-    def test_follows(self):
+    def test_13_follows(self):
         u1 = User(email='john@example.com', password='cat')
         u2 = User(email='susan@example.org', password='dog')
         u1.save()

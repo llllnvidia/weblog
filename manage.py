@@ -37,7 +37,7 @@ manager.add_command("runserver", Server(
 
 
 @manager.command
-def test(coverage=False):
+def test():
     """Run the unit tests."""
     import unittest
     tests = unittest.TestLoader().discover('tests')

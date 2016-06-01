@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, abort
 from flask.ext.login import login_user, logout_user, login_required, current_user
 
 from app.models.account import User
@@ -116,7 +116,7 @@ def email_change_confirm(token):
         token = current_user.generate_confirmation_token()
         send_email(current_user.email, '账户确认',
                    'auth/email/confirm', user=current_user, token=token)
-        flash('一封包含身份确认链接的邮件已发往你的邮箱。')
+        flash('一封包含身份确认链接的邮件已发往你的新邮箱。')
         return redirect(url_for('main.index'))
     if not current_user.confirm(token):
         flash('确认链接非法或已过期。')
@@ -135,15 +135,15 @@ def password_change():
             flash('修改成功。')
             return redirect(url_for('main.user', username=current_user.username))
         else:
-            flash('请输入正确的密码')
+            flash('请输入正确的密码。')
             return render_template('auth/change_password.html', form=form)
     return render_template('auth/change_password.html', form=form)
 
 
 @auth.route('/reset/password', methods=['GET', 'POST'])
 def password_reset_request():
-    if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
+    if current_user.is_authenticated:
+        abort(404)
     form = PasswordResetRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -160,13 +160,11 @@ def password_reset_request():
 
 @auth.route('/reset/password/<token>', methods=['GET', 'POST'])
 def password_reset(token):
-    if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
+    if current_user.is_authenticated:
+        abort(404)
     form = PasswordResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user is None:
-            return redirect(url_for('main.index'))
         if user.reset_password(token, form.password.data):
             flash('你的密码已重设。')
             return redirect(url_for('auth.login'))
@@ -174,3 +172,18 @@ def password_reset(token):
             flash('重设失败。')
             return redirect(url_for('main.index'))
     return render_template('auth/reset_password.html', form=form)
+
+
+@auth.route('/forbidden')
+def forbidden():
+    abort(403)
+
+
+@auth.route('/page_not_found')
+def page_not_found():
+    abort(404)
+
+
+@auth.route('/internal_server_error')
+def internal_server_error():
+    abort(500)
