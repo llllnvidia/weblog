@@ -117,8 +117,8 @@ class User(UserMixin, db.Model):
         self.save()
         self.follow(self)
         admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
-        if admin:
-            Dialogue(admin, self, u'系统消息')
+        if admin and admin != self:
+            Dialogue(admin, self, name=u'系统消息')
         else:
             pass
         self.save()
@@ -141,7 +141,7 @@ class User(UserMixin, db.Model):
     @staticmethod
     def add_admin():
         admin = User(email=u'Admin@CodeBlog.com',
-                     username=u'管理员',
+                     username=u'Admin',
                      password=u'1234',
                      confirmed=True,
                      member_since=datetime.utcnow())
@@ -151,7 +151,7 @@ class User(UserMixin, db.Model):
     @staticmethod
     def add_test_user():
         user = User(email=u'user@CodeBlog.com',
-                    username=u'测试员',
+                    username=u'tester',
                     password=u'1234',
                     confirmed=True,
                     member_since=datetime.utcnow())
@@ -228,7 +228,7 @@ class User(UserMixin, db.Model):
             f = Follow(follower=self, followed=user)
             f.save()
 
-    def unfollow(self, user):
+    def not_follow(self, user):
         f = self.followed.filter_by(followed_id=user.id).first()
         if f:
             f.delete()
@@ -255,10 +255,12 @@ class User(UserMixin, db.Model):
     def get_message_from_admin(self, content, link_id=None, link_type=None):
         admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
         if self.id == admin.id or not admin:
-            admin = User.query.filter_by(role=Role.query.filter_by(name='Administrator').first()).first()
-            dialogue = Dialogue.get_dialogue(admin, self)
-        else:
-            dialogue = Dialogue.get_dialogue(admin, self)
+            admin_list = User.query.filter_by(role=Role.query.filter_by(name='Administrator').first()).all()
+            for admin_new in admin_list:
+                if admin_new != admin:
+                    admin = admin_new
+                    break
+        dialogue = Dialogue.get_dialogue(admin, self)
         if link_id and link_type:
             dialogue.new_chat(author=admin, content=content, link_id=link_id, link_type=link_type)
         else:

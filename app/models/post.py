@@ -35,7 +35,10 @@ class Post(db.Model):
                            backref=db.backref('posts', lazy='dynamic'))
 
     def __repr__(self):
-        return '<Post %s Author %s>' % (self.title, User.query.filter_by(id=self.author_id).first().username)
+        if self.title:
+            return '<Post %s Author %s>' % (self.title, self.author.username)
+        else:
+            return '<Post %d Author %s>' % (self.id, self.author.username)
 
     def ping(self):
         self.last_edit = datetime.utcnow()
@@ -50,14 +53,14 @@ class Post(db.Model):
         db.session.commit()
 
     def tag(self, tag):
-        if not self.is_taging(tag):
+        if not self.is_tagging(tag):
             self.tags.append(tag)
 
-    def untag(self, tag):
-        if self.is_taging(tag):
+    def not_tag(self, tag):
+        if self.is_tagging(tag):
             self.tags.remove(tag)
 
-    def is_taging(self, tag):
+    def is_tagging(self, tag):
         return tag in self.tags
 
     @staticmethod
@@ -65,7 +68,7 @@ class Post(db.Model):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'img', 'span',
                         'h1', 'h2', 'h3', 'p', 'tr', 'td', 'table', 'tbody', 'colgroup', 'col', 'thead', 'th']
-        attrs = {
+        args = {
             '*': ['class'],
             'ol': ['class'],
             'li': ['rel'],
@@ -87,11 +90,11 @@ class Post(db.Model):
         
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
-            tags=allowed_tags, attributes=attrs, strip=True))
+            tags=allowed_tags, attributes=args, strip=True))
 
         target.summary_html = bleach.linkify(bleach.clean(
             markdown(target.summary, output_format='html'),
-            tags=allowed_tags, attributes=attrs, strip=True))
+            tags=allowed_tags, attributes=args, strip=True))
 
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
@@ -141,14 +144,21 @@ class Category(db.Model):
         self.parent_category = parent_category
 
     def __repr__(self):
+        name = None
+        if self.parent_category:
+            name = Category.query.filter_by(id=self.parent_id).first().name
         return '<Category %s Parent %s Son %s>' % (self.name,
-                                                   Category.query.filter_by(id=self.parent_id).first().name,
+                                                   name,
                                                    [cg.name for cg in self.son_categories])
 
     @staticmethod
     def add_none():
         none = Category(name=u'None')
         none.save()
+        for post in Post.query.all():
+            if post.category is None:
+                post.category = none
+                post.save()
 
     def save(self):
         db.session.add(self)
@@ -176,26 +186,17 @@ class Category(db.Model):
         return count
 
     def posts_query(self, query=None):
+        posts = None
         if query:
+            posts = query.filter(Post.category == self)
             if self.son_categories:
-                posts = query.filter(Post.category == self)
                 for son_category in self.son_categories:
-                    query = query.filter(Post.category == son_category)
-                    if query.all() and posts.all():
-                        posts = posts.union(query)
-                    elif query.all():
-                        posts = query
-                    else:
-                        posts = None
-            else:
-                posts = query.filter(Post.category == self)
+                    posts = posts.union(query.filter(Post.category == son_category))
         else:
+            posts = Post.query.filter(Post.category == self)
             if self.son_categories:
-                posts = Post.query.filter(Post.category == self)
                 for son_category in self.son_categories:
-                    posts = posts.union(Post.filter(Post.category == son_category))
-            else:
-                posts = Post.query.filter(Post.category == self)
+                    posts = posts.union(Post.query.filter(Post.category == son_category))
         return posts
 
 

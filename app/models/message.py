@@ -22,7 +22,7 @@ class Gallery(db.Model):
             self.name = self.get_temporary_name
 
     def __repr__(self):
-        return '< Dialogue %s User %s >' % (self.dialogue.id, self.user.username)
+        return '<Dialogue %s User %s>' % (self.dialogue.id, self.user.username)
 
     def save(self):
         db.session.add(self)
@@ -111,7 +111,7 @@ class Dialogue(db.Model):
             gallery.count = self.chats.count()
             gallery.save()
         else:
-            print 'error dialogue.user_join'
+            print '\n [ERROR] dialogue.user_join(%s) \n' % user.username
 
     def user_leave(self, user):
         if self.is_joining(user):

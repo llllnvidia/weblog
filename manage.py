@@ -37,11 +37,19 @@ manager.add_command("runserver", Server(
 
 
 @manager.command
+def dev():
+    from livereload import Server
+    live_server = Server(app.wsgi_app)
+    live_server.watch('**/*.*')
+    live_server.serve(open_url_delay=True)
+
+
+@manager.command
 def test():
     """Run the unit tests."""
     import unittest
     tests = unittest.TestLoader().discover('tests')
-    unittest.TextTestRunner(verbosity=2).run(tests)
+    unittest.TextTestRunner(verbosity=9).run(tests)
 
 
 @manager.command

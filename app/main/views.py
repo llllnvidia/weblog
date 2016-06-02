@@ -121,7 +121,7 @@ def follow(username):
 def not_follow(username):
     user_not_follow = User.query.filter_by(username=username).first()
     if current_user.is_following(user_not_follow):
-        current_user.unfollow(user_not_follow)
+        current_user.not_follow(user_not_follow)
         user_not_follow.get_message_from_admin(content=u'你失去了一位粉丝。', link_id=current_user.username, link_type='user')
         flash('你取消了对%s的关注。' % username)
     else:
@@ -276,7 +276,7 @@ def edit_article(post_id):
         if tags:
             for tag in post.tags:
                 if tag.content not in tags:
-                    post.untag(tag)
+                    post.not_tag(tag)
             for tag in tags:
                 new_tag = Tag.query.filter_by(content=tag).first()
                 if not new_tag:
@@ -286,7 +286,7 @@ def edit_article(post_id):
                     post.tag(new_tag)
         else:
             for tag in post.tags:
-                    post.untag(tag)
+                    post.not_tag(tag)
         post.ping()
         post.save()
         flash('该文章已修改。')
