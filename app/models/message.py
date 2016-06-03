@@ -87,6 +87,8 @@ class Dialogue(db.Model):
         db.session.commit()
 
     def delete(self):
+        for gallery in self.galleries:
+            gallery.delete()
         db.session.delete(self)
         db.session.commit()
 
@@ -99,8 +101,6 @@ class Dialogue(db.Model):
         if self.is_joining(user):
             gallery = self.galleries.filter_by(user_id=user.id).first()
             return gallery.name
-        else:
-            return 'Error user!'
 
     def user_join(self, user, name=None):
         if not self.is_joining(user):
@@ -110,8 +110,6 @@ class Dialogue(db.Model):
                 gallery = Gallery(dialogue=self, user=user)
             gallery.count = self.chats.count()
             gallery.save()
-        else:
-            print '\n [ERROR] dialogue.user_join(%s) \n' % user.username
 
     def user_leave(self, user):
         if self.is_joining(user):
@@ -139,10 +137,7 @@ class Dialogue(db.Model):
     def having_new_chats(self, user):
         if self.is_joining(user):
             gallery = self.galleries.filter_by(user_id=user.id).first()
-            if gallery.count < self.chats.count():
-                return self.chats.count() - gallery.count
-            else:
-                return 0
+            return gallery.having_new_chats
         else:
             return 0
 
@@ -201,8 +196,6 @@ class Chat(db.Model):
                 self.link = url_for('main.user', username=link_id)
             elif link_type == 'post':
                 self.link = url_for('main.article', post_id=link_id)
-            else:
-                pass
 
     def save(self):
         db.session.add(self)
