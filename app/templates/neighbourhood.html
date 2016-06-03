@@ -64,7 +64,7 @@
         </ul>
     </div>
     <div class="panel panel-info">
-        <div class="panel-heading">标签</div>
+        <div class="panel-heading">标签<a href="?tag_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true"></span></a></div>
         <div class="panel-body">
             {% for tag in tags if tag.posts_count() %}
                 {% if tag.content in cur_tags %}

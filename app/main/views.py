@@ -30,6 +30,7 @@ def neighbourhood():
     category_disable = request.args.get('category_disable', None)
     cur_tag = request.args.get('tag', None)
     cur_tag_cookie = request.cookies.get('tags', '')
+    tag_disable = request.args.get('tag_disable', None)
     cur_key = request.args.get('key', None)
     cur_key_cookie = request.cookies.get('key', None)
     key_disable = request.args.get('key_disable', None)
@@ -98,10 +99,14 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('tags', cur_tags, path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-    else:
+    elif not tag_disable:
         for tag in cur_tags:
             if tag:
                 query = Tag.query.filter_by(content=tag).first().posts_query(query)
+    if tag_disable:
+        resp = make_response(redirect(url_for('main.neighbourhood')))
+        resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
+        return resp
 
     # key
     if not cur_key and not key_disable:
@@ -148,6 +153,7 @@ def user(username):
     category_disable = request.args.get('category_disable', None)
     cur_tag = request.args.get('tag', None)
     cur_tag_cookie = request.cookies.get('tags', '')
+    tag_disable = request.args.get('tag_disable', None)
     cur_key = request.args.get('key', None)
     cur_key_cookie = request.cookies.get('key', None)
     key_disable = request.args.get('key_disable', None)
@@ -198,10 +204,14 @@ def user(username):
             resp = make_response(redirect(url_for('main.user', username=username)))
             resp.set_cookie('tags', cur_tags, path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
-    else:
+    elif not tag_disable:
         for tag in cur_tags:
             if tag:
                 query = Tag.query.filter_by(content=tag).first().posts_query(query)
+    if tag_disable:
+        resp = make_response(redirect(url_for('main.user', username=username)))
+        resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
+        return resp
 
     # key
     if not cur_key and not key_disable:
