@@ -129,7 +129,7 @@
                 </div>
                 {% if pagination and pagination.total//pagination.per_page %}
                 <div class="panel-footer">
-                    {{ macros.pagination_widget(pagination, 'main.user') }}
+                    {{ macros.pagination_widget(pagination, 'main.user', username=username) }}
                 </div>
                 {% endif %}
             </div>
