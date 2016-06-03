@@ -23,52 +23,115 @@ def index():
 def neighbourhood():
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
+
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category', None)
+    cur_category_cookie = request.cookies.get('category', None)
+    category_disable = request.args.get('category_disable', None)
     cur_tag = request.args.get('tag', None)
+    cur_tag_cookie = request.cookies.get('tags', '')
     cur_key = request.args.get('key', None)
-    show_talk = request.args.get('show_talk', None)
-    show = request.args.get('show_followed', None)
-    show_followed = request.cookies.get('show_followed', None)
-    if show is None:
-        show = show_followed
-    if not current_user.is_authenticated:
-        show = None
-    if show:
-        show = int(show)
-        if show:
-            if not show_followed or show_followed == '0':
-                resp = make_response(redirect(url_for('main.neighbourhood')))
-                resp.set_cookie('show_followed', '1', max_age=60 * 3)
-                return resp
-            query_show = query = current_user.followed_posts
-        else:
-            if not show_followed or show_followed == '1':
-                resp = make_response(redirect(url_for('main.neighbourhood')))
-                resp.set_cookie('show_followed', '0', max_age=60 * 3)
-                return resp
-            query_show = query = Post.query
+    cur_key_cookie = request.cookies.get('key', None)
+    key_disable = request.args.get('key_disable', None)
+    show_talk = request.args.get('show_talk', None, type=int)
+    show_talk_cookie = request.cookies.get('show_talk', None, type=int)
+    show_followed = request.args.get('show_followed', None, type=int)
+    show_followed_cookie = request.cookies.get('show_followed', None, type=int)
+
+    # show_followed
+    if show_followed is None and current_user.is_authenticated:
+        show_followed = show_followed_cookie
+    if show_followed:
+        if not show_followed_cookie:
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('show_followed', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
+        query_show = query = current_user.followed_posts
     else:
+        if show_followed_cookie:
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('show_followed', '0', path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
         query_show = query = Post.query
+
+    # show_talk
+    if not show_talk and not category_disable:
+        show_talk = show_talk_cookie
     if show_talk:
+        if not show_talk_cookie:
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('show_talk', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
+        elif show_talk_cookie and cur_category:
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('show_talk', '0', path=url_for('main.neighbourhood'), max_age=60 * 3)
+            resp.set_cookie('category', cur_category, path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
         query = query.filter(Post.is_article == False)
+
+    # category
+    if not cur_category and not show_talk_cookie and not category_disable:
+        cur_category = cur_category_cookie
     if cur_category:
+        if not cur_category_cookie or cur_category_cookie != cur_category:
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('category', cur_category, path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
         query = Category.query.filter_by(name=cur_category).first().posts_query(query)
+    if category_disable:
+        resp = make_response(redirect(url_for('main.neighbourhood')))
+        resp.set_cookie('category', '', path=url_for('main.neighbourhood'), max_age=0)
+        resp.set_cookie('show_talk', '', path=url_for('main.neighbourhood'), max_age=0)
+        return resp
+    # tag
+    cur_tags = cur_tag_cookie.split(',')
     if cur_tag:
-        query = Tag.query.filter_by(content=cur_tag).first().posts_query(query)
+        if cur_tag not in cur_tags:
+            cur_tags.append(cur_tag)
+            cur_tags = ','.join(cur_tags)
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('tags', cur_tags, path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
+        elif cur_tag in cur_tags:
+            cur_tags.remove(cur_tag)
+            cur_tags = ','.join(cur_tags)
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('tags', cur_tags, path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
+    else:
+        for tag in cur_tags:
+            if tag:
+                query = Tag.query.filter_by(content=tag).first().posts_query(query)
+
+    # key
+    if not cur_key and not key_disable:
+        cur_key = cur_key_cookie
     if cur_key:
+        if cur_key_cookie != cur_key:
+            resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('key', cur_key, path=url_for('main.neighbourhood'), max_age=60 * 3)
+            return resp
         query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
+    if key_disable:
+        resp = make_response(redirect(url_for('main.neighbourhood')))
+        resp.set_cookie('key', '', path=url_for('main.neighbourhood'), max_age=0)
+        return resp
+
+    # query
     if query:
         pagination = query.order_by(Post.timestamp.desc()).paginate(
             page, per_page=current_app.config['POSTS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
-        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts, cur_tag=cur_tag,
-                               Post=Post, categories=categories_list, tags=tags, show_followed=show, query=query_show,
-                               pagination=pagination)
+        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts,
+                               Post=Post, categories=categories_list, tags=tags, cur_tags=cur_tags,
+                               cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                               show_followed=show_followed, query=query_show, pagination=pagination)
     else:
-        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, cur_tag=cur_tag,
-                               Post=Post, categories=categories_list, tags=tags, show_followed=show, query=query_show)
+        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User,
+                               Post=Post, categories=categories_list, tags=tags, cur_tags=cur_tags,
+                               cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                               show_followed=show_followed, query=query_show)
 
 
 @main.route('/user/<username>')
@@ -76,28 +139,96 @@ def user(username):
     user_showed = User.query.filter_by(username=username).first()
     if user_showed is None:
         abort(404)
-    query_show = query = user_showed.posts.filter_by(is_article=True).order_by(Post.timestamp.desc())
+    query_show = query = user_showed.posts.filter_by(is_article=True)
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
-    cur_category = request.args.get('category')
-    cur_tag = request.args.get('tag')
-    cur_key = request.args.get('key')
+    cur_category = request.args.get('category', None)
+    cur_category_cookie = request.cookies.get('category', None)
+    category_disable = request.args.get('category_disable', None)
+    cur_tag = request.args.get('tag', None)
+    cur_tag_cookie = request.cookies.get('tags', '')
+    cur_key = request.args.get('key', None)
+    cur_key_cookie = request.cookies.get('key', None)
+    key_disable = request.args.get('key_disable', None)
+    show_talk = request.args.get('show_talk', None, type=int)
+    show_talk_cookie = request.cookies.get('show_talk', None, type=int)
+
+    # show_talk
+    if not show_talk and not category_disable:
+        show_talk = show_talk_cookie
+    if show_talk:
+        if not show_talk_cookie:
+            resp = make_response(redirect(url_for('main.user', username=username)))
+            resp.set_cookie('show_talk', '1', path=url_for('main.user', username=username), max_age=60 * 3)
+            return resp
+        elif show_talk_cookie and cur_category:
+            resp = make_response(redirect(url_for('main.user', username=username)))
+            resp.set_cookie('show_talk', '0', path=url_for('main.user', username=username), max_age=60 * 3)
+            resp.set_cookie('category', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
+            return resp
+        query = query.filter(Post.is_article == False)
+
+    # category
+    if not cur_category and not show_talk_cookie and not category_disable:
+        cur_category = cur_category_cookie
     if cur_category:
+        if not cur_category_cookie or cur_category_cookie != cur_category:
+            resp = make_response(redirect(url_for('main.user', username=username)))
+            resp.set_cookie('category', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
+            return resp
         query = Category.query.filter_by(name=cur_category).first().posts_query(query)
+    if category_disable:
+        resp = make_response(redirect(url_for('main.user', username=username)))
+        resp.set_cookie('category', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
+        return resp
+    # tag
+    cur_tags = cur_tag_cookie.split(',')
     if cur_tag:
-        query = Tag.query.filter_by(content=cur_tag).first().posts_query(query)
+        if cur_tag not in cur_tags:
+            cur_tags.append(cur_tag)
+            cur_tags = ','.join(cur_tags)
+            resp = make_response(redirect(url_for('main.user', username=username)))
+            resp.set_cookie('tags', cur_tags, path=url_for('main.user', username=username), max_age=60 * 3)
+            return resp
+        elif cur_tag in cur_tags:
+            cur_tags.remove(cur_tag)
+            cur_tags = ','.join(cur_tags)
+            resp = make_response(redirect(url_for('main.user', username=username)))
+            resp.set_cookie('tags', cur_tags, path=url_for('main.user', username=username), max_age=60 * 3)
+            return resp
+    else:
+        for tag in cur_tags:
+            if tag:
+                query = Tag.query.filter_by(content=tag).first().posts_query(query)
+
+    # key
+    if not cur_key and not key_disable:
+        cur_key = cur_key_cookie
     if cur_key:
+        if cur_key_cookie != cur_key:
+            resp = make_response(redirect(url_for('main.user', username=username)))
+            resp.set_cookie('key', cur_key, path=url_for('main.user', username=username), max_age=60 * 3)
+            return resp
         query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
+    if key_disable:
+        resp = make_response(redirect(url_for('main.user', username=username)))
+        resp.set_cookie('key', '', path=url_for('main.user', username=username), max_age=0)
+        return resp
+
+    # query
     if query:
-        pagination = query.paginate(
+        pagination = query.order_by(Post.timestamp.desc()).paginate(
             page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
-        return render_template('user.html', user=user_showed, posts=posts, query=query_show, tags=tags, cur_tag=cur_tag,
+        return render_template('user.html', user=user_showed, posts=posts, query=query_show, tags=tags,
+                               cur_tags=cur_tags,cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                categories=categories_list, pagination=pagination)
     else:
-        return render_template('user.html', user=user_showed, query=query_show, tags=tags, cur_tag=cur_tag,
+        return render_template('user.html', user=user_showed, query=query_show, tags=tags,
+                               cur_tags=cur_tags,cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                categories=categories_list)
 
 

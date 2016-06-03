@@ -18,46 +18,47 @@
 </div>
 </div>
 <div class="row" id='neighbourhood'>
-    <aside class="col-md-3 hidden-xs">
+    <aside class="col-md-3">
     <form role="search" method="get" id="searchform" action="#neighbourhood">
         <div class="well well-sm input-group">
-            <input type="text" name='key' id="search" class="form-control">
+            <input type="text" name='key' id="search" value="{% if key %}{{ key }}{% endif %}" class="form-control">
             <span class="input-group-btn">
-                <button type="submit" id="searchsubmit" value="" class="btn btn-primary">
+            {% if key %}
+                <a type="button" class="btn btn-primary" href="?key_disable=1#neighbourhood">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+            {% else %}
+                <button type="submit" id="searchsubmit" class="btn btn-primary">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
+            {% endif %}
             </span>
         </div>
     </form>
     <div class="panel panel-info">
-        <div class="panel-heading">栏目</div>
+        <div class="panel-heading">栏目<a href="?category_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true"></span></a></div>
         <ul class="list-group" id="listcontrol">
-            <li role="presentation" class="list-group-item">
+            <a href="?show_talk=1#neighbourhood" class="list-group-item{% if show_talk %} active{% endif %}">
                 <span class="badge">{{ query.filter(Post.is_article==False).count() }}</span>
-                <a href="?show_talk=1#neighbourhood">吐槽</a>
-            </li>
+                吐槽
+            </a>
         {% for category in categories  %}
             {% if category.son_categories %}
-                <li role="presentation" class="list-group-item">
+                <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
                     <span class="badge">{{ category.posts_count(query) }}</span>
-                    <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
-                    <a data-toggle="collapse" data-parent="#listcontrol"  href="#{{ category.id }}">
-                          <btn class="caret"></btn>
-                    </a>
-                </li>
-                <li class="collapse" id="{{ category.id }}">
+                    {{ category.name }}
+                </a>
                 {% for son_category in category.son_categories %}
-                    <lu class="list-group-item">&nbsp;&nbsp;
+                    <a href="?category={{ son_category.name }}#neighbourhood" class="list-group-item{% if cur_category == son_category.name %} active{% endif %}">&nbsp;&nbsp;
                         <span class="badge">{{ son_category.posts_count(query) }}</span>
-                        <a href="?category={{ son_category.name }}#neighbourhood">{{ son_category.name }}</a>
-                    </lu>
+                        {{ son_category.name }}
+                    </a>
                 {% endfor %}
-                </li>
             {% else %}
-                <li class="list-group-item">
+                <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
                     <span class="badge">{{ category.posts_count(query) }}</span>
-                    <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}</a>
-                </li>
+                    {{ category.name }}
+                </a>
             {% endif %}
         {% endfor %}
         </ul>
@@ -66,8 +67,8 @@
         <div class="panel-heading">标签</div>
         <div class="panel-body">
             {% for tag in tags if tag.posts_count() %}
-                {% if tag.content == cur_tag %}
-                <a href="?tag=#neighbourhood" class="btn btn-primary btn-xs" style= "margin: 4px">
+                {% if tag.content in cur_tags %}
+                <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-primary btn-xs" style= "margin: 4px">
                     {{ tag.content }}
                     <span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span>
                 </a>

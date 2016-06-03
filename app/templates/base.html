@@ -36,39 +36,6 @@
                 {% else %}
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
                 {% endif %}
-                {% if request.endpoint == 'main.neighbourhood' %}
-                <li role="presentation" class="dropdown visible-xs"><a class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                  aria-haspopup="true" aria-expanded="false">栏目
-                  <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                        <li>
-                            <a href="?show_talk=1#neighbourhood">吐槽
-                                &nbsp;
-                                <span class="badge">{{ query.filter(Post.is_article==False).count() }}</span>
-                            </a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        {% for category in categories %}
-                            <li>
-                                <a href="?category={{ category.name }}#neighbourhood">{{ category.name }}
-                                &nbsp;
-                                <span class="badge">{{ category.posts_count(query) }}</span></a>
-                            </li>
-                            {% if category.soncategories %}
-                            {% for soncategory in category.soncategories %}
-                                <li>
-                                    <a href="?category={{ soncategory.name }}#neighbourhood">&nbsp;&nbsp;{{ soncategory.name }}
-                                    &nbsp;
-                                    <span class="badge">{{ soncategory.posts_count(query) }}</span></a>
-                                </li>
-                            {% endfor %}
-                            {% endif %}
-                            <li role="separator" class="divider"></li>
-                        {% endfor %}
-                        </ul>
-                </li>
-                {% endif %}
                 {% if current_user.is_authenticated %}
                 {% if current_user.new_messages_count %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
