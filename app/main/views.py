@@ -129,12 +129,12 @@ def neighbourhood():
             error_out=False)
         posts = pagination.items
         return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts,
-                               Post=Post, categories=categories_list, tags=tags, cur_tags=cur_tags,
+                               categories=categories_list, tags=tags, cur_tags=cur_tags,
                                cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                show_followed=show_followed, query=query_show, pagination=pagination)
     else:
         return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User,
-                               Post=Post, categories=categories_list, tags=tags, cur_tags=cur_tags,
+                               categories=categories_list, tags=tags, cur_tags=cur_tags,
                                cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                show_followed=show_followed, query=query_show)
 
@@ -234,11 +234,11 @@ def user(username):
             error_out=False)
         posts = pagination.items
         return render_template('user.html', user=user_showed, posts=posts, query=query_show, tags=tags,
-                               cur_tags=cur_tags,cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                               cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                categories=categories_list, pagination=pagination)
     else:
         return render_template('user.html', user=user_showed, query=query_show, tags=tags,
-                               cur_tags=cur_tags,cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                               cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                categories=categories_list)
 
 
