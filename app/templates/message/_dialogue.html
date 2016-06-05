@@ -6,7 +6,7 @@
     {% endif %}
     <div class="chat_heading">
         <a href="{{ url_for('main.user', username=chat.author.username) }}" style="font-size: large">{{ chat.author.username }}</a>
-        <i style="font-size: smaller">{{ moment(chat.timestamp).format('YY-MM-DD hh:mm') }}</i>
+        <i style="font-size: smaller">{{ moment(chat.timestamp).format('YY-MM-DD HH:mm') }}</i>
     </div>
     {% if chat.link %}
     <div class="chat_body">
