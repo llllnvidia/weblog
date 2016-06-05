@@ -63,7 +63,7 @@
                 <a href="{{ url_for('main.user', username=post.author.username) }}">
                     {{ post.author.username }}
                 </a>
-                <small>{{ moment(post.timestamp).format('YY-MM-DD hh:mm') }}</small>
+                <small>{{ moment(post.timestamp).format('YY-MM-DD HH:mm') }}</small>
             </h3>
             {{ post.body | markdown | safe }}
             {% endif %}
