@@ -118,17 +118,12 @@
         </div>
         </aside>
         <div class="col-md-9">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <div class="panel-title">
-                        文章
-                    </div>
-                </div>
-                <div class="panel-body">
+            <div>
+                <div>
                     {% include '_posts.html' %}
                 </div>
                 {% if pagination and pagination.total//pagination.per_page %}
-                <div class="panel-footer">
+                <div>
                     {{ macros.pagination_widget(pagination, 'main.user', username=username) }}
                 </div>
                 {% endif %}

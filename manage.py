@@ -9,7 +9,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Shell, Server
 
 from app import create_app, db
-from app.models.post import User, Post, Category
+from app.models.post import Post, Category
 from app.models.account import Role, User
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -40,7 +40,7 @@ manager.add_command("runserver", Server(
 def dev():
     from livereload import Server
     live_server = Server(app.wsgi_app)
-    live_server.watch('**/*.*')
+    live_server.watch('app')
     live_server.serve(open_url_delay=True)
 
 

@@ -45,25 +45,14 @@ class PostModelTestCase(unittest.TestCase):
         after_timestamp = datetime.utcnow()
         self.assertTrue(post.timestamp <= before_timestamp <= post.last_edit <= after_timestamp)
 
-    def test_03_post_on_chang_body(self):
-        post = Post(body='# Post Big title')
-        post.save()
-        self.assertTrue('<h1>Post Big title</h1>' in post.body_html)
-        self.assertTrue(post.summary == '')
-        post.body = '''# Post Big title\nline\nline\nline\nline\nline\nline
-        line\nline\nline\nline\nline\nline\nline\nline\nline\n'''
-        post.save()
-        self.assertFalse(post.summary == '')
-        self.assertTrue('<h1>Post Big title</h1>' in post.summary_html)
-
-    def test_04_comment_save_and_delete(self):
+    def test_03_comment_save_and_delete(self):
         comment = Comment(body='Comment is Comment')
         comment.save()
         self.assertTrue(Comment.query.count() == 1)
         comment.delete()
         self.assertTrue(Comment.query.count() == 0)
 
-    def test_05_category_repr_save_and_delete(self):
+    def test_04_category_repr_save_and_delete(self):
         self.assertTrue(Category.query.count() == 0)
         Category.add_none()
         category = Category(name='tester',
@@ -78,14 +67,14 @@ class PostModelTestCase(unittest.TestCase):
         self.assertTrue(Category.query.count() == 1)
         self.assertTrue(post.category_id == 1)
 
-    def test_06_category_add_none(self):
+    def test_05_category_add_none(self):
         post = Post(body='# Post Big title')
         post.save()
         self.assertTrue(post.category is None)
         Category.add_none()
         self.assertTrue(post.category == Category.query.get(1))
 
-    def test_07_category_posts_count(self):
+    def test_06_category_posts_count(self):
         Category.add_none()
         none = Category.query.get(1)
         category = Category(name='tester',
@@ -100,7 +89,7 @@ class PostModelTestCase(unittest.TestCase):
         self.assertTrue(none.posts_count(query) == 1)
         self.assertTrue(category.posts_count(query) == 1)
 
-    def test_08_category_posts_query(self):
+    def test_07_category_posts_query(self):
         Category.add_none()
         none = Category.query.get(1)
         category = Category(name='tester',
@@ -116,7 +105,7 @@ class PostModelTestCase(unittest.TestCase):
         self.assertTrue(none.posts_query(query).count() == 1)
         self.assertTrue(category.posts_query(query).count() == 1)
 
-    def test_09_tag_save_and_delete(self):
+    def test_08_tag_save_and_delete(self):
         tag = Tag('test')
         self.assertTrue(Tag.query.count() == 0)
         tag.save()
@@ -124,7 +113,7 @@ class PostModelTestCase(unittest.TestCase):
         tag.delete()
         self.assertTrue(Tag.query.count() == 0)
 
-    def test_10_tag_and_post(self):
+    def test_09_tag_and_post(self):
         tag = Tag('test')
         tag.save()
         post = Post(body='# Post Big title')
@@ -135,7 +124,7 @@ class PostModelTestCase(unittest.TestCase):
         post.not_tag(tag)
         self.assertTrue(post.tags == [])
 
-    def test_11_tag_posts_query_and_count(self):
+    def test_10_tag_posts_query_and_count(self):
         tag = Tag('test')
         tag.save()
         post = Post(body='# Post Big title')

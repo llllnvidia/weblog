@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-import bleach
-from markdown import markdown
-
 from app import db, login_manager
-from app.models.account import User, AnonymousUser
+from app.models.account import AnonymousUser
 
 posttags = db.Table('posttags',
                     db.Column('tags_id', db.Integer, db.ForeignKey('tags.id')),
@@ -17,14 +14,12 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     is_article = db.Column(db.Boolean, default=False)
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     title = db.Column(db.Text)
     summary = db.Column(db.Text)
-    summary_html = db.Column(db.Text)
     last_edit = db.Column(db.DateTime)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category',
@@ -63,42 +58,6 @@ class Post(db.Model):
     def is_tagging(self, tag):
         return tag in self.tags
 
-    @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'img', 'span',
-                        'h1', 'h2', 'h3', 'p', 'tr', 'td', 'table', 'tbody', 'colgroup', 'col', 'thead', 'th']
-        args = {
-            '*': ['class'],
-            'ol': ['class'],
-            'li': ['rel'],
-            'span': ['class'],
-            'a': ['href', 'rel'],
-            'img': ['src', 'alt'],
-            'code': ['class', 'style']
-        }
-
-        a = value.split("\n")
-        if len(a) > 15:
-            b = []
-            for i in range(15):
-                if i < len(a):
-                    b.append(a[i])
-            target.summary = '\n'.join(b)
-        else:
-            target.summary = ""
-        
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
-            tags=allowed_tags, attributes=args, strip=True))
-
-        target.summary_html = bleach.linkify(bleach.clean(
-            markdown(target.summary, output_format='html'),
-            tags=allowed_tags, attributes=args, strip=True))
-
-
-db.event.listen(Post.body, 'set', Post.on_changed_body)
-
 login_manager.anonymous_user = AnonymousUser
 
 
@@ -106,7 +65,6 @@ class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -119,17 +77,6 @@ class Comment(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-
-    @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
-                        'strong']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
-            tags=allowed_tags, strip=True))
-
-
-db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 
 class Category(db.Model):

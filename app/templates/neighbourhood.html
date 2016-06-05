@@ -5,18 +5,7 @@
 {% block title %}CodeBlog{% endblock %}
 
 {% block page_content %}
-<div class="container">
-<div class="jumbotron" style="background-color: transparent">
-    <h4 align="center">
-        <br><br>
-            从{{ moment(time).format('LL') }}到现在，<br><br>
-            已经过去了{{ moment().fromTime(time,1) }}。<br><br>
-            现在这里有{{ User.query.count() }}个伙伴，
-            {{ Post.query.filter_by(is_article=True).count() }}篇文章，
-            {{ Post.query.filter_by(is_article=False).count() }}份吐槽。
-    </h4>
-</div>
-</div>
+<div class="container-fluid">
 <div class="row" id='neighbourhood'>
     <aside class="col-md-3">
     <form role="search" method="get" id="searchform" action="#neighbourhood">
@@ -84,27 +73,26 @@
     </div>
     </aside>
     <div class="col-md-9">
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <div class="panel-title">
-                    社区
-                </div>
+        <div>
+            <div>
                 {% if current_user.is_authenticated %}
                 <ul class="nav nav-tabs" style="margin-top: 4px">
                     <li role="presentation"{% if not show_followed %} class="active"{% endif %}><a href="?show_followed=0#neighbourhood">All</a></li>
                     <li role="presentation"{% if show_followed %} class="active"{% endif %}><a href="?show_followed=1#neighbourhood">Follow</a></li>
                 </ul>
+                    <br/>
                 {% endif %}
             </div>
-            <div class="panel-body">
+            <div>
                 {% include '_posts.html' %}
             </div>
             {% if pagination and pagination.total//pagination.per_page %}
-            <div class="panel-footer">
+            <div>
                 {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
             </div>
             {% endif %}
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

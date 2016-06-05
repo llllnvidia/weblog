@@ -46,8 +46,9 @@ def validate_tag(self, field):
 
 class ArticleForm(Form):
     title = StringField('标题')
+    summary = TextAreaField('摘要', validators=[DataRequired(), Length(1, 200, message="太长了。")])
     body = PageDownField("", validators=[DataRequired()])
-    tags = StringField('标签',validators=[validate_tag])
+    tags = StringField('标签', validators=[validate_tag])
     category = SelectField("栏目", coerce=int)
     submit = SubmitField('发表')
 

@@ -14,6 +14,12 @@ from .forms import TalkForm, EditProfileForm, EditProfileAdminForm, CommentForm,
 from ..decorators import admin_required, permission_required
 
 
+@main.app_template_filter('markdown')
+def txt_to_html(txt):
+    from markdown import markdown
+    return markdown(text=txt)
+
+
 @main.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
@@ -116,7 +122,7 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('key', cur_key, path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
+        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key) | Post.summary.contains(cur_key))
     if key_disable:
         resp = make_response(redirect(url_for('main.neighbourhood')))
         resp.set_cookie('key', '', path=url_for('main.neighbourhood'), max_age=0)
@@ -221,7 +227,7 @@ def user(username):
             resp = make_response(redirect(url_for('main.user', username=username)))
             resp.set_cookie('key', cur_key, path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
-        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key))
+        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key) | Post.summary.contains(cur_key))
     if key_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
         resp.set_cookie('key', '', path=url_for('main.user', username=username), max_age=0)
@@ -411,6 +417,7 @@ def edit_article(post_id):
     if request.method == 'POST' and form.validate():
         post.title = form.title.data
         post.body = form.body.data
+        post.summary = form.summary.data
         post.category = Category.query.filter_by(id=form.category.data).first()
         post.is_article = True
         tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
@@ -433,6 +440,7 @@ def edit_article(post_id):
         flash('该文章已修改。')
         return redirect(url_for('main.article', post_id=post_id, page=-1))
     form.title.data = post.title
+    form.summary.data = post.summary
     form.body.data = post.body
     form.tags.data = ','.join([str(tag.content) for tag in post.tags])
     return render_template('edit_post.html', form=form, article=True, post=post)
