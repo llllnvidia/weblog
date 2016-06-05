@@ -460,7 +460,7 @@ def moderate():
         page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('comments.html', comments=comments,
+    return render_template('admin_manager/comments.html', comments=comments,
                            pagination=pagination, page=page)
 
 
@@ -499,7 +499,7 @@ def users():
     users_list = [{'id': item.id, 'user': item.username, 'name': item.name,
                    'member_since': item.member_since,
                    'last_seen': item.last_seen}for item in pagination.items]
-    return render_template('users.html', title="所有用户",
+    return render_template('admin_manager/users.html', title="所有用户",
                            endpoint='.users', pagination=pagination, users=users_list)
 
 
@@ -547,7 +547,7 @@ def categories(category_id=None):
         form.name.data = category.name
         form.parent.choices = [(category.parent_id,
                                 Category.query.filter_by(id=category.parent_id).first().name)]
-        return render_template('categories.html', title="所有栏目", form=form,
+        return render_template('admin_manager/categories.html', title="所有栏目", form=form,
                                endpoint='main.categories', pagination=pagination, categories=categories_list)
     else:
         form = CategoryForm()
@@ -556,7 +556,7 @@ def categories(category_id=None):
             new_category.save()
             flash("已添加")
             return redirect(url_for('main.categories', page=page, form=form))
-        return render_template('categories.html', title="所有栏目", form=form,
+        return render_template('admin_manager/categories.html', title="所有栏目", form=form,
                                endpoint='main.categories', pagination=pagination, categories=categories_list)
 
 
