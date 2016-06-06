@@ -53,13 +53,13 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query_show = query = current_user.followed_posts
+        query_category_count = query = current_user.followed_posts
     else:
         if show_followed_cookie:
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '0', path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query_show = query = Post.query
+        query_category_count = query = Post.query
 
     # show_talk
     if not show_talk and not category_disable:
@@ -67,11 +67,13 @@ def neighbourhood():
     if show_talk:
         if not show_talk_cookie:
             resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
             resp.set_cookie('show_talk', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
         elif show_talk_cookie and cur_category:
             resp = make_response(redirect(url_for('main.neighbourhood')))
-            resp.set_cookie('show_talk', '0', path=url_for('main.neighbourhood'), max_age=60 * 3)
+            resp.set_cookie('show_talk', '', path=url_for('main.neighbourhood'), max_age=0)
+            resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
             resp.set_cookie('category', cur_category, path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
         query = query.filter(Post.is_article == False)
@@ -82,11 +84,13 @@ def neighbourhood():
     if cur_category:
         if not cur_category_cookie or cur_category_cookie != cur_category:
             resp = make_response(redirect(url_for('main.neighbourhood')))
+            resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
             resp.set_cookie('category', cur_category, path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
         query = Category.query.filter_by(name=cur_category).first().posts_query(query)
     if category_disable:
         resp = make_response(redirect(url_for('main.neighbourhood')))
+        resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
         resp.set_cookie('category', '', path=url_for('main.neighbourhood'), max_age=0)
         resp.set_cookie('show_talk', '', path=url_for('main.neighbourhood'), max_age=0)
         return resp
@@ -137,12 +141,13 @@ def neighbourhood():
         return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts,
                                categories=categories_list, tags=tags, cur_tags=cur_tags,
                                cur_category=cur_category, show_talk=show_talk, key=cur_key,
-                               show_followed=show_followed, query=query_show, pagination=pagination)
+                               show_followed=show_followed, query_category_count=query_category_count,
+                               query_tag_count=query, pagination=pagination)
     else:
         return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User,
                                categories=categories_list, tags=tags, cur_tags=cur_tags,
                                cur_category=cur_category, show_talk=show_talk, key=cur_key,
-                               show_followed=show_followed, query=query_show)
+                               show_followed=show_followed, query_category_count=query_category_count)
 
 
 @main.route('/user/<username>')
@@ -150,7 +155,7 @@ def user(username):
     user_showed = User.query.filter_by(username=username).first()
     if user_showed is None:
         abort(404)
-    query_show = query = user_showed.posts.filter_by(is_article=True)
+    query_category_count = query = user_showed.posts.filter_by(is_article=True)
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
     page = request.args.get('page', 1, type=int)
@@ -172,11 +177,13 @@ def user(username):
     if show_talk:
         if not show_talk_cookie:
             resp = make_response(redirect(url_for('main.user', username=username)))
+            resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
             resp.set_cookie('show_talk', '1', path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
         elif show_talk_cookie and cur_category:
             resp = make_response(redirect(url_for('main.user', username=username)))
-            resp.set_cookie('show_talk', '0', path=url_for('main.user', username=username), max_age=60 * 3)
+            resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
+            resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
             resp.set_cookie('category', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
         query = query.filter(Post.is_article == False)
@@ -188,11 +195,13 @@ def user(username):
         if not cur_category_cookie or cur_category_cookie != cur_category:
             resp = make_response(redirect(url_for('main.user', username=username)))
             resp.set_cookie('category', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
+            resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
             return resp
         query = Category.query.filter_by(name=cur_category).first().posts_query(query)
     if category_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
         resp.set_cookie('category', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
         resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
         return resp
     # tag
@@ -239,11 +248,12 @@ def user(username):
             page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
-        return render_template('user.html', user=user_showed, posts=posts, query=query_show, tags=tags,
+        return render_template('user.html', user=user_showed, posts=posts, query_category_count=query_category_count,
+                               tags=tags, query_tag_count=query,
                                cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                categories=categories_list, pagination=pagination)
     else:
-        return render_template('user.html', user=user_showed, query=query_show, tags=tags,
+        return render_template('user.html', user=user_showed, query_category_count=query_category_count, tags=tags,
                                cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
                                categories=categories_list)
 
@@ -642,8 +652,6 @@ def dialogues(dialogue_id=None):
         chats = pagination.items
         if form.validate_on_submit():
             dialogue.new_chat(author=current_user, content=form.content.data)
-            dialogue.update_show()
-            dialogue.update_chats(current_user)
             flash('消息发送成功。')
             return redirect(url_for('main.dialogues', dialogue_id=dialogue_id) + '?page=' + str(pagination.pages))
         return render_template('message/dialogues.html', form=form, dialogues=dialogue_list, dialogue=dialogue,

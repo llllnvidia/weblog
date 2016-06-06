@@ -1,5 +1,5 @@
 {% for post in posts if post %}
-    <div class="well well-lg" style="background-color: #fdfdfd">
+    <div class="well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
         {% if post.is_article %}
             {% if request.endpoint != 'main.article' %}
             <a href="{{ url_for('main.article', post_id=post.id) }}"><h3>{{ post.title }}</h3></a>
@@ -20,7 +20,7 @@
             </h3>
             {% endif %}
             <div class="row">
-            <div class="col-xs-3">
+            <div class="col-lg-4">
                 最后一次编辑：<i style="color: gray">{{ moment(post.last_edit).fromNow() }}</i>
                 <br/>
                 创建时间：<i style="color: gray">{{ moment(post.timestamp).format('LL') }}</i>
@@ -32,7 +32,7 @@
                     <i style="color: gray">none</i>
                 {% endif %}
             </div>
-            <div class="col-xs-9">
+            <div class="col-lg-8">
                 作者：
                 <a href="{{ url_for('main.user', username=post.author.username) }}" style="color: gray">
                     <i>{{ post.author.username }}</i>
@@ -59,12 +59,12 @@
                 {{ post.summary | markdown | safe}}
             {% endif %}
             {% else %}
-            <h3>
+
                 <a href="{{ url_for('main.user', username=post.author.username) }}">
-                    {{ post.author.username }}
+                   <h3> {{ post.author.username }}<small>{{ moment(post.timestamp).format('YY-MM-DD HH:mm') }}</small></h3>
                 </a>
-                <small>{{ moment(post.timestamp).format('YY-MM-DD HH:mm') }}</small>
-            </h3>
+
+
             {{ post.body | markdown | safe }}
             {% endif %}
     </div>

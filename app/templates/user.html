@@ -2,7 +2,8 @@
 {% import "_macros.html" as macros %}
 
 {% block page_content %}
-<div class="page-header">
+<div class="container-fluid">
+<div class="well  well-lg" style="background-color: rgba(255, 255, 255, 0.33)">
     <h1>{{ user.username }}</h1>
     {% if user.name or user.location %}
     <p>
@@ -24,7 +25,6 @@
         {{ moment(user.member_since).format('LL') }}那一天来到这个网站，
         最后一次出没在{{ moment(user.last_seen).fromNow(1) }}前。
     </p>
-    <hr/>
     <div class="btn-group">
     {% if user == current_user %}
     <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">修改资料</a>
@@ -53,12 +53,12 @@
             user.is_following(current_user) %}
           | <span class="label label-default">正在关注你</span>
         {% endif %}
+</div>
     <hr/>
-    <div class="container-fluid">
-    <div class="row" style="margin-left:-30px;margin-right:-30px" id='user'>
+    <div class="row" id='user'>
         <aside class="col-md-3">
         <form role="search" method="get" id="searchform" action="">
-        <div class="well well-sm input-group">
+        <div class="well well-sm input-group" style="background-color: rgba(255, 255, 255, 0.90)">
             <input type="text" name='key' id="search" value="{% if key %}{{ key }}{% endif %}" class="form-control">
             <span class="input-group-btn">
             {% if key %}
@@ -73,24 +73,24 @@
             </span>
         </div>
         </form>
-        <div class="panel panel-info">
-            <div class="panel-heading">栏目<a href="?category_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true"></span></a></div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">栏目<a href="?category_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
             <ul class="list-group" id="listcontrol">
-            {% for category in categories if category.posts_count(query) %}
+            {% for category in categories if category.posts_count(query_category_count) %}
             {% if category.son_categories %}
                 <a href="?category={{ category.name }}#user" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
-                    <span class="badge">{{ category.posts_count(query) }}</span>
+                    <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
-                {% for son_category in category.son_categories if son_category.posts_count(query) %}
+                {% for son_category in category.son_categories if son_category.posts_count(query_category_count) %}
                     <a href="?category={{ son_category.name }}#user" class="list-group-item{% if cur_category == son_category.name %} active{% endif %}">&nbsp;&nbsp;
-                        <span class="badge">{{ son_category.posts_count(query) }}</span>
+                        <span class="badge">{{ son_category.posts_count(query_category_count) }}</span>
                         {{ son_category.name }}
                     </a>
                 {% endfor %}
             {% else %}
                 <a href="?category={{ category.name }}#user" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
-                    <span class="badge">{{ category.posts_count(query) }}</span>
+                    <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
             {% endif %}
@@ -101,17 +101,17 @@
             {% endfor %}
             </ul>
         </div>
-        <div class="panel panel-info">
-            <div class="panel-heading">标签<a href="?tag_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true"></span></a></div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">标签<a href="?tag_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
             <div class="panel-body">
-            {% for tag in tags if tag.posts_count(query)%}
+            {% for tag in tags if tag.posts_count(query_tag_count)%}
                 {% if tag.content in cur_tags %}
-                <a href="?tag={{tag.content}}#user" class="btn btn-primary btn-xs" style= "margin: 4px">
+                <a href="?tag={{tag.content}}#user" class="btn btn-primary btn-sm" style= "margin: 4px">
                     {{ tag.content }}
                     <span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span>
                 </a>
                 {% else %}
-                <a href="?tag={{tag.content}}#user" class="btn btn-info btn-xs" style= "margin: 4px">
+                <a href="?tag={{tag.content}}#user" class="btn btn-default btn-xs" style= "margin: 4px">
                     {{ tag.content }}
                 </a>
                 {% endif %}
@@ -133,7 +133,6 @@
                 {% endif %}
             </div>
         </div>
-    </div>
     </div>
 </div>
 {% endblock %}

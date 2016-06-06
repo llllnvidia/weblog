@@ -5,48 +5,44 @@
 
 {% block page_content %}
 {% if article %}
-    <div class="container-fluid">
-        <div class="page-header">
-            <h1>Article</h1>
-        </div>
-            {% if request.endpoint == 'main.new_article' %}
-            <form action="/new/article" method="post" role="form">
-            {% else %}
-            <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',post_id=post.id ) }}">删除</a>
-            <hr/>
-            <form action="/edit/article/{{ post.id }}" method="post" role="form">
-            {% endif %}
-                {{ form.hidden_tag() }}
+    <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
+        {% if request.endpoint == 'main.new_article' %}
+        <form action="/new/article" method="post" role="form" class="form-horizontal">
+        {% else %}
+        <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',post_id=post.id ) }}">删除</a>
+        <hr/>
+        <form action="/edit/article/{{ post.id }}" method="post" role="form" class="form-horizontal">
+        {% endif %}
+            <legend>博文</legend>
+            {{ form.hidden_tag() }}
 
-                {{ wtf.form_field(form.title) }}
-                {{ wtf.form_field(form.summary, row=5) }}
-                <h4>正文输入
-                    <a href="http://www.appinn.com/markdown/" type="button" target="_blank" class="btn btn-sm btn-info">Markdown-help</a>
-                </h4>
-                <div class="row">
-                    <div class="col-lg-6 hidden-xs">
-                        {{ wtf.form_field(form.body,only_preview=True) }}
-                    </div>
-                    <div class="col-lg-6">
-                        {{ wtf.form_field(form.body,only_input=True,
-                         style='overflow:scroll;overflow-y:hidden;overflow-x:hidden',
-                         onfocus="window.activeobj=this;
-                        this.clock=setInterval(
-                        function(){
-                        activeobj.style.height=activeobj.scrollHeight+'px';
-                        },50);") }}
-                    </div>
+            {{ wtf.form_field(form.title) }}
+            {{ wtf.form_field(form.summary, row=5) }}
+            <h4>正文输入
+                <a href="http://www.appinn.com/markdown/" type="button" target="_blank" class="btn btn-sm btn-primary">Markdown-help</a>
+            </h4>
+            <div  class="row">
+                <div class="col-lg-6 hidden-xs">
+                    {{ wtf.form_field(form.body,only_preview=True) }}
                 </div>
-                {{ wtf.form_field(form.category) }}
-                {{ wtf.form_field(form.tags) }}
-                {{ wtf.form_field(form.submit) }}
-            </form>
+                <div class="col-lg-6">
+                    {{ wtf.form_field(form.body,only_input=True,
+                     style='overflow:scroll;overflow-y:hidden;overflow-x:hidden',
+                     onfocus="window.activeobj=this;
+                    this.clock=setInterval(
+                    function(){
+                    activeobj.style.height=activeobj.scrollHeight+'px';
+                    },50);") }}
+                </div>
+            </div>
+            {{ wtf.form_field(form.category) }}
+            {{ wtf.form_field(form.tags) }}
+            {{ wtf.form_field(form.submit) }}
+        </form>
     </div>
 {% else %}
-    <div class="container-fluid">
-        <div class="page-header">
-            <h1>吐槽</h1>
-        </div>
+    <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
+        <legend>吐槽</legend>
         {% if request.endpoint == 'main.edit_talk' %}
         <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',post_id=post.id ) }}">删除</a>
         <hr/>

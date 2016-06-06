@@ -173,6 +173,7 @@ class Dialogue(db.Model):
     def new_chat(self, author, content, **kwargs):
         chat = Chat(dialogue=self, author=author, content=content, **kwargs)
         self.update_chats(author)
+        self.update_show()
         chat.save()
 
 

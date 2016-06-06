@@ -9,7 +9,7 @@
 <div class="row" id='neighbourhood'>
     <aside class="col-md-3">
     <form role="search" method="get" id="searchform" action="#neighbourhood">
-        <div class="well well-sm input-group">
+        <div class="well well-sm input-group" style="background-color: rgba(255, 255, 255, 0.90)">
             <input type="text" name='key' id="search" value="{% if key %}{{ key }}{% endif %}" class="form-control">
             <span class="input-group-btn">
             {% if key %}
@@ -24,45 +24,45 @@
             </span>
         </div>
     </form>
-    <div class="panel panel-info">
-        <div class="panel-heading">栏目<a href="?category_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true"></span></a></div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">栏目<a href="?category_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
         <ul class="list-group" id="listcontrol">
             <a href="?show_talk=1#neighbourhood" class="list-group-item{% if show_talk %} active{% endif %}">
-                <span class="badge">{{ query.filter(Post.is_article==False).count() }}</span>
+                <span class="badge">{{ query_category_count.filter(Post.is_article==False).count() }}</span>
                 吐槽
             </a>
         {% for category in categories  %}
             {% if category.son_categories %}
                 <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
-                    <span class="badge">{{ category.posts_count(query) }}</span>
+                    <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
                 {% for son_category in category.son_categories %}
                     <a href="?category={{ son_category.name }}#neighbourhood" class="list-group-item{% if cur_category == son_category.name %} active{% endif %}">&nbsp;&nbsp;
-                        <span class="badge">{{ son_category.posts_count(query) }}</span>
+                        <span class="badge">{{ son_category.posts_count(query_category_count) }}</span>
                         {{ son_category.name }}
                     </a>
                 {% endfor %}
             {% else %}
                 <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
-                    <span class="badge">{{ category.posts_count(query) }}</span>
+                    <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
             {% endif %}
         {% endfor %}
         </ul>
     </div>
-    <div class="panel panel-info">
-        <div class="panel-heading">标签<a href="?tag_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true"></span></a></div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">标签<a href="?tag_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
         <div class="panel-body">
-            {% for tag in tags if tag.posts_count() %}
+            {% for tag in tags if tag.posts_count(query_tag_count) %}
                 {% if tag.content in cur_tags %}
-                <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-primary btn-xs" style= "margin: 4px">
+                <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-primary btn-sm" style= "margin: 4px">
                     {{ tag.content }}
                     <span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span>
                 </a>
                 {% else %}
-                <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-info btn-xs" style= "margin: 4px">
+                <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-default btn-xs" style= "margin: 4px">
                     {{ tag.content }}
                 </a>
                 {% endif %}
@@ -76,7 +76,7 @@
         <div>
             <div>
                 {% if current_user.is_authenticated %}
-                <ul class="nav nav-tabs" style="margin-top: 4px">
+                <ul class="nav nav-tabs">
                     <li role="presentation"{% if not show_followed %} class="active"{% endif %}><a href="?show_followed=0#neighbourhood">All</a></li>
                     <li role="presentation"{% if show_followed %} class="active"{% endif %}><a href="?show_followed=1#neighbourhood">Follow</a></li>
                 </ul>
