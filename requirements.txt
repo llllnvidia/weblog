@@ -1,4 +1,4 @@
-Flask==0.10.1
+Flask>=0.10.1
 Flask-Bootstrap==3.3.5.7
 Flask-Login==0.3.2
 Flask-Mail==0.9.1
@@ -9,8 +9,7 @@ Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12
 Jinja2==2.8
-bleach==1.4.2
-Markdown==2.6.6
+Markdown>=2.6.6
 MarkupSafe==0.23
 requests==2.10.0
 SQLAlchemy==1.0.12
@@ -19,3 +18,4 @@ WTForms==2.1
 coverage==4.1
 selenium==2.53.2
 livereload==2.4.1
+scipy==0.17.1
