@@ -12,9 +12,13 @@
             str = document.getElementById("num_message");
             str.value = str.value + nums;
         }
-        function onclick_clear() {
+        function onclick_delete() {
             str = document.getElementById("num_message");
             str.value = str.value.slice(0,-1);
+        }
+        function onclick_clear() {
+            str = document.getElementById("num_message");
+            str.value = ''
         }
         function onclick_result() {
             str = document.getElementById("num_message");
@@ -34,61 +38,63 @@
     </div>
 </div>
     {% endfor %}
-    {% block page_content %}{% endblock %}
     <div class="row">
-    <div class="col-lg-2">
-    <div class="panel panel-default form" style="margin-top: 50px">
+    <div class="col-lg-4">
         <form action="" method="post" class="form" role="form">
-        <div class="panel-heading" style="height: 50px;">
-            <input type="text" id="num_message" name="number"
-                   class="text" style="border-color: transparent;background-color: transparent;margin-left: -7px">
-        </div>
-        <div class="panel-body">
-            <div class="row" align="center">
-                <div class="btn-group">
-                    <input type="button" value="1" id="1" onclick="onclick_num(1)" class="btn">
-                    <input type="button" value="2" id="2" onclick="onclick_num(2)" class="btn">
-                    <input type="button" value="3" id="3" onclick="onclick_num(3)" class="btn">
-                    <input type="button" value="+" id="add" onclick="onclick_num('+')" class="btn">
-                </div>
+            <div class="well well-sm">
+            <div class="container-fluid">
+            <div class="row" style="margin-bottom: 20px">
+                <input type="text" id="num_message" name="number" class="text form-control">
             </div>
-            <br>
-            <div class="row" align="center">
-                <div class="btn-group">
-                    <input type="button" value="4" id="4" onclick="onclick_num(4)" class="btn">
-                    <input type="button" value="5" id="5" onclick="onclick_num(5)" class="btn">
-                    <input type="button" value="6" id="6" onclick="onclick_num(6)" class="btn">
-                    <input type="button" value="-" id="sub" onclick="onclick_num('-')" class="btn">
-                </div>
-            </div>
-            <br>
-            <div class="row" align="center">
-                <div class="btn-group">
+            <div class="row">
+                <div class="btn-group col-lg-6" style="margin-right: -15px">
                     <input type="button" value="7" id="7" onclick="onclick_num(7)" class="btn">
                     <input type="button" value="8" id="8" onclick="onclick_num(8)" class="btn">
                     <input type="button" value="9" id="9" onclick="onclick_num(9)" class="btn">
-                    <input type="button" value="*" id="mul" onclick="onclick_num('*')" class="btn">
+                </div>
+                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                    <input type="button" value="Del" id="delete" onclick="onclick_delete()" class="btn btn-primary">
+                    <input type="button" value="AC" id="clear" onclick="onclick_clear()" class="btn btn-danger">
                 </div>
             </div>
             <br>
-            <div class="row" style="margin-left: auto">
-                <div class="btn-group">
-                    <input type="button" value="0" id="0" onclick="onclick_num(0)" class="btn">
-                    <input type="button" value="." id="point" onclick="onclick_num('.')" class="btn">
+            <div class="row">
+                <div class="btn-group col-lg-6" style="margin-right: -15px">
+                    <input type="button" value="4" id="4" onclick="onclick_num(4)" class="btn">
+                    <input type="button" value="5" id="5" onclick="onclick_num(5)" class="btn">
+                    <input type="button" value="6" id="6" onclick="onclick_num(6)" class="btn">
+                </div>
+                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                    <input type="button" value="*" id="mul" onclick="onclick_num('*')" class="btn">
                     <input type="button" value="/" id="division" onclick="onclick_num('/')" class="btn">
                 </div>
             </div>
             <br>
-            <div class="row" style="margin-left: auto">
-                <div class="btn-group">
-                    <input type="button" value="Del" id="clear" onclick="onclick_clear()" class="btn">
-                    <input type="button" value="=" id="result" onclick="onclick_result()" class="btn">
+            <div class="row">
+                <div class="btn-group col-lg-6" style="margin-right: -15px">
+                    <input type="button" value="1" id="1" onclick="onclick_num(1)" class="btn">
+                    <input type="button" value="2" id="2" onclick="onclick_num(2)" class="btn">
+                    <input type="button" value="3" id="3" onclick="onclick_num(3)" class="btn">
+                </div>
+                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                    <input type="button" value="+" id="add" onclick="onclick_num('+')" class="btn">
+                    <input type="button" value="-" id="sub" onclick="onclick_num('-')" class="btn">
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="btn-group col-lg-6" style="margin-right: -15px">
+                    <input type="button" value="0" id="0" onclick="onclick_num(0)" class="btn">
+                    <input type="button" value="." id="point" onclick="onclick_num('.')" class="btn">
+                </div>
+                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                    <input type="button" value="=" id="result" onclick="onclick_result()" class="btn btn-warning">
                     <input class="btn btn-primary" id="submit" onclick="onclick_result()" name="submit" type="submit" value="next">
                 </div>
             </div>
         </div>
+        </div>
         </form>
-    </div>
     </div>
     <div class="col-lg-3">
         <div class="panel panel-default" style="margin-top: 50px">
