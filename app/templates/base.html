@@ -41,7 +41,7 @@
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
                 {% endif %}
                 {% if current_user.is_authenticated %}
-                {% if current_user.new_messages_count %}
+                    {% if current_user.new_messages_count %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">个人 <span class="badge badge-xs">{{ current_user.new_messages_count }}</span>
@@ -65,7 +65,15 @@
                         <li><a href="{{ url_for('main.new_talk') }}">吐槽</a></li>
                     </ul>
                 </li>
-                {% endif %}
+                    {% endif %}
+                <li role="presentation" class="dropdown"><a class="dropdown-toggle"
+                 data-toggle="dropdown" role="button"
+                  aria-haspopup="true" aria-expanded="false">工具
+                  <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('tools.calculator') }}">实验数据处理器</a></li>
+                    </ul>
+                </li>
                 {% endif %}
                 {% if current_user.is_authenticated and current_user.is_moderator() %}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"

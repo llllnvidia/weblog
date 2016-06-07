@@ -119,8 +119,8 @@
         <div class="panel-footer">
         <div class="btn-group">
             <a href="?table_method=clear" type="button" class="btn btn-danger btn-lg">清空</a>
-            <a href="?table_method=chauvenet" type="button" class="btn btn-primary btn-lg{% if number_list and number_list.__len__() < 5 %} disabled{% endif %}">剔除坏值</a>
-            <a href="?table_method=handle" type="button" class="btn btn-warning btn-lg">标准偏差</a>
+            <a href="?table_method=chauvenet" type="button" class="btn btn-primary btn-lg{% if not number_list or (number_list and number_list.__len__() < 5) %} disabled{% endif %}">剔除坏值</a>
+            <a href="?table_method=handle" type="button" class="btn btn-warning btn-lg{% if not number_list %} disabled{% endif %}">标准偏差</a>
         </div>
         </div>
         </div>

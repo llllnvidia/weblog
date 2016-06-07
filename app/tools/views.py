@@ -91,10 +91,10 @@ def calculator():
         elif not number_list and number:
             number_list = number
             number_list_string = number_list
-        else:
-            number_list_string = ""
+
         resp = make_response(redirect(url_for('tools.calculator')))
-        resp.set_cookie('number_list', number_list_string, path=url_for('tools.calculator'), max_age=60 * 60 * 24)
+        if number_list_string:
+            resp.set_cookie('number_list', number_list_string, path=url_for('tools.calculator'), max_age=60 * 60 * 24)
         resp.set_cookie('bool_number_list_show', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('mean', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('std_dev', '', path=url_for('tools.calculator'), max_age=0)
