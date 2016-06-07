@@ -15,6 +15,9 @@ def chauvenet(y, mean=None, stdv=None):
     filter = prob >= criterion
     return filter
 
+
+def list_handler(y):
+    pass
 x = numpy.array([2, 4, 6, 8, 10, 12])
 y = numpy.array([3.5, 7.2, 9.5, 17.1, 20.0, 25.5])
 
