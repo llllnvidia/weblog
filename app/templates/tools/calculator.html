@@ -125,6 +125,18 @@
         </div>
         </div>
     </div>
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">实验数据表</div>
+        </div>
+        <ul class="list-group">
+            <li class="list-group-item">平均值：{{ request.cookies.get('mean', None) }}</li>
+            <li class="list-group-item">标准偏差：{{ request.cookies.get('std_dev', None) }}</li>
+            <li class="list-group-item">平均标准偏差：{{ request.cookies.get('std_dev_mean', None) }}</li>
+        </ul>
+        </div>
+    </div>
     </div>
 </div>
 {% endblock %}

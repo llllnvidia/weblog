@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 from scipy.special import erfc
 import numpy
 
 
+# 肖维捏准则
 def chauvenet(y, mean=None, stdv=None):
     if mean is None:
       mean = y.mean()
@@ -27,15 +29,27 @@ def num_list_to_str_list(y):
 
 
 def get_bool_list_of_number_list(str_list):
-    num_list = str_list_to_num_list(str_list)
-    before_list = numpy.array(num_list)
-    list_bool = chauvenet(before_list)
+    array_list = numpy.array(str_list_to_num_list(str_list))
+    list_bool = chauvenet(array_list)
     get_list_bool_showed = list_bool.tolist()
     return get_list_bool_showed
 
+
+def handle(str_list):
+    array_list = numpy.array(str_list_to_num_list(str_list))
+    return array_list.mean(), array_list.std(ddof=1), array_list.std(ddof=1)/numpy.sqrt(len(array_list))
+
 if __name__ == "__main__":
-    test = ['1.2', '3', '4.56', '1.2e+10', '1547865', '-1']
+    """test function"""
+    test = ['1.54', '1.56', '1.58', '1.54', '1.56', '1.57', '1.53', '1.59']
+    num_list = str_list_to_num_list(test)
+    bool_list = chauvenet(numpy.array(str_list_to_num_list(test)))
+    new_list = numpy.array(str_list_to_num_list(test))[bool_list].tolist()
+    new_list_str = num_list_to_str_list(new_list)
+    mean, std_dev, std_dev_mean = handle(new_list_str)
     print test
-    print str_list_to_num_list(test)
-    print chauvenet(numpy.array(str_list_to_num_list(test)))
-    print get_bool_list_of_number_list(test)
+    print num_list
+    print bool_list
+    print new_list
+    print mean, std_dev, std_dev_mean
+
