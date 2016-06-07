@@ -89,21 +89,39 @@
     </div>
     <div class="col-lg-4">
         <div class="panel panel-default">
-            <ul class="list-group">
+        <div class="panel-heading">
+            <div class="panel-title">实验数据表</div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                  <th>#</th>
+                  <th>值</th>
+                </tr>
+            </thead>
+            <tbody>
             {% if number_list %}
             {% for number in number_list if number %}
-                <li class="list-group-item">
-                    <b>{{ number }}</b>
+                <tr{% if bool_number_list_show and not bool_number_list_show[loop.index0] %} class="danger"{% endif %}>
+                <td>{{ loop.index }}</td>
+                <td>
+                    <i>{{ number }}</i>
                     <a href="?number_erase={{ number }}">
                         <span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true">
                         </span>
                     </a>
-                </li>
+                </td>
+                </tr>
             {% endfor %}
             {% endif %}
-            </ul>
+            </tbody>
+            </table>
         <div class="panel-footer">
-            <a href="?table_method=clear" type="button" class="btn btn-danger btn-group">清空</a>
+        <div class="btn-group">
+            <a href="?table_method=clear" type="button" class="btn btn-danger btn-lg">清空</a>
+            <a href="?table_method=chauvenet" type="button" class="btn btn-primary btn-lg{% if number_list and number_list.__len__() < 5 %} disabled{% endif %}">剔除坏值</a>
+            <a href="?table_method=handle" type="button" class="btn btn-warning btn-lg">标准偏差</a>
+        </div>
         </div>
         </div>
     </div>
