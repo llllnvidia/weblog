@@ -27,10 +27,7 @@
     </p>
     <div class="btn-group">
     {% if user == current_user %}
-    <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">修改资料</a>
-    {% endif %}
-    {% if current_user.is_administrator() %}
-    <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin',user_id=user.id) }}">修改资料[Admin]</a>
+    <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">修改资料</a>
     {% endif %}
     </div>
     {% if current_user.can(Permission.FOLLOW) and user != current_user %}
@@ -132,7 +129,7 @@
         <div class="col-md-9">
             <div>
                 <div>
-                    {% include '_posts.html' %}
+                    {% include 'post/_posts.html' %}
                 </div>
                 {% if pagination and pagination.total//pagination.per_page %}
                 <div>

@@ -19,13 +19,16 @@
             <td>{{ moment(user.member_since).format('LL') }}</td>
             <td>{{ moment(user.last_seen).format('LLL') }}</td>
             <td>
-                <div class="btn-block">
+                <div class="btn-group">
                 <a class="btn btn-default" href="{{ url_for('main.user', username = user.user) }}">
                     详情
                 </a>
                 {% if current_user.is_administrator() %}
-                <a class="btn btn-danger" href="{{ url_for('main.delete_user',user_id=user.id) }}">
-                    删除
+                <a class="btn btn-warning" href="{{ url_for('admin_manager.edit_profile_admin',user_id=user.id) }}">
+                    修改资料
+                </a>
+                <a class="btn btn-danger" href="{{ url_for('admin_manager.delete_user',user_id=user.id) }}">
+                    删除用户
                 </a>
                 {% endif %}
                 </div>

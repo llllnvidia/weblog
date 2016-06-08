@@ -192,11 +192,11 @@ class Chat(db.Model):
         if link_id:
             from flask import url_for
             if link_type == 'comment':
-                self.link = url_for('main.article', post_id=link_id) + '#comments'
+                self.link = url_for('post.article', post_id=link_id) + '#comments'
             elif link_type == 'user':
                 self.link = url_for('main.user', username=link_id)
             elif link_type == 'post':
-                self.link = url_for('main.article', post_id=link_id)
+                self.link = url_for('post.article', post_id=link_id)
 
     def save(self):
         db.session.add(self)

@@ -6,10 +6,10 @@
 {% block page_content %}
 {% if article %}
     <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
-        {% if request.endpoint == 'main.new_article' %}
+        {% if request.endpoint == 'post.new_article' %}
         <form action="/new/article" method="post" role="form" class="form-horizontal">
         {% else %}
-        <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',post_id=post.id ) }}">删除</a>
+        <a class="btn btn-danger btn-sm" href="{{ url_for('post.delete_post',post_id=post.id ) }}">删除</a>
         <hr/>
         <form action="/edit/article/{{ post.id }}" method="post" role="form" class="form-horizontal">
         {% endif %}
@@ -43,8 +43,8 @@
 {% else %}
     <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
         <legend>吐槽</legend>
-        {% if request.endpoint == 'main.edit_talk' %}
-        <a class="btn btn-danger btn-sm" href="{{ url_for('main.delete_post',post_id=post.id ) }}">删除</a>
+        {% if request.endpoint == 'post.edit_talk' %}
+        <a class="btn btn-danger btn-sm" href="{{ url_for('post.delete_post',post_id=post.id ) }}">删除</a>
         <hr/>
         {% endif %}
         {{ wtf.quick_form(form) }}

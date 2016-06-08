@@ -8,7 +8,7 @@
     <h1>所有评论</h1>
 </div>
 {% set moderate = True %}
-{% include '_comments.html' %}
+{% include 'post/_comments.html' %}
 {% if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination,'.moderate') }}

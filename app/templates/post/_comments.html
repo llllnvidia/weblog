@@ -2,7 +2,7 @@
     {% for comment in comments %}
     <div class=" well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
         <span class="badge pull-right">{{ moment(comment.timestamp).fromNow() }}</span>
-        <div class="comment-author"><a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a></div>
+        <div class="comment-author"><a href="{{ url_for('main.user', username=comment.author.username) }}">{{ comment.author.username }}</a></div>
         {% if comment.disabled and not moderate %}
         <p><i>这条评论被管理员禁止显示。</i></p>
         {% endif %}
@@ -17,13 +17,13 @@
     {% if moderate %}
     <div class="btn-group" style="margin-left:6px;margin-bottom:4px">
         {% if comment.disabled %}
-        <a class="btn btn-group-xs btn-primary" href="{{ url_for('.moderate_enable',
+        <a class="btn btn-group-xs btn-primary" href="{{ url_for('admin_manager.moderate_enable',
             comment_id=comment.id, page=page) }}">Enable</a>
         {% else %}
-        <a class="btn btn-group-xs btn-danger" href="{{ url_for('.moderate_disable',
+        <a class="btn btn-group-xs btn-danger" href="{{ url_for('admin_manager.moderate_disable',
             comment_id=comment.id, page=page) }}">Disable</a>
         {% endif %}
-        <a class="btn btn-group-xs btn-primary" href="{{ url_for('main.article',post_id=comment.post_id) }}">详情</a>
+        <a class="btn btn-group-xs btn-primary" href="{{ url_for('post.article',post_id=comment.post_id) }}">详情</a>
     </div>
         <hr>
     {% endif %}
