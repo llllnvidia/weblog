@@ -50,6 +50,7 @@ def new_article():
     if request.method == 'POST' and form.validate():
         post = Post(body=form.body.data, title=form.title.data,
                     author=current_user,
+                    summary=form.summary.data,
                     is_article=True, category=Category.query.filter_by(id=form.category.data).first())
         tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
         if tags:
