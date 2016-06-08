@@ -76,10 +76,12 @@
         <div class="panel panel-primary">
             <div class="panel-heading">栏目<a href="?category_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
             <ul class="list-group" id="listcontrol">
+            {% if query_category_count.filter(Post.is_article==False).count() %}
                 <a href="?show_talk=1#user" class="list-group-item{% if show_talk %} active{% endif %}">
                     <span class="badge">{{ query_category_count.filter(Post.is_article==False).count() }}</span>
                     吐槽
                 </a>
+            {% endif %}
             {% for category in categories if category.posts_count(query_category_count) %}
             {% if category.son_categories %}
                 <a href="?category={{ category.name }}#user" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
@@ -99,9 +101,11 @@
                 </a>
             {% endif %}
             {% else %}
+                {% if not query_category_count.filter(Post.is_article==False).count() %}
                 <div class="panel-body">
                 无栏目
                 </div>
+                {% endif %}
             {% endfor %}
             </ul>
         </div>
@@ -132,7 +136,7 @@
                 </div>
                 {% if pagination and pagination.total//pagination.per_page %}
                 <div>
-                    {{ macros.pagination_widget(pagination, 'main.user', username=username) }}
+                    {{ macros.pagination_widget(pagination, 'main.user', username=user.username) }}
                 </div>
                 {% endif %}
             </div>
