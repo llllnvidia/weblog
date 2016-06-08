@@ -28,57 +28,57 @@
 
 {% block title %}实验数据处理{% endblock %}
 {% block page_content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
     <div class="col-lg-4">
         <form action="" method="post" class="form" role="form">
             <div class="well well-sm">
             <div class="container-fluid">
-            <div class="row" style="margin-bottom: 20px">
+            <div class="row" style="margin-bottom: 30px">
                 <input type="text" id="num_message" name="number" class="text form-control">
             </div>
             <div class="row">
-                <div class="btn-group col-lg-6" style="margin-right: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="7" id="7" onclick="onclick_num(7)" class="btn">
                     <input type="button" value="8" id="8" onclick="onclick_num(8)" class="btn">
                     <input type="button" value="9" id="9" onclick="onclick_num(9)" class="btn">
                 </div>
-                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="Del" id="delete" onclick="onclick_delete()" class="btn btn-primary">
                     <input type="button" value="AC" id="clear" onclick="onclick_clear()" class="btn btn-danger">
                 </div>
             </div>
             <br>
             <div class="row">
-                <div class="btn-group col-lg-6" style="margin-right: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="4" id="4" onclick="onclick_num(4)" class="btn">
                     <input type="button" value="5" id="5" onclick="onclick_num(5)" class="btn">
                     <input type="button" value="6" id="6" onclick="onclick_num(6)" class="btn">
                 </div>
-                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="*" id="mul" onclick="onclick_num('*')" class="btn">
                     <input type="button" value="/" id="division" onclick="onclick_num('/')" class="btn">
                 </div>
             </div>
             <br>
             <div class="row">
-                <div class="btn-group col-lg-6" style="margin-right: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="1" id="1" onclick="onclick_num(1)" class="btn">
                     <input type="button" value="2" id="2" onclick="onclick_num(2)" class="btn">
                     <input type="button" value="3" id="3" onclick="onclick_num(3)" class="btn">
                 </div>
-                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="+" id="add" onclick="onclick_num('+')" class="btn">
                     <input type="button" value="-" id="sub" onclick="onclick_num('-')" class="btn">
                 </div>
             </div>
             <br>
             <div class="row">
-                <div class="btn-group col-lg-6" style="margin-right: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="0" id="0" onclick="onclick_num(0)" class="btn">
                     <input type="button" value="." id="point" onclick="onclick_num('.')" class="btn">
                 </div>
-                <div class="btn-group col-lg-6" style="margin-left: -15px">
+                <div class="btn-group col-lg-push-0">
                     <input type="button" value="=" id="result" onclick="onclick_result()" class="btn btn-warning">
                     <input class="btn btn-primary" id="submit" onclick="onclick_result()" name="submit" type="submit" value="next">
                 </div>
@@ -87,7 +87,7 @@
         </div>
         </form>
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-4" id="data-table">
         <div class="panel panel-default">
         <div class="panel-heading">
             <div class="panel-title">实验数据表</div>
@@ -117,23 +117,23 @@
             </tbody>
             </table>
         <div class="panel-footer">
-        <div class="btn-group">
-            <a href="?table_method=clear" type="button" class="btn btn-danger btn-lg">清空</a>
-            <a href="?table_method=chauvenet" type="button" class="btn btn-primary btn-lg{% if not number_list or (number_list and number_list.__len__() < 5) %} disabled{% endif %}">剔除坏值</a>
-            <a href="?table_method=handle" type="button" class="btn btn-warning btn-lg{% if not number_list %} disabled{% endif %}">标准偏差</a>
-        </div>
+            <div class="btn-group" align="center">
+                <a href="?table_method=clear" type="button" class="btn btn-danger">清空</a>
+                <a href="?table_method=chauvenet" type="button" class="btn btn-primary{% if not number_list or (number_list and number_list.__len__() < 5) %} disabled{% endif %}">剔除坏值</a>
+                <a href="?table_method=handle" type="button" class="btn btn-warning{% if not number_list %} disabled{% endif %}">标准偏差</a>
+            </div>
         </div>
         </div>
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-3" id="data-result-table">
         <div class="panel panel-default">
         <div class="panel-heading">
             <div class="panel-title">实验数据表</div>
         </div>
         <ul class="list-group">
-            <li class="list-group-item">平均值：{{ request.cookies.get('mean', None) }}</li>
-            <li class="list-group-item">标准偏差：{{ request.cookies.get('std_dev', None) }}</li>
-            <li class="list-group-item">平均标准偏差：{{ request.cookies.get('std_dev_mean', None) }}</li>
+                <li class="list-group-item">平均值：{{ request.cookies.get('mean', None) }}</li>
+                <li class="list-group-item">标准偏差：{{ request.cookies.get('std_dev', None) }}</li>
+                <li class="list-group-item">平均标准偏差：{{ request.cookies.get('std_dev_mean', None) }}</li>
         </ul>
         </div>
     </div>

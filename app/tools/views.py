@@ -24,7 +24,7 @@ def calculator():
 
     # table_method clear
     if table_method == "clear":
-        resp = make_response(redirect(url_for('tools.calculator')))
+        resp = make_response(redirect(url_for('tools.calculator')+"#data-table"))
         resp.set_cookie('bool_number_list_show', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('number_list', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('mean', '', path=url_for('tools.calculator'), max_age=0)
@@ -37,7 +37,7 @@ def calculator():
         import calculator
         bool_number_list_show = calculator.get_bool_list_of_number_list(number_list)
         # end
-        resp = make_response(redirect(url_for('tools.calculator')))
+        resp = make_response(redirect(url_for('tools.calculator')+"#data-table"))
         resp.set_cookie('mean', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('std_dev', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('std_dev_mean', '', path=url_for('tools.calculator'), max_age=0)
@@ -50,7 +50,7 @@ def calculator():
     if table_method == "handle":
         import calculator
         mean, std_dev, std_dev_mean = calculator.handle(number_list)
-        resp = make_response(redirect(url_for('tools.calculator')))
+        resp = make_response(redirect(url_for('tools.calculator')+"#data-result-table"))
         resp.set_cookie('mean', str(mean), path=url_for('tools.calculator'), max_age=60 * 3)
         resp.set_cookie('std_dev', str(std_dev), path=url_for('tools.calculator'), max_age=60 * 3)
         resp.set_cookie('std_dev_mean', str(std_dev_mean), path=url_for('tools.calculator'), max_age=60 * 3)
@@ -62,7 +62,7 @@ def calculator():
         if number_erase in number_list:
             number_list.remove(number_erase)
         number_list_string = ' '.join(number_list)
-        resp = make_response(redirect(url_for('tools.calculator')))
+        resp = make_response(redirect(url_for('tools.calculator')+"#data-table"))
         resp.set_cookie('bool_number_list_show', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('mean', '', path=url_for('tools.calculator'), max_age=0)
         resp.set_cookie('std_dev', '', path=url_for('tools.calculator'), max_age=0)
