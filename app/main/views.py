@@ -155,9 +155,10 @@ def user(username):
     user_showed = User.query.filter_by(username=username).first()
     if user_showed is None:
         abort(404)
-    query_category_count = query = user_showed.posts.filter_by(is_article=True)
+    query_category_count = query = user_showed.posts
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
+
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category', None)
     cur_category_cookie = request.cookies.get('category', None)
