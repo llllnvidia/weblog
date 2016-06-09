@@ -4,6 +4,7 @@ from datetime import date
 from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response
 from flask.ext.login import current_user, login_required
+from werkzeug.utils import secure_filename
 
 from app.models.account import Permission, User
 from app.models.message import Dialogue
@@ -334,8 +335,9 @@ def edit_profile():
 def upload_images():
     form = UploadImagesForm()
     if form.validate_on_submit():
-        filename = form.upload.data.filename
-        form.upload.data.save(current_app.config['IMG_PATH'] + filename)
+        import os
+        filename = secure_filename(form.upload.data.filename)
+        form.upload.data.save(os.path.join(current_app.config['IMG_PATH'], filename))
     else:
         filename = None
     return render_template('upload.html', form=form, filename=filename)
