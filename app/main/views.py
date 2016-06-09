@@ -338,9 +338,9 @@ def upload_images():
         import os
         filename = secure_filename(form.upload.data.filename)
         form.upload.data.save(os.path.join(current_app.config['IMG_PATH'], filename))
-    else:
-        filename = None
-    return render_template('upload.html', form=form, filename=filename)
+        flash("上传成功！")
+        return redirect(url_for('main.upload_images'))
+    return render_template('upload.html', form=form)
 
 
 @main.route('/dialogues/<int:dialogue_id>', methods=('GET', 'POST'))
