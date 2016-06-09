@@ -41,6 +41,6 @@ def create_app(config_name):
     from .post import post as post_blueprint
     app.register_blueprint(post_blueprint)
     from .admin_manager import admin_manager as admin_manager_blueprint
-    app.register_blueprint(admin_manager_blueprint,url_prefix='/admin_manager')
+    app.register_blueprint(admin_manager_blueprint, url_prefix='/admin_manager')
 
     return app

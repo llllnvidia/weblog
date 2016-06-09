@@ -5,7 +5,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'bshghadasssdfjaskdjfhaklsfasdjfl'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or \
+                 r"\x87\xb7t\xcc\x84\x1e\xff\n{IPF\xa9s\xf2\xf0\x8d9\xde'\x12\x1c\xa5\xe6"
     SQLALCEMY_COMMIT_ON_TEARDOWN = True
     ADMIN = os.environ.get('ADMIN', 'Admin')
     MAIL_SUBJECT_PREFIX = '[CodeBlog]'
@@ -50,7 +51,7 @@ class ProductionConfig(Config):
 
 config = {
     'development': DevelopmentConfig,
-    'debug' : DebugConfig,
+    'debug': DebugConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
 
