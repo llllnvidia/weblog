@@ -5,48 +5,66 @@
 
 {% block head %}
 {{ super() }}
-        <link rel="stylesheet" href="{{ url_for('static', filename='editor.md/') }}/css/editormd.css" />
-        <link rel="shortcut icon" href="https://pandao.github.io/editor.md/favicon.ico" type="image/x-icon" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='editor.md/') }}css/editormd.css" />
 {% endblock %}
 
 {% block page_content %}
-    <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
-    {% if request.endpoint == 'post.new_article' %}
+    <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255,1)">
+        {% if request.endpoint == 'post.new_article' %}
         <form action="/new/article" method="post" role="form" class="">
         {% else %}
-        <a class="btn btn-danger btn-sm" href="{{ url_for('post.delete_post',post_id=post.id ) }}">删除</a>
-        <hr/>
         <form action="/edit/article/{{ post.id }}" method="post" role="form" class="">
         {% endif %}
             <legend>博文</legend>
             {{ form.hidden_tag() }}
             {{ wtf.form_field(form.title) }}
-            {{ wtf.form_field(form.summary, row=5) }}
-        <div id="test-editormd" style="z-index: 4" id="editor">
-            <textarea style="display:none;" name="editor-markdown-doc"></textarea>
+            {{ wtf.form_field(form.summary) }}
+        <div id="editormd" style="z-index: 4" id="editor">
+            <textarea style="display:none;" name="editor-markdown-doc" required>{% if post_body %}{{ post_body }}{% endif %}</textarea>
         </div>
-            {{ wtf.form_field(form.category) }}
-            {{ wtf.form_field(form.tags) }}
-            {{ wtf.form_field(form.submit) }}
+        <div class="row">
+            <div class="col-lg-3">
+                {{ wtf.form_field(form.category) }}
+            </div>
+            <div class="col-lg-4">
+                {{ wtf.form_field(form.tags) }}
+            </div>
+            <div class="col-lg-1" style="margin-top: 20px">
+                {{ wtf.form_field(form.submit) }}
+            </div>
+            {% if request.endpoint == 'post.article' %}
+            <div class="col-lg-1" style="margin-top: 20px">
+                <a class="btn btn-danger" href="{{ url_for('post.delete_post',post_id=post.id ) }}">删除</a>
+            </div>
+            {% endif %}
+        </div>
         </form>
-    </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='editor.md/examples/') }}js/jquery.min.js"></script>
+{{ super() }}
+<script src="{{ url_for('static', filename='editor.md/') }}jquery.min.js"></script>
 <script src="{{ url_for('static', filename='editor.md/') }}editormd.min.js"></script>
 <script type="text/javascript">
     var testEditor;
     $(function() {
-        testEditor = editormd("test-editormd", {
+        testEditor = editormd("editormd", {
             width   : "100%",
-            height  : 640,
+            height  : 420,
             syncScrolling : "single",
             emoji           : true,
             tex  : true,
+            delay : 300,
+            flowChart : true,
+            searchReplace : true,
+            codeFold : true,
             tocm : true,
+            taskList        : true,
             tocDropdown   : false,
+            sequenceDiagram : true,
+            htmlDecode : "iframe",
+            pageBreak : true,
             path    : "{{ url_for('static', filename='editor.md/') }}lib/"
         });
     });
