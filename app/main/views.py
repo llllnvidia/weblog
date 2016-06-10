@@ -3,9 +3,9 @@ from datetime import date
 
 from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
-from flask.ext.sqlalchemy import get_debug_queries
+from flask_sqlalchemy import get_debug_queries
 
 from app.models.account import Permission, User
 from app.models.message import Dialogue
