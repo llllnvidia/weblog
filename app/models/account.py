@@ -83,7 +83,6 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    short_posts = db.relationship('ShortPost', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
@@ -278,6 +277,8 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_administrator(self):
         return False
+
+login_manager.anonymous_user = AnonymousUser
 
 
 @login_manager.user_loader

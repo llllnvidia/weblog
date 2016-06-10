@@ -1,45 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from app import db, login_manager
-from app.models.account import AnonymousUser
+from app import db
 
 posttags = db.Table('posttags',
                     db.Column('tags_id', db.Integer, db.ForeignKey('tags.id')),
                     db.Column('posts_id', db.Integer, db.ForeignKey('posts.id'))
                     )
-
-
-class ShortPost(db.Model):
-    __tablename__ = 'short_posts'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    last_edit = db.Column(db.DateTime)
-
-    def __repr__(self):
-        return '<ShortPost %d Author %s>' % (self.id, self.author.username)
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    @staticmethod
-    def post_to_short_post():
-        post_list = Post.query.all()
-        for post_need_change in post_list:
-            if not post_need_change.is_article:
-                short_post = ShortPost(body=post_need_change.body,
-                                       timestamp=post_need_change.timestamp,
-                                       last_edit=post_need_change.last_edit,
-                                       author_id=post_need_change.author_id)
-                short_post.save()
-                post_need_change.delete()
 
 
 class Post(db.Model):
@@ -89,8 +56,6 @@ class Post(db.Model):
 
     def is_tagging(self, tag):
         return tag in self.tags
-
-login_manager.anonymous_user = AnonymousUser
 
 
 class Comment(db.Model):

@@ -27,9 +27,9 @@
     <div class="panel panel-primary">
         <div class="panel-heading">栏目<a href="?category_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
         <ul class="list-group" id="listcontrol">
-        {% if query_category_count.filter(Post.is_article==False).count() %}
+        {% if query_category_count.filter(Post.is_article == False).count() %}
             <a href="?show_talk=1#neighbourhood" class="list-group-item{% if show_talk %} active{% endif %}">
-                <span class="badge">{{ query_category_count.filter(Post.is_article==False).count() }}</span>
+                <span class="badge">{{ query_category_count.filter(Post.is_article == False).count() }}</span>
                 吐槽
             </a>
         {% endif %}
@@ -52,7 +52,7 @@
                 </a>
             {% endif %}
         {% else %}
-                {% if not query_category_count.filter(Post.is_article==False).count() %}
+                {% if not query_category_count.filter(Post.is_article == False).count() %}
                 <div class="panel-body">
                 无栏目
                 </div>

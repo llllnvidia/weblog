@@ -109,7 +109,7 @@ def edit_article(post_id):
     return render_template('post/edit_post.html', form=form, article=True, post=post_edit)
 
 
-@post.route('/delete-post/<int:post_id>')
+@post.route('/delete/post/<int:post_id>')
 @login_required
 def delete_post(post_id):
     post_delete = Post.query.get_or_404(post_id)
