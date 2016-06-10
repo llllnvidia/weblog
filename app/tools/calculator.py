@@ -3,6 +3,19 @@ from scipy.special import erfc
 import numpy
 
 
+# 判断数字是否合法
+def is_number(number_str):
+    import re
+    regex = re.match('(-?\d+.\d+e(-|\+)\d+)|(-?\d+\.\d+)|(-?\d+)', number_str)
+    if regex:
+        if regex.group() == number_str:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 # 肖维捏准则
 def chauvenet(y, mean=None, stdv=None):
     if mean is None:
@@ -41,7 +54,10 @@ def handle(str_list):
 
 if __name__ == "__main__":
     """test function"""
-    test = ['1.54', '1.56', '1.58', '1.54', '1.56', '1.57', '1.53', '1.59']
+    test = ['1.54', '1.56', '1.58', '1.54', '1.56', '1.57', '1.53', '1.59', '1.2e+10', '1.2e-12', '-1', '132',
+            '1.2e+32']
+    for number_str in test:
+        print is_number(number_str)
     num_list = str_list_to_num_list(test)
     bool_list = chauvenet(numpy.array(str_list_to_num_list(test)))
     new_list = numpy.array(str_list_to_num_list(test))[bool_list].tolist()

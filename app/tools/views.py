@@ -72,17 +72,16 @@ def calculator():
         return resp
 
     if request.method == "POST":
+        from calculator import is_number
         number_raw = request.form.get('number', None)
 
         # is number?
         number = ""
-        if number_raw:
-            number = "".join([a for a in number_raw
-                              if a.isdigit() or a == '+' or a == '-' or a == 'e' or a == '.'])
-            if len(number) < len(number_raw):
-                flash('请输入一个数字')
-                render_template('tools/calculator.html', number_list=number_list,
-                                bool_number_list_show=bool_number_list_show)
+        if not is_number(number_raw):
+            flash('请输入一个数字')
+            return redirect(url_for('tools.calculator'))
+        else:
+            number = ''.join(list(number_raw))
 
         # list show
         if number_list and number:
