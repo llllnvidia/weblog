@@ -15,7 +15,7 @@ from .forms import EditProfileForm, UploadImagesForm, ChatForm
 from ..decorators import permission_required
 
 
-@main.after_request
+@main.after_app_request
 def after_request(response):
     for query_inspected in get_debug_queries():
         if query_inspected.duration >= current_app.config['DB_QUERY_TIMEOUT']:
