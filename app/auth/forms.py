@@ -19,8 +19,9 @@ class LoginForm(Form):
 class RegistrationForm(Form):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                              Email(message="请输入合法的邮箱地址。")])
-    username = StringField('用户名', validators=[DataRequired(), Length(1, 64)])
+    username = StringField('用户名', validators=[DataRequired()])
     password = PasswordField('密码', validators=[DataRequired(),
+                                                 Length(6, 64, message='密码需要六位以上'),
                                                  EqualTo('password2', message='两个密码必须相同。')])
     password2 = PasswordField('密码确认', validators=[DataRequired()])
     submit = SubmitField('注册')
@@ -53,6 +54,7 @@ class ChangeEmailForm(Form):
 class ChangePasswordForm(Form):
     old_password = PasswordField('旧密码', validators=[DataRequired()])
     password = PasswordField('密码', validators=[DataRequired(),
+                                                 Length(6, 64, message='密码需要六位以上'),
                                                  EqualTo('password2', message='两个密码必须相同。')])
     password2 = PasswordField('密码确认', validators=[DataRequired()])
     submit = SubmitField('更改')
@@ -71,8 +73,9 @@ class PasswordResetRequestForm(Form):
 class PasswordResetForm(Form):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                              Email(message="请输入合法的邮箱地址。")])
-    password = PasswordField('新密码', validators=[
-        DataRequired(), EqualTo('password2', message='两个密码必须一样。')])
+    password = PasswordField('新密码', validators=[DataRequired(),
+                                                   Length(6, 64, message='密码需要六位以上'),
+                                                   EqualTo('password2', message='两个密码必须一样。')])
     password2 = PasswordField('新密码确认', validators=[DataRequired()])
     submit = SubmitField('重设密码')
 
