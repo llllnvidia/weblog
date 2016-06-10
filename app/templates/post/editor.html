@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}CodeBlog - Edit{% endblock %}
+
+{% block head %}
+{{ super() }}
+        <link rel="stylesheet" href="{{ url_for('static', filename='editor.md/') }}/css/editormd.css" />
+        <link rel="shortcut icon" href="https://pandao.github.io/editor.md/favicon.ico" type="image/x-icon" />
+{% endblock %}
+
+{% block page_content %}
+    <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
+    {% if request.endpoint == 'post.new_article' %}
+        <form action="/new/article" method="post" role="form" class="">
+        {% else %}
+        <a class="btn btn-danger btn-sm" href="{{ url_for('post.delete_post',post_id=post.id ) }}">删除</a>
+        <hr/>
+        <form action="/edit/article/{{ post.id }}" method="post" role="form" class="">
+        {% endif %}
+            <legend>博文</legend>
+            {{ form.hidden_tag() }}
+            {{ wtf.form_field(form.title) }}
+            {{ wtf.form_field(form.summary, row=5) }}
+        <div id="test-editormd" style="z-index: 4" id="editor">
+            <textarea style="display:none;" name="editor-markdown-doc"></textarea>
+        </div>
+            {{ wtf.form_field(form.category) }}
+            {{ wtf.form_field(form.tags) }}
+            {{ wtf.form_field(form.submit) }}
+        </form>
+    </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='editor.md/examples/') }}js/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='editor.md/') }}editormd.min.js"></script>
+<script type="text/javascript">
+    var testEditor;
+    $(function() {
+        testEditor = editormd("test-editormd", {
+            width   : "100%",
+            height  : 640,
+            syncScrolling : "single",
+            emoji           : true,
+            tex  : true,
+            tocm : true,
+            tocDropdown   : false,
+            path    : "{{ url_for('static', filename='editor.md/') }}lib/"
+        });
+    });
+</script>
+{% endblock %}

@@ -47,8 +47,8 @@ def article(post_id):
 @login_required
 def new_article():
     form = ArticleForm()
-    if request.method == 'POST' and form.validate():
-        post_new = Post(body=form.body.data, title=form.title.data,
+    if request.method == 'POST':
+        post_new = Post(body=request.form['editor-markdown-doc'], title=form.title.data,
                         author=current_user,
                         summary=form.summary.data,
                         is_article=True, category=Category.query.filter_by(id=form.category.data).first())
@@ -63,7 +63,7 @@ def new_article():
         post_new.ping()
         post_new.save()
         return redirect(url_for('post.article', post_id=post_new.id, page=-1))
-    return render_template('post/edit_post.html', form=form, article=True)
+    return render_template('post/editor.html', form=form, article=True)
 
 
 @post.route('/edit/article/<int:post_id>', methods=['GET', 'POST'])
