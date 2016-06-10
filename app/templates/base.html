@@ -15,7 +15,7 @@
 {% endblock %}
 {% block navbar %}
 <div class="navbar navbar-default" role="navigation" style="z-index: 100">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -101,7 +101,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     {% for message in get_flashed_messages() %}
     <div class="alert  alert-dismissible alert-danger">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
