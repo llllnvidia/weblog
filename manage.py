@@ -69,8 +69,6 @@ def deploy():
         print 'Category insert None.'
     else:
         print 'database already exists!'
-#    Role.insert_roles()
-#    print 'insert Roles.'
     admin_id = input('admin_id:')
     while True:
         if User.query.get(admin_id):
