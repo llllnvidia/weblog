@@ -5,6 +5,7 @@ from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response
 from flask.ext.login import current_user, login_required
 from werkzeug.utils import secure_filename
+from flask.ext.sqlalchemy import get_debug_queries
 
 from app.models.account import Permission, User
 from app.models.message import Dialogue
@@ -12,6 +13,18 @@ from app.models.post import Post, Category, Tag
 from . import main
 from .forms import EditProfileForm, UploadImagesForm, ChatForm
 from ..decorators import permission_required
+
+
+@main.after_request
+def after_request(response):
+    for query_inspected in get_debug_queries():
+        if query_inspected.duration >= current_app.config['DB_QUERY_TIMEOUT']:
+            current_app.logger.warning(
+                'Slow query: %s\nParameters: %s\nDuration: %s\nContext: %s\n' %
+                (query_inspected.statement, query_inspected.parameters,
+                 query_inspected.duration, query_inspected.context)
+            )
+    return response
 
 
 @main.route('/', methods=['GET', 'POST'])

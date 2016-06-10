@@ -25,6 +25,8 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = False
+    SQLALCHEMY_RECORD_QUERIES = True
+    DB_QUERY_TIMEOUT = 0.5
     MAIL_SERVER = 'smtp.163.com'
     MAIL_PORT = 25
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
