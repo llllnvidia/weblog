@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from flask.ext.pagedown.fields import PageDownField
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, SelectField, SubmitField, ValidationError
 from wtforms.validators import DataRequired, Length
@@ -13,9 +12,8 @@ def validate_tag(self, field):
 
 
 class ArticleForm(Form):
-    title = StringField('标题')
+    title = StringField('标题', validators=[DataRequired()])
     summary = TextAreaField('摘要', validators=[DataRequired(), Length(1, 200, message="太长了。")])
-    body = PageDownField("", validators=[DataRequired()])
     tags = StringField('标签', validators=[validate_tag])
     category = SelectField("栏目", coerce=int)
     submit = SubmitField('发表')
