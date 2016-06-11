@@ -5,7 +5,7 @@
 
 {% block head %}
 {{ super() }}
-        <link rel="stylesheet" href="{{ url_for('static', filename='editor.md/') }}css/editormd.css" />
+        <link rel="stylesheet" href="{{ url_for('static',  filename='bower_components/editor.md/css/') }}editormd.css" />
 {% endblock %}
 
 {% block page_content %}
@@ -44,8 +44,8 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='editor.md/') }}jquery.min.js"></script>
-<script src="{{ url_for('static', filename='editor.md/') }}editormd.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/examples/js/') }}jquery.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/') }}editormd.min.js"></script>
 <script type="text/javascript">
     var testEditor;
     $(function() {
@@ -65,7 +65,7 @@
             sequenceDiagram : true,
             htmlDecode : "iframe",
             pageBreak : true,
-            path    : "{{ url_for('static', filename='editor.md/') }}lib/"
+            path    : "{{ url_for('static', filename='bower_components/editor.md/') }}lib/"
         });
     });
 </script>
