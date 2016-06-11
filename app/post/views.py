@@ -48,7 +48,7 @@ def article(post_id):
 def new_article():
     form = ArticleForm()
     if request.method == 'POST' and form.validate():
-        post_new = Post(body=request.form['editor-markdown-doc'], title=form.title.data,
+        post_new = Post(body=form.body.data, title=form.title.data,
                         author=current_user,
                         summary=form.summary.data,
                         is_article=True, category=Category.query.filter_by(id=form.category.data).first())
@@ -63,7 +63,7 @@ def new_article():
         post_new.ping()
         post_new.save()
         return redirect(url_for('post.article', post_id=post_new.id, page=-1))
-    return render_template('post/editor.html', form=form)
+    return render_template('post/edit_post.html', form=form, article=True)
 
 
 @post.route('/edit/article/<int:post_id>', methods=['GET', 'POST'])
@@ -79,7 +79,7 @@ def edit_article(post_id):
         form = ArticleForm()
     if request.method == 'POST' and form.validate():
         post_edit.title = form.title.data
-        post_edit.body = request.form['editor-markdown-doc']
+        post_edit.body = form.body.data
         post_edit.summary = form.summary.data
         post_edit.category = Category.query.filter_by(id=form.category.data).first()
         post_edit.is_article = True
@@ -104,9 +104,9 @@ def edit_article(post_id):
         return redirect(url_for('post.article', post_id=post_id, page=-1))
     form.title.data = post_edit.title
     form.summary.data = post_edit.summary
-    post_body = post_edit.body
+    form.body.data = post_edit.body
     form.tags.data = ','.join([str(tag.content) for tag in post_edit.tags])
-    return render_template('post/editor.html', form=form, post=post_edit, post_body=post_body)
+    return render_template('post/edit_post.html', form=form, article=True, post=post_edit)
 
 
 @post.route('/delete/post/<int:post_id>')
@@ -132,7 +132,7 @@ def new_talk():
                     author=current_user)
         talk.save()
         return redirect(url_for('main.neighbourhood'))
-    return render_template('post/edit_post.html', form=form)
+    return render_template('post/edit_post.html', form=form, article=False)
 
 
 @post.route('/edit/talk/<int:post_id>', methods=['GET', 'POST'])
@@ -147,4 +147,4 @@ def edit_talk(post_id):
         flash("已修改。")
         return redirect(url_for('main.neighbourhood'))
     form.body.data = talk.body
-    return render_template('post/edit_post.html', form=form, post=talk)
+    return render_template('post/edit_post.html', form=form, is_new=int(post_id), article=False, post=talk)
