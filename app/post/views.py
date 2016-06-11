@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from flask import flash, redirect, url_for, request, current_app, render_template, abort
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 
 from . import post
 from .forms import ArticleForm, TalkForm, CommentForm

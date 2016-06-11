@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from flask import render_template, redirect, request, url_for, flash, abort
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 
 from app.models.account import User
 from . import auth

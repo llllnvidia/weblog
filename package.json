@@ -1,0 +1,19 @@
+{
+  "name": "codeblog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZsLinw/codeblog.git"
+  },
+  "author": "815750986%qq.com",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/ZsLinw/codeblog/issues"
+  },
+  "homepage": "https://github.com/ZsLinw/codeblog#readme"
+}

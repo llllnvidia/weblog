@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import flash, redirect, url_for, render_template, request, current_app
-from flask.ext.login import login_required
+from flask_login import login_required
 
 from app.decorators import admin_required, permission_required
 from . import admin_manager

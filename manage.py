@@ -5,8 +5,8 @@ import os
 import sys
 from datetime import datetime
 
-from flask.ext.migrate import Migrate, MigrateCommand
-from flask.ext.script import Manager, Shell, Server
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager, Shell, Server
 
 from app import create_app, db
 from app.models.post import Post, Category
@@ -81,7 +81,7 @@ def deploy():
 
 @manager.command
 def init_migrations():
-    from flask.ext.migrate import init
+    from flask_migrate import init
     if not os.path.isdir(os.getenv('MIGRATIONS', basedir+'/migrations')):
         init(directory=os.getenv('MIGRATIONS',  basedir+'/migrations'))
         print 'create migration :' + os.getenv('MIGRATIONS', basedir+'/migrations')
@@ -91,7 +91,7 @@ def init_migrations():
 
 @manager.command
 def migrate_migrations():
-    from flask.ext.migrate import migrate
+    from flask_migrate import migrate
     if os.path.exists(os.getenv('MIGRATIONS', basedir + '/migrations')):
         migrate(directory=os.getenv('MIGRATIONS', basedir + '/migrations'),message=str(datetime.utcnow()))
         print 'migrate database :' + os.getenv('MIGRATIONS', basedir + '/migrations')
@@ -101,7 +101,7 @@ def migrate_migrations():
 
 @manager.command
 def upgrade_migrations():
-    from flask.ext.migrate import upgrade
+    from flask_migrate import upgrade
     if os.path.exists(os.getenv('MIGRATIONS', basedir+'/migrations')):
         upgrade(directory=os.getenv('MIGRATIONS', basedir+'/migrations'))
         print 'upgrade database :' + os.getenv('MIGRATIONS', basedir+'/migrations')
@@ -111,7 +111,7 @@ def upgrade_migrations():
 
 @manager.command
 def downgrade_migrations():
-    from flask.ext.migrate import downgrade
+    from flask_migrate import downgrade
     if os.path.exists(os.getenv('MIGRATIONS', basedir+'/migrations')):
         downgrade(directory=os.getenv('MIGRATIONS', basedir+'/migrations'))
         print 'downgrade database :' + os.getenv('MIGRATIONS', basedir+'/migrations')
