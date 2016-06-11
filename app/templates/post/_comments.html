@@ -1,10 +1,18 @@
 <div class="comments">
     {% for comment in comments %}
     <div class=" well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius: 7px">
+    {% if moderate %}
+        <a href="{{ url_for('main.user', username=comment.author.username) }}">
+        <h5> {{ comment.author.username }}
+            <small>{{ moment(comment.timestamp).format('YY-MM-DD HH:mm') }}</small>
+        </h5>
+        </a>
+    {% else %}
         <span class="badge pull-right">{{ moment(comment.timestamp).fromNow() }}</span>
         <div class="comment-author"><a href="{{ url_for('main.user', username=comment.author.username) }}">{{ comment.author.username }}</a></div>
+    {% endif %}
         {% if comment.disabled and not moderate %}
-        <p><i>这条评论被管理员禁止显示。</i></p>
+        <p>这条评论被管理员禁止显示。</p>
         {% endif %}
         {% if current_user.is_moderator() or not comment.disabled %}
             {% if comment.body_html %}
@@ -15,7 +23,7 @@
         {% endif %}
     </div>
     {% if moderate %}
-    <div class="btn-group" style="margin-left:6px;margin-bottom:4px">
+    <div class="btn-group" style="margin-bottom: 20px;margin-left: auto">
         {% if comment.disabled %}
         <a class="btn btn-group-xs btn-primary" href="{{ url_for('admin_manager.moderate_enable',
             comment_id=comment.id, page=page) }}">Enable</a>
@@ -25,7 +33,7 @@
         {% endif %}
         <a class="btn btn-group-xs btn-primary" href="{{ url_for('post.article',post_id=comment.post_id) }}">详情</a>
     </div>
-        <hr>
+        <br/>
     {% endif %}
     {% endfor %}
 </div>

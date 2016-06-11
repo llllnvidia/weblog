@@ -119,8 +119,8 @@ class User(UserMixin, db.Model):
         admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
         if admin and admin != self:
             Dialogue(admin, self, name=u'系统消息')
-        else:
-            pass
+        if not self.password_hash:
+            self.password = u'123456'
         self.save()
 
     def save(self):

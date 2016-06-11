@@ -119,7 +119,7 @@ def delete_post(post_id):
     else:
         post_delete.delete()
         flash('已删除！')
-        return redirect(url_for('main.neighbourhood'))
+    return redirect(url_for('admin_manager.talks'))
 
 
 @post.route('/new/talk', methods=['GET', 'POST'])

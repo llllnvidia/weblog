@@ -32,11 +32,6 @@
             <div class="col-lg-1" style="margin-top: 20px">
                 {{ wtf.form_field(form.submit) }}
             </div>
-            {% if request.endpoint == 'post.article' %}
-            <div class="col-lg-1" style="margin-top: 20px">
-                <a class="btn btn-danger" href="{{ url_for('post.delete_post',post_id=post.id ) }}">删除</a>
-            </div>
-            {% endif %}
         </div>
         </form>
     </div>

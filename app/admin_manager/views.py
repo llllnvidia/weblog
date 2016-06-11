@@ -6,34 +6,49 @@ from app.decorators import admin_required, permission_required
 from . import admin_manager
 from .forms import EditProfileAdminForm, CategoryForm
 from app.models.account import User, Role, Permission
-from app.models.post import Comment, Category
+from app.models.post import Comment, Category, Post
 
 
-@admin_manager.route('/edit-profile/<int:user_id>', methods=['GET', 'POST'])
+@admin_manager.route('/new/profile', methods=['GET', 'POST'])
+@admin_manager.route('/edit/profile/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def edit_profile_admin(user_id):
-    user_edited = User.query.get_or_404(user_id)
-    form = EditProfileAdminForm(user=user_edited)
-    if form.validate_on_submit():
-        user_edited.email = form.email.data
-        user_edited.username = form.username.data
-        user_edited.confirmed = form.confirmed.data
-        user_edited.role = Role.query.get(form.role.data)
-        user_edited.name = form.name.data
-        user_edited.location = form.location.data
-        user_edited.about_me = form.about_me.data
-        user_edited.save()
-        flash('资料已修改。')
-        return redirect(url_for('.user', username=user_edited.username))
-    form.email.data = user_edited.email
-    form.username.data = user_edited.username
-    form.confirmed.data = user_edited.confirmed
-    form.role.data = user_edited.role_id
-    form.name.data = user_edited.name
-    form.location.data = user_edited.location
-    form.about_me.data = user_edited.about_me
-    return render_template('admin_manager/edit_profile_admin.html', form=form, user=user_edited)
+def edit_profile_admin(user_id=None):
+    if user_id:
+        user_edited = User.query.get_or_404(user_id)
+        form = EditProfileAdminForm(user=user_edited)
+        if form.validate_on_submit():
+            user_edited.email = form.email.data
+            user_edited.username = form.username.data
+            user_edited.confirmed = form.confirmed.data
+            user_edited.role = Role.query.get(form.role.data)
+            user_edited.name = form.name.data
+            user_edited.location = form.location.data
+            user_edited.about_me = form.about_me.data
+            user_edited.save()
+            flash('资料已修改。')
+            return redirect(url_for('admin_manager.users'))
+        form.email.data = user_edited.email
+        form.username.data = user_edited.username
+        form.confirmed.data = user_edited.confirmed
+        form.role.data = user_edited.role_id
+        form.name.data = user_edited.name
+        form.location.data = user_edited.location
+        form.about_me.data = user_edited.about_me
+        return render_template('admin_manager/edit_profile_admin.html', form=form)
+    else:
+        form = EditProfileAdminForm()
+        if form.validate_on_submit():
+            new_user = User(email=form.email.data,
+                            username=form.username.data,
+                            confirmed=form.confirmed.data,
+                            role_id=form.role.data,
+                            name=form.name.data,
+                            location=form.location.data,
+                            about_me=form.about_me.data,)
+            new_user.save()
+            return redirect(url_for('admin_manager.users'))
+        return render_template('admin_manager/edit_profile_admin.html', form=form)
 
 
 @admin_manager.route('/comments')
@@ -84,8 +99,7 @@ def users():
     users_list = [{'id': item.id, 'user': item.username, 'name': item.name,
                    'member_since': item.member_since,
                    'last_seen': item.last_seen}for item in pagination.items]
-    return render_template('admin_manager/users.html', title="所有用户",
-                           endpoint='.users', pagination=pagination, users=users_list)
+    return render_template('admin_manager/users.html', pagination=pagination, users=users_list)
 
 
 @admin_manager.route('/users/delete/<int:user_id>')
@@ -141,8 +155,8 @@ def categories(category_id=None):
             new_category.save()
             flash("已添加")
             return redirect(url_for('admin_manager.categories', page=page, form=form))
-        return render_template('admin_manager/categories.html', title="所有栏目", form=form,
-                               endpoint='admin_manager.categories', pagination=pagination, categories=categories_list)
+        return render_template('admin_manager/categories.html', form=form, pagination=pagination,
+                               categories=categories_list)
 
 
 @admin_manager.route('/categories/delete/<int:category_id>')
@@ -153,3 +167,15 @@ def delete_category(category_id):
     category.delete()
     flash("已删除")
     return redirect(url_for('admin_manager.categories'))
+
+
+@admin_manager.route('/talks', methods=['GET', 'POST'])
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def talks():
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.filter_by(is_article=False).order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    talks_list = pagination.items
+    return render_template('admin_manager/talks.html', talks=talks_list, pagination=pagination)

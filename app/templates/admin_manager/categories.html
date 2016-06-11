@@ -2,11 +2,11 @@
 {% import "_macros.html" as macros %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Codeblog - {{ title }}{% endblock %}
+{% block title %}Codeblog - 所有栏目{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1>{{ title }}</h1>
+    <h4>所有栏目</h4>
 </div>
 <div class="well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius: 10px">
     {{ wtf.quick_form(form) }}
@@ -47,7 +47,7 @@
 </div>
 {% if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
-    {{ macros.pagination_widget(pagination,endpoint) }}
+    {{ macros.pagination_widget(pagination, request.endpoint) }}
 </div>
 {% endif %}
 {% endblock %}

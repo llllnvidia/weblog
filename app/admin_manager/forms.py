@@ -17,16 +17,32 @@ class EditProfileAdminForm(Form):
     about_me = TextAreaField('个人简介')
     submit = SubmitField('提交')
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user=None, *args, **kwargs):
         super(EditProfileAdminForm, self).__init__(*args, **kwargs)
         self.role.choices = [(role.id, role.name)
-                             for role in Role.query.order_by(Role.name).all()]
-        self.user = user
+                             for role in Role.query.order_by(Role.id).all()]
+        if user:
+            self.user = user
+        else:
+            self.user = None
 
     def validate_email(self, field):
-        if field.data != self.user.email and \
-                User.query.filter_by(username=field.data).first():
-            raise ValidationError('用户名已被使用')
+        if self.user:
+            if field.data != self.user.email and \
+                    User.query.filter_by(email=field.data).first():
+                raise ValidationError('邮箱地址已被使用')
+        else:
+            if User.query.filter_by(email=field.data).first():
+                raise ValidationError('邮箱地址已被使用')
+
+    def validate_username(self, field):
+        if self.user:
+            if field.data != self.user.username and \
+                    User.query.filter_by(username=field.data).first():
+                raise ValidationError('用户名已被使用')
+        else:
+            if User.query.filter_by(username=field.data).first():
+                raise ValidationError('用户名已被使用')
 
 
 class CategoryForm(Form):
@@ -41,3 +57,7 @@ class CategoryForm(Form):
         if Category.query.filter(Category.parent_id == 1).count():
             choices.extend([(cg.id, cg.name) for cg in Category.query.filter(Category.parent_id == 1).all()])
         self.parent.choices = choices
+
+    def validate_name(self, field):
+        if Category.filter(name=field.data).first():
+            raise ValidationError('已有同名的栏目')
