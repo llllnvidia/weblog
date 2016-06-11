@@ -3,14 +3,11 @@
 {% import "_macros.html" as macros %}
 {% block title %}CodeBlog - Article{% endblock %}
 
-<<<<<<< HEAD
 {% block head %}
 {{ super() }}
         <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/editor.md/css/') }}editormd.preview.css" />
 {% endblock %}
 
-=======
->>>>>>> refs/remotes/origin/master
 {% block page_content %}
 {% include 'post/_posts.html' %}
 <h4 id='comments'>评论</h4>
@@ -22,20 +19,18 @@
     {{ macros.pagination_widget(pagination, '.article', fragment='#comments', post_id=posts[0].id) }}
 </div>
 {% endif %}
-<<<<<<< HEAD
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static',  filename='bower_components/editor.md/examples/js/') }}jquery.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/lib/') }}marked.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/lib/') }}prettify.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/lib/') }}raphael.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/lib/') }}underscore.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/lib/') }}sequence-diagram.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/lib/') }}flowchart.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/lib/') }}jquery.flowchart.min.js"></script>
-<script src="{{ url_for('static',  filename='bower_components/editor.md/') }}editormd.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}marked.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}prettify.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}raphael.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}underscore.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}sequence-diagram.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}flowchart.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}jquery.flowchart.min.js"></script>
+<script src="{{ url_for('static', filename='bower_components/editor.md/') }}editormd.js"></script>
 <script type="text/javascript">
     $(function() {
         var EditormdView;
@@ -53,6 +48,4 @@
         });
     });
 </script>
-=======
->>>>>>> refs/remotes/origin/master
 {% endblock %}

@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_content %}
-    <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255,1)">
+    <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius: 10px">
         {% if request.endpoint == 'post.new_article' %}
         <form action="/new/article" method="post" role="form" class="">
         {% else %}
@@ -44,7 +44,6 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='bower_components/editor.md/examples/js/') }}jquery.min.js"></script>
 <script src="{{ url_for('static', filename='bower_components/editor.md/') }}editormd.min.js"></script>
 <script type="text/javascript">
     var testEditor;
