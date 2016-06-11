@@ -1,5 +1,5 @@
 {% for post in posts if post %}
-    <div class="well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius:10px;">
+    <div class="well well-lg" style="background-color: rgba(255, 255, 255, 0.90)">
         {% if post.is_article %}
             {% if request.endpoint != 'post.article' %}
             <a href="{{ url_for('post.article', post_id=post.id) }}"><h3>{{ post.title }}</h3></a>
@@ -54,9 +54,7 @@
             </div>
             </div><br/>
             {% if request.endpoint == 'post.article' or not post.summary %}
-                <div id="editormd-view">
-                <textarea id="append-test" style="display:none;">{{ post.body }}</textarea>
-                </div>
+                {{ post.body | markdown | safe}}
             {% else %}
                 {{ post.summary | markdown | safe}}
             {% endif %}
