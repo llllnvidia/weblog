@@ -89,6 +89,8 @@ class Dialogue(db.Model):
     def delete(self):
         for gallery in self.galleries:
             gallery.delete()
+        for chat in self.chats:
+            chat.delete()
         db.session.delete(self)
         db.session.commit()
 

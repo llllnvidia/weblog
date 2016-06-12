@@ -128,6 +128,14 @@ class User(UserMixin, db.Model):
         db.session.commit()
 
     def delete(self):
+        for comment_delete in self.comments:
+            comment_delete.delete()
+        for chat_delete in self.chats:
+            chat_delete.delete()
+        for post_delete in self.posts:
+            post_delete.delete()
+        for gallery_delete in self.galleries:
+            gallery_delete.delete()
         db.session.delete(self)
         db.session.commit()
 
@@ -182,7 +190,7 @@ class User(UserMixin, db.Model):
 
     @property
     def password(self):
-        raise AttributeError('密码不可用。')
+        raise AttributeError('密码不可用,只可用于赋值。')
 
     @password.setter
     def password(self, password):
