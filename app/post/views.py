@@ -112,6 +112,7 @@ def edit_article(post_id):
 @post.route('/delete/post/<int:post_id>')
 @login_required
 def delete_post(post_id):
+    next_url = request.args.get('next', '')
     post_delete = Post.query.get_or_404(post_id)
     if current_user != post_delete.author and \
             not current_user.can(0x0f):
@@ -119,7 +120,10 @@ def delete_post(post_id):
     else:
         post_delete.delete()
         flash('已删除！')
-    return redirect(url_for('admin_manager.talks'))
+    if next_url:
+        return redirect(next_url)
+    else:
+        return redirect(url_for('main.index'))
 
 
 @post.route('/new/talk', methods=['GET', 'POST'])
@@ -132,7 +136,7 @@ def new_talk():
                     author=current_user)
         talk.save()
         return redirect(url_for('main.neighbourhood'))
-    return render_template('post/edit_post.html', form=form)
+    return render_template('post/edit_talk.html', form=form)
 
 
 @post.route('/edit/talk/<int:post_id>', methods=['GET', 'POST'])
@@ -147,4 +151,4 @@ def edit_talk(post_id):
         flash("已修改。")
         return redirect(url_for('main.neighbourhood'))
     form.body.data = talk.body
-    return render_template('post/edit_post.html', form=form, post=talk)
+    return render_template('post/edit_talk.html', form=form, post=talk)

@@ -29,9 +29,14 @@
             <div class="col-lg-4">
                 {{ wtf.form_field(form.tags) }}
             </div>
-            <div class="col-lg-1" style="margin-top: 20px">
+            <div class="col-lg-1 btn-group-vertical">
                 {{ wtf.form_field(form.submit) }}
+                {% if request.endpoint == 'post.edit_article' %}
+                <a type="button" class="btn btn-danger"
+                   href="{{ url_for('post.delete_post', post_id=post.id) }}?next={{url_for('main.neighbourhood') }}">删除</a>
+                {% endif %}
             </div>
+
         </div>
         </form>
     </div>
