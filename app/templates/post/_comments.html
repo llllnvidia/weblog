@@ -31,7 +31,7 @@
         <a class="btn btn-group-xs btn-danger" href="{{ url_for('admin_manager.moderate_disable',
             comment_id=comment.id, page=page) }}">Disable</a>
         {% endif %}
-        <a class="btn btn-group-xs btn-primary" href="{{ url_for('post.article',post_id=comment.post_id) }}"  target="_blank">详情</a>
+        <a class="btn btn-group-xs btn-primary" href="{{ url_for('post.article', post_id=comment.post_id) }}" target="_blank">详情</a>
     </div>
         <br/>
     {% endif %}

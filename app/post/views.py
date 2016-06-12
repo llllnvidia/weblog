@@ -118,6 +118,8 @@ def delete_post(post_id):
             not current_user.can(0x0f):
         abort(403)
     else:
+        for comment_need_delete in post_delete.comments:
+            comment_need_delete.delete()
         post_delete.delete()
         flash('已删除！')
     if next_url:
