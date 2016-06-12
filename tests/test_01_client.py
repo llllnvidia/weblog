@@ -31,79 +31,77 @@ class FlaskClientTestCase(unittest.TestCase):
         response = self.client.post(url_for('auth.register'), data={
             'email': 'john_example.com',
             'username': 'john',
-            'password': 'cat',
-            'password2': 'ca'
+            'password': 'catcat',
+            'password2': 'catcatt'
         })
-        self.assertTrue(re.search('请输入合法的邮箱地址。', response.data))
-        self.assertTrue(re.search('两个密码必须相同。', response.data))
+        self.assertTrue(re.search('请输入合法的邮箱地址', response.data))
+        self.assertTrue(re.search('两个密码必须相同', response.data))
         response = self.client.post(url_for('auth.register'), data={
             'email': 'john@example.com',
             'username': 'john',
-            'password': 'cat',
-            'password2': 'cat'
-        })
-        self.assertTrue(response.status_code == 302)
-        response = self.client.get(url_for('auth.register'))
-        self.assertTrue('一封包含身份确认链接的邮件已发往你的邮箱。' in response.data)
+            'password': 'catcat',
+            'password2': 'catcat'
+        }, follow_redirects=True)
+        self.assertTrue('一封包含身份确认链接的邮件已发往你的邮箱' in response.data)
         response = self.client.post(url_for('auth.register'), data={
             'email': 'john@example.com',
             'username': 'john',
-            'password': 'cat',
-            'password2': 'cat'
+            'password': 'catcat',
+            'password2': 'catcat'
         })
-        self.assertTrue(re.search('Email已被占用。', response.data))
-        self.assertTrue(re.search('用户名已被占用。', response.data))
+        self.assertTrue(re.search('Email已被占用', response.data))
+        self.assertTrue(re.search('用户名已被占用', response.data))
 
     def test_02_login(self):
         # login with the new account
         User(email='john@example.com',
-             password='cat',
+             password='catcat',
              username='john')
         response = self.client.get(url_for('auth.login'))
         self.assertTrue(re.search('忘记密码？', response.data))
         response = self.client.post(url_for('auth.login'), data={
             'email': 'john_example.com',
-            'password': 'cat'
+            'password': 'catcat'
         })
-        self.assertTrue(re.search('请输入合法的邮箱地址。', response.data))
+        self.assertTrue(re.search('请输入合法的邮箱地址', response.data))
         response = self.client.post(url_for('auth.login'), data={
             'email': 'john@example.com',
-            'password': 'ca'
+            'password': 'catcatt'
         })
         self.assertTrue(re.search('无效的用户名或密码', response.data))
         response = self.client.post(url_for('auth.login'), data={
             'email': 'john@example.org',
-            'password': 'cat'
+            'password': 'catcat'
         })
         self.assertTrue(re.search('无效的用户名或密码', response.data))
         response = self.client.post(url_for('auth.login'), data={
             'email': 'john@example.com',
-            'password': 'cat',
+            'password': 'catcat',
             'remember_me': True
         }, follow_redirects=True)
         self.assertTrue(re.search('你好', response.data))
-        self.assertTrue('你还没有进行身份认证。' in response.data)
+        self.assertTrue('你还没有进行身份认证' in response.data)
 
     def test_03_confirm(self):
         # send a confirmation token
         user = User(email='john@example.com',
-                    password='cat',
+                    password='catcat',
                     username='john')
         self.client.post(url_for('auth.login'), data={
             'email': 'john@example.com',
-            'password': 'cat',
+            'password': 'catcat',
             'remember_me': True
         }, follow_redirects=True)
         token = 'asdhfjasdkhfadsfasdfasdf'
         response = self.client.get(url_for('auth.confirm', token=token),
                                    follow_redirects=True)
-        self.assertTrue('确认链接非法或已过期。' in response.data)
+        self.assertTrue('确认链接非法或已过期' in response.data)
         response = self.client.get(url_for('auth.resend_confirmation'),
                                    follow_redirects=True)
-        self.assertTrue('一封新的包含身份确认链接的邮件已发往你的邮箱。' in response.data)
+        self.assertTrue('一封新的包含身份确认链接的邮件已发往你的邮箱' in response.data)
         token = user.generate_confirmation_token()
         response = self.client.get(url_for('auth.confirm', token=token), follow_redirects=True)
-        self.assertTrue('已确认你的身份，欢迎加入我们。' in response.data)
+        self.assertTrue('已确认你的身份，欢迎加入我们' in response.data)
         response = self.client.get(url_for('auth.confirm', token=token), follow_redirects=True)
         self.assertTrue('Github' in response.data)
         response = self.client.get(url_for('auth.unconfirmed'), follow_redirects=True)
@@ -112,59 +110,59 @@ class FlaskClientTestCase(unittest.TestCase):
     def test_04_change_password(self):
         # change password
         User(email='john@example.com',
-             password='cat',
+             password='catcat',
              confirmed=True,
              username='john')
         self.client.post(url_for('auth.login'), data={
             'email': 'john@example.com',
-            'password': 'cat',
+            'password': 'catcat',
             'remember_me': True
         }, follow_redirects=True)
         response = self.client.get(url_for('auth.password_change'))
         self.assertTrue('旧密码' in response.data)
         response = self.client.post(url_for('auth.password_change'), data={
-            'old_password': 'ca',
-            'password': 'cat',
-            'password2': 'cat'
+            'old_password': 'catcatt',
+            'password': 'catcat',
+            'password2': 'catcat'
         }, follow_redirects=True)
-        self.assertTrue('请输入正确的密码。' in response.data)
+        self.assertTrue('请输入正确的密码' in response.data)
         response = self.client.post(url_for('auth.password_change'), data={
-            'old_password': 'cat',
-            'password': 'cat',
-            'password2': 'ca'
+            'old_password': 'catcat',
+            'password': 'catcat',
+            'password2': 'catcatt'
         }, follow_redirects=True)
-        self.assertTrue('两个密码必须相同。' in response.data)
+        self.assertTrue('两个密码必须相同' in response.data)
         response = self.client.post(url_for('auth.password_change'), data={
-            'old_password': 'cat',
-            'password': 'cat',
-            'password2': 'cat'
+            'old_password': 'catcat',
+            'password': 'catcat',
+            'password2': 'catcat'
         }, follow_redirects=True)
-        self.assertTrue('修改成功。' in response.data)
+        self.assertTrue('修改成功' in response.data)
 
     def test_05_change_email(self):
         # change email
         user = User(email='john@example.com',
-                    password='cat',
+                    password='catcat',
                     confirmed=True,
                     username='john')
         self.client.post(url_for('auth.login'), data={
             'email': 'john@example.com',
-            'password': 'cat',
+            'password': 'catcat',
             'remember_me': True
         }, follow_redirects=True)
         response = self.client.get(url_for('auth.send_confirmation_email'),
                                    follow_redirects=True)
-        self.assertTrue('确认邮件已发送，请确认。' in response.data)
+        self.assertTrue('确认邮件已发送，请确认' in response.data)
         token = 'asdhfjasdkhfadsfasdfasdf'
         response = self.client.get(url_for('auth.email_change_confirm', token=token), follow_redirects=True)
-        self.assertTrue('确认链接非法或已过期。' in response.data)
+        self.assertTrue('确认链接非法或已过期' in response.data)
         token = user.generate_confirmation_token()
         response = self.client.get(url_for('auth.email_change_confirm', token=token))
         self.assertTrue('修改邮箱地址' in response.data)
         response = self.client.post(url_for('auth.email_change_confirm', token=token), data={
             'email': 'john_example.com'
         }, follow_redirects=True)
-        self.assertTrue('请输入合法的邮箱地址。' in response.data)
+        self.assertTrue('请输入合法的邮箱地址' in response.data)
         response = self.client.post(url_for('auth.email_change_confirm', token=token), data={
             'email': 'john@example.com'
         }, follow_redirects=True)
@@ -172,24 +170,24 @@ class FlaskClientTestCase(unittest.TestCase):
         response = self.client.post(url_for('auth.email_change_confirm', token=token), data={
             'email': 'jack@example.com'
         }, follow_redirects=True)
-        self.assertTrue('修改成功。' in response.data)
-        self.assertTrue('一封包含身份确认链接的邮件已发往你的新邮箱。' in response.data)
+        self.assertTrue('修改成功' in response.data)
+        self.assertTrue('一封包含身份确认链接的邮件已发往你的新邮箱' in response.data)
         token = user.generate_confirmation_token()
         response = self.client.get(url_for('auth.confirm', token=token),
                                    follow_redirects=True)
-        self.assertTrue('已确认你的身份，欢迎加入我们。' in response.data)
+        self.assertTrue('已确认你的身份，欢迎加入我们' in response.data)
         response = self.client.get(url_for('auth.confirm', token=token), follow_redirects=True)
         self.assertTrue('Github' in response.data)
 
     def test_06_logout(self):
         # log out
         User(email='john@example.com',
-             password='cat',
+             password='catcat',
              confirmed=True,
              username='john')
         self.client.post(url_for('auth.login'), data={
             'email': 'john@example.com',
-            'password': 'cat',
+            'password': 'catcat',
             'remember_me': True
         }, follow_redirects=True)
         response = self.client.get(url_for('auth.logout'), follow_redirects=True)
@@ -198,12 +196,12 @@ class FlaskClientTestCase(unittest.TestCase):
     def test_07_reset_password(self):
         # reset password
         user = User(email='john@example.com',
-                    password='cat',
+                    password='catcat',
                     confirmed=True,
                     username='john')
         self.client.post(url_for('auth.login'), data={
             'email': 'john@example.com',
-            'password': 'cat',
+            'password': 'catcat',
             'remember_me': True
         }, follow_redirects=True)
         response = self.client.get(url_for('auth.password_reset_request'))
@@ -218,42 +216,42 @@ class FlaskClientTestCase(unittest.TestCase):
         response = self.client.post(url_for('auth.password_reset_request'), data={
             'email': 'jack_example.com'
         })
-        self.assertTrue('请输入合法的邮箱地址。' in response.data)
+        self.assertTrue('请输入合法的邮箱地址' in response.data)
         response = self.client.post(url_for('auth.password_reset_request'), data={
             'email': 'jack@example.com'
         }, follow_redirects=True)
-        self.assertTrue('无效的账号。' in response.data)
+        self.assertTrue('无效的账号' in response.data)
         response = self.client.post(url_for('auth.password_reset_request'), data={
             'email': 'john@example.com'
         }, follow_redirects=True)
-        self.assertTrue('一封含有重设密码的链接已发给你，请注意查收。' in response.data)
+        self.assertTrue('一封含有重设密码的链接已发给你，请注意查收' in response.data)
         response = self.client.post(url_for('auth.password_reset', token=token), data={
             'email': 'john@example.com',
-            'password': 'cat',
-            'password2': 'cat'
+            'password': 'catcat',
+            'password2': 'catcat'
         }, follow_redirects=True)
-        self.assertTrue('重设失败。' in response.data)
+        self.assertTrue('重设失败' in response.data)
         token = user.generate_reset_token()
         response = self.client.post(url_for('auth.password_reset', token=token), data={
             'email': 'john_example.com',
-            'password': 'cat',
-            'password2': 'ca'
+            'password': 'catcat',
+            'password2': 'catcatt'
         })
         self.assertTrue('密码重设' in response.data)
-        self.assertTrue('请输入合法的邮箱地址。' in response.data)
-        self.assertTrue('两个密码必须一样。' in response.data)
+        self.assertTrue('请输入合法的邮箱地址' in response.data)
+        self.assertTrue('两个密码必须一样' in response.data)
         response = self.client.post(url_for('auth.password_reset', token=token), data={
             'email': 'jack@example.com',
-            'password': 'cat',
-            'password2': 'cat'
+            'password': 'catcat',
+            'password2': 'catcat'
         })
-        self.assertTrue('无效的账号。' in response.data)
+        self.assertTrue('无效的账号' in response.data)
         response = self.client.post(url_for('auth.password_reset', token=token), data={
             'email': 'john@example.com',
-            'password': 'cat',
-            'password2': 'cat'
+            'password': 'catcat',
+            'password2': 'catcat'
         }, follow_redirects=True)
-        self.assertTrue('你的密码已重设。' in response.data)
+        self.assertTrue('你的密码已重设' in response.data)
 
     def test_08_error_handler(self):
         response = self.client.get(url_for('auth.forbidden'))
