@@ -16,17 +16,28 @@
     <div class="row">
     <div class="panel panel-default">
     <table class="table table-hover followers">
-        <thead><tr><th>栏目</th><th>父栏目</th><th>子栏目</th><th>文章数</th><th>操作</th></tr></thead>
+        <thead><tr><th>栏目</th><th>父栏目</th><th>子栏目</th><th>文章数</th><th>文章</th><th>操作</th></tr></thead>
     {% if categories %}
         {% for category in categories %}
         <tr>
             <td>{{ category.name }}</td>
-            <td>{{ category.parent_category }}</td>
+            <td>{{ category.parent_category.name }}</td>
             <td>
-                {{  category.son_categories }}
+                {% for son_category in category.son_categories %}
+                    {% if not loop.first %}&nbsp;{% endif %}
+                {{  son_category.name }}
+                {% endfor %}
             </td>
             <td>
-                {{ category.count }}
+                {{ category.posts.count() }}
+            </td>
+            <td>
+            {% for article in category.posts %}
+            {% if not loop.first %}&nbsp;{% endif %}
+                &lt;&lt;
+                <a href="{{ url_for('post.article',post_id=article.id) }}" target="_blank">{{ article.title }}</a>
+                &gt;&gt;
+            {% endfor %}
             </td>
             <td>
                 {% if category.id != 1 %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}CodeBlog - {{ title }}{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h4>{{ title }}</h4>
+</div>
+<div class="panel panel-primary">
+<table class="table table-hover followers">
+{% if talks %}
+    <thead>
+    <tr>
+        <th>#</th><th>author</th><th>内容</th><th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for talk in talks %}
+    <tr>
+        <td>{{ talk.id }}</td>
+        <td>
+            <a href="{{ url_for('main.user',username=talk.author.username) }}" target="_blank">
+                {{ talk.author.username }}
+            </a>
+        </td>
+        <td>{{ talk.body | truncate(99, true)}}</td>
+        <td>
+            <div  class="btn-group-vertical">
+            <a type="button" class="btn btn-sm btn-warning" href="{{ url_for('post.edit_talk', post_id=talk.id) }}" target="_blank">修改</a>
+            <a type="button" class="btn btn-sm btn-danger"
+               href="{{ url_for('post.delete_post', post_id=talk.id) }}?next={{ request.url }}">删除</a>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+{% endif %}
+{% if articles %}
+    <thead>
+    <tr>
+        <th>#</th><th>author</th><th>timestamp</th>
+        <th>last_edit</th><th>栏目</th><th>标签</th>
+        <th>摘要</th><th>内容</th><th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for article in articles %}
+    <tr>
+        <td>{{ article.id }}</td>
+        <td>
+            <a href="{{ url_for('main.user',username=article.author.username) }}" target="_blank">
+                {{ article.author.username }}
+            </a>
+        </td>
+        <td>{{ moment(article.timestamp).format('YY-MM-DD HH:mm') }}</td>
+        <td>{{ moment(article.last_edit).format('YY-MM-DD HH:mm') }}</td>
+        <td>{{ article.category.name }}</td>
+        <td>{% for tag in article.tags %}{% if not loop.first %},{% endif %}{{ tag.content }}{% endfor %}</td>
+        <td>{{ article.summary | truncate(50, true) }}</td>
+        <td>{{ article.body | truncate(99, true) }}</td>
+        <td>
+            <div  class="btn-group-vertical">
+            <a type="button" class="btn btn-sm btn-warning" href="{{ url_for('post.edit_article', post_id=article.id) }}">修改</a>
+            <a type="button" class="btn btn-sm btn-danger"
+               href="{{ url_for('post.delete_post', post_id=article.id) }}?next={{ request.url }}">删除</a>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+{% endif %}
+</table>
+</div>
+{% if pagination and pagination.total//pagination.per_page %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, request.endpoint) }}
+</div>
+{% endif %}
+{% endblock %}

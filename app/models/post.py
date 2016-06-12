@@ -156,6 +156,9 @@ class Tag(db.Model):
         db.session.commit()
 
     def delete(self):
+        for post_need_changed in self.posts:
+            post_need_changed.tags.remove(self)
+            post_need_changed.save()
         db.session.delete(self)
         db.session.commit()
 

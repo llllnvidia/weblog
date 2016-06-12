@@ -6,7 +6,7 @@ from app.decorators import admin_required, permission_required
 from . import admin_manager
 from .forms import EditProfileAdminForm, CategoryForm
 from app.models.account import User, Role, Permission
-from app.models.post import Comment, Category, Post
+from app.models.post import Comment, Category, Post, Tag
 
 
 @admin_manager.route('/new/profile', methods=['GET', 'POST'])
@@ -96,9 +96,7 @@ def users():
     pagination = User.query.order_by(User.last_seen.desc()).paginate(
         page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
-    users_list = [{'id': item.id, 'user': item.username, 'name': item.name,
-                   'member_since': item.member_since,
-                   'last_seen': item.last_seen}for item in pagination.items]
+    users_list = pagination.items
     return render_template('admin_manager/users.html', pagination=pagination, users=users_list)
 
 
@@ -121,20 +119,7 @@ def categories(category_id=None):
     pagination = Category.query.filter_by().paginate(
         page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
-    categories_list = list()
-    for item in pagination.items:
-        arg = {'id': item.id, 'name': item.name}
-        if item.parent_category:
-            arg.update({'parent_category': Category.query.filter_by(id=item.parent_id).first().name})
-        else:
-            arg.update({'parent_category': 'None'})
-        if item.son_categories:
-            arg.update({'son_categories': ' '.join([cg.name for cg in item.son_categories])})
-            arg.update({'count': item.posts_count()})
-        else:
-            arg.update({'son_categories': 'None'})
-            arg.update({'count': item.posts_count()})
-        categories_list.append(arg)
+    categories_list = pagination.items
     if category_id:
         category = Category.query.filter_by(id=category_id).first()
         form = CategoryForm()
@@ -146,8 +131,8 @@ def categories(category_id=None):
         form.name.data = category.name
         form.parent.choices = [(category.parent_id,
                                 Category.query.filter_by(id=category.parent_id).first().name)]
-        return render_template('admin_manager/categories.html', title="所有栏目", form=form,
-                               endpoint='admin_manager.categories', pagination=pagination, categories=categories_list)
+        return render_template('admin_manager/categories.html', form=form,
+                               pagination=pagination, categories=categories_list)
     else:
         form = CategoryForm()
         if request.method == 'POST' and form.validate():
@@ -178,4 +163,38 @@ def talks():
         page, per_page=current_app.config['POSTS_PER_PAGE'],
         error_out=False)
     talks_list = pagination.items
-    return render_template('admin_manager/talks.html', talks=talks_list, pagination=pagination)
+    return render_template('admin_manager/posts.html', title='所有吐槽', talks=talks_list, pagination=pagination)
+
+
+@admin_manager.route('/articles', methods=['GET', 'POST'])
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def articles():
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.filter_by(is_article=True).order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    articles_list = pagination.items
+    return render_template('admin_manager/posts.html', title='所有博文', articles=articles_list, pagination=pagination)
+
+
+@admin_manager.route('/tags', methods=['GET', 'POST'])
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def tags():
+    page = request.args.get('page', 1, type=int)
+    pagination = Tag.query.paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    tags_list = pagination.items
+    return render_template('admin_manager/tags.html', tags=tags_list, pagination=pagination)
+
+
+@admin_manager.route('/delete/tag/<int:tag_id>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def delete_tag(tag_id):
+    tag_delete = Tag.query.get_or_404(tag_id)
+    tag_delete.delete()
+    flash('已删除！')
+    return redirect(url_for('admin_manager.tags'))

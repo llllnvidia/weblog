@@ -17,16 +17,18 @@
     <div class="row">
     <div class="panel panel-default">
     <table class="table table-hover">
-        <thead><tr><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th><th>操作</th></tr></thead>
+        <thead><tr><th>#</th><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th><th>文章数</th><th>操作</th></tr></thead>
         {% for user in users %}
         <tr>
-            <td>{{ user.user }}</td>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
             <td>{{ user.name }}</td>
             <td>{{ moment(user.member_since).format('LL') }}</td>
             <td>{{ moment(user.last_seen).format('LLL') }}</td>
+            <td>{{ user.posts.filter_by(is_article=True).count() }}</td>
             <td>
                 <div class="btn-group">
-                <a class="btn btn-default" href="{{ url_for('main.user', username = user.user) }}">
+                <a class="btn btn-default" href="{{ url_for('main.user', username=user.username) }}" target="_blank">
                     详情
                 </a>
                 {% if current_user.is_administrator() %}

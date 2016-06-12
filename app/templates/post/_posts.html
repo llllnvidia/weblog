@@ -55,7 +55,7 @@
             </div><br/>
             {% if request.endpoint == 'post.article' or not post.summary %}
                  <div id="editormd-view">
-                <textarea id="append-test" style="display:none;">{{ post.body }}</textarea>
+                <textarea id="append-test" style="display:none;">{{ post.body  }}</textarea>
                 </div>
             {% else %}
                 {{ post.summary | markdown | safe }}
