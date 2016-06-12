@@ -24,7 +24,7 @@
                 {{ talk.author.username }}
             </a>
         </td>
-        <td>{{ talk.body | truncate(99, true)}}</td>
+        <td>{{ talk.body | truncate(50, true)}}</td>
         <td>
             <div  class="btn-group-vertical">
             <a type="button" class="btn btn-sm btn-warning" href="{{ url_for('post.edit_talk', post_id=talk.id) }}" target="_blank">修改</a>
@@ -57,11 +57,12 @@
         <td>{{ moment(article.last_edit).format('YY-MM-DD HH:mm') }}</td>
         <td>{{ article.category.name }}</td>
         <td>{% for tag in article.tags %}{% if not loop.first %},{% endif %}{{ tag.content }}{% endfor %}</td>
-        <td>{{ article.summary | truncate(50, true) }}</td>
-        <td>{{ article.body | truncate(99, true) }}</td>
+        <td>{{ article.summary | truncate(25, true) }}</td>
+        <td>{{ article.body | truncate(50, true) }}</td>
         <td>
             <div  class="btn-group-vertical">
-            <a type="button" class="btn btn-sm btn-warning" href="{{ url_for('post.edit_article', post_id=article.id) }}">修改</a>
+            <a type="button" class="btn btn-sm btn-default" href="{{ url_for('post.article',post_id=article.id) }}" target="_blank">详情</a>
+            <a type="button" class="btn btn-sm btn-warning" href="{{ url_for('post.edit_article', post_id=article.id) }}" target="_blank">修改</a>
             <a type="button" class="btn btn-sm btn-danger"
                href="{{ url_for('post.delete_post', post_id=article.id) }}?next={{ request.url }}">删除</a>
             </div>
