@@ -23,7 +23,6 @@ class SeleniumTestCase(unittest.TestCase):
             pass
 
         if cls.client:
-
             cls.app = create_app('testing')
             cls.app_context = cls.app.app_context()
             cls.app_context.push()
@@ -53,6 +52,7 @@ class SeleniumTestCase(unittest.TestCase):
             cls.app_context.pop()
 
     def setUp(self):
+        self.base_rul = 'http://127.0.0.1:5000'
         if not self.client:
             self.skipTest('Web browser not available')
 
@@ -61,7 +61,7 @@ class SeleniumTestCase(unittest.TestCase):
 
     def test_00_home_page(self):
 
-        self.client.get('http://localhost:5000/')
+        self.client.get(self.base_rul + '/')
         self.assertTrue(re.search('CodeBlog', self.client.page_source))
 
         self.client.find_element_by_link_text('登陆').click()
