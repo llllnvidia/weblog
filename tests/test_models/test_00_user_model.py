@@ -4,6 +4,10 @@ import time
 from datetime import datetime
 from app import create_app, db
 from app.models.account import User, AnonymousUser, Role, Permission, Follow
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class UserModelTestCase(unittest.TestCase):

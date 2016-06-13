@@ -6,6 +6,10 @@ from app import create_app, db
 from app.models.account import User, Role
 from app.models.post import Category
 from selenium import webdriver
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class SeleniumTestCase(unittest.TestCase):
@@ -70,3 +74,6 @@ class SeleniumTestCase(unittest.TestCase):
 
         self.assertTrue(re.search('Demo', self.client.page_source))
         self.assertTrue('个人' in self.client.page_source)
+
+if __name__ == '__main__':
+    unittest.main()

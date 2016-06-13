@@ -2,6 +2,10 @@
 import unittest
 from flask import current_app
 from app import create_app, db
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class BasicsTestCase(unittest.TestCase):

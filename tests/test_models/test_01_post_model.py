@@ -4,6 +4,10 @@ from datetime import datetime
 from app import create_app, db
 from app.models.account import User, Role
 from app.models.post import Post, Category, Comment, Tag
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class PostModelTestCase(unittest.TestCase):

@@ -3,6 +3,10 @@ import unittest
 from app import create_app, db
 from app.models.account import User, Role
 from app.models.message import Dialogue, Gallery, Chat
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class MessageModelTestCase(unittest.TestCase):
