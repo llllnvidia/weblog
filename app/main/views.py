@@ -371,7 +371,8 @@ def dialogues(dialogue_id=None):
             dialogue.show = False
             dialogue.save()
             return redirect(url_for('main.dialogues'))
-        dialogue.update_chats(current_user)
+        dialogue.update_chats(current_user)     # 更新gallery.count
+        current_user.ping()     # 更新current_user.new_messages_count
         form = ChatForm()
         page = request.args.get('page', 1, type=int)
         pagination = dialogue.chats.filter_by().paginate(
