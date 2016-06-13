@@ -1,5 +1,5 @@
 # codeblog
+
 flask python
 website：
-http://linw-codeblog.daoapp.io
-Weekly update！
+http://linw-codeblog.daoapp.io Welcome！
