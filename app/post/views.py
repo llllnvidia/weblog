@@ -16,6 +16,7 @@ def txt_to_html(txt):
 
 @post.route('/article/<int:post_id>', methods=['GET', 'POST'])
 def article(post_id):
+    prev_url = request.args.get('prev_url', '')
     post_show = Post.query.get_or_404(post_id)
     if not post_show.is_article:
         abort(404)
@@ -39,7 +40,7 @@ def article(post_id):
         page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('post/article.html', posts=[post_show], form=form,
+    return render_template('post/article.html', posts=[post_show], form=form, prev_url=prev_url,
                            comments=comments, pagination=pagination, page=page)
 
 

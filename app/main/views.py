@@ -37,6 +37,7 @@ def neighbourhood():
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
 
+    prev_url = request.args.get('prev_url', '')
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category', None)
     cur_category_cookie = request.cookies.get('category', None)
@@ -51,6 +52,18 @@ def neighbourhood():
     show_talk_cookie = request.cookies.get('show_talk', None, type=int)
     show_followed = request.args.get('show_followed', None, type=int)
     show_followed_cookie = request.cookies.get('show_followed', None, type=int)
+
+    # 处理从post.article栏目&标签跳转
+    if prev_url:
+        if cur_category:
+            resp = make_response(redirect(url_for('main.neighbourhood', category=cur_category)))
+        elif cur_tag:
+            resp = make_response(redirect(url_for('main.neighbourhood', tag=cur_tag)))
+        resp.set_cookie('show_talk', '', path=url_for('main.neighbourhood'), max_age=0)
+        resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
+        resp.set_cookie('category', '', path=url_for('main.neighbourhood'), max_age=0)
+        resp.set_cookie('key', '', path=url_for('main.neighbourhood'), max_age=0)
+        return resp
 
     # show_followed
     if show_followed is None and current_user.is_authenticated:
@@ -166,6 +179,7 @@ def user(username):
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
 
+    prev_url = request.args.get('prev_url', '')
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category', None)
     cur_category_cookie = request.cookies.get('category', None)
@@ -178,6 +192,18 @@ def user(username):
     key_disable = request.args.get('key_disable', None)
     show_talk = request.args.get('show_talk', None, type=int)
     show_talk_cookie = request.cookies.get('show_talk', None, type=int)
+
+    # 处理从post.article栏目&标签跳转
+    if prev_url:
+        if cur_category:
+            resp = make_response(redirect(url_for('main.user', username=username, category=cur_category)))
+        elif cur_tag:
+            resp = make_response(redirect(url_for('main.user', username=username, tag=cur_tag)))
+        resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('category', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('key', '', path=url_for('main.user', username=username), max_age=0)
+        return resp
 
     # show_talk
     if not show_talk and not category_disable:
@@ -406,7 +432,7 @@ def new_dialogue(username):
 
 @main.route('/shutdown')
 def server_shutdown():
-    if not current_app.testing:
+    if not current_app.config['TESTING']:
         abort(404)
     shutdown = request.environ.get('werkzeug.server.shutdown')
     if not shutdown:
