@@ -153,6 +153,7 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_16_user_delete(self):
         users = User.query.all()
+        # todo : 测试是否能够通过数据库模型关系连带删除
         for user in users:
             user.delete()
         self.assertTrue(User.query.count() == 0)
@@ -201,3 +202,6 @@ class UserModelTestCase(unittest.TestCase):
         User.add_self_follows()
         self.assertTrue(user.followers.count() == 1)
         self.assertTrue(user.is_following(user))
+
+if __name__ == '__main__':
+    unittest.main()
