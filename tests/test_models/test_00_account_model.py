@@ -165,7 +165,6 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(Post.query.count() == 2)
         self.assertTrue(Comment.query.count() == 2)
         self.assertTrue(Chat.query.count() == 2)
-        # todo : 测试是否能够通过数据库模型关系连带删除
         for user in users:
             user.delete()
         self.assertTrue(User.query.count() == 0)
