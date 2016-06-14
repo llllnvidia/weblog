@@ -153,10 +153,25 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_16_user_delete(self):
         users = User.query.all()
+        from app.models.post import Post, Comment
+        from app.models.message import Chat
+        for x in range(2):
+            post_new = Post(author=users[x])
+            post_new.save()
+            comment_new = Comment(author=users[x])
+            comment_new.save()
+            users[x].get_message_from_admin(content='User', link_id=users[x].id, link_type='user')
+        self.assertTrue(User.query.count() == 2)
+        self.assertTrue(Post.query.count() == 2)
+        self.assertTrue(Comment.query.count() == 2)
+        self.assertTrue(Chat.query.count() == 2)
         # todo : 测试是否能够通过数据库模型关系连带删除
         for user in users:
             user.delete()
         self.assertTrue(User.query.count() == 0)
+        self.assertTrue(Post.query.count() == 0)
+        self.assertTrue(Comment.query.count() == 0)
+        self.assertTrue(Chat.query.count() == 0)
 
     def test_17_get_followed_posts(self):
         user = User.query.first()
