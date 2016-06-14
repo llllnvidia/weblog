@@ -2,7 +2,7 @@
 
 [Codelog](https://github.com/ZsLinw/codeblog) is powered by [Flask](http://flask.pocoo.org/).
 
-It&#39;s started in 6 May, 2015
+It&#39;s started in 6 May, 2016
 
 Codeblog aims to do it better, its features are as follow:
 
@@ -37,7 +37,7 @@ Codeblog aims to do it better, its features are as follow:
 
 - jQuery
 - BootStrap
-    - [paper theme](http://bootswatch.com/paper/)
+    - [Bootswatch paper theme](http://bootswatch.com/paper/)
 - [Editor.md](https://github.com/pandao/editor.md)
 
 ## How to run CodeBlog ?
