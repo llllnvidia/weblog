@@ -23,15 +23,15 @@ Codeblog aims to do it better, its features are as follow:
 ### Backend
 
 - Flask
-    - flask-script
-    - flask-login
-    - flask-admin
+    - Flask-Script
+    - Flask-Login
+    - Flask-Admin
     - Flask-WTF
-	- Flask-Moment
-	- Flask-SQLAlchemy
+    - Flask-Moment
+    - Flask-SQLAlchemy
     - Flask-Migrate
 - WTForms
-- markdown
+- Markdown
 
 ### Frontend
 
