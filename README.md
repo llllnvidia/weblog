@@ -1,3 +1,4 @@
+[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/codeblog?branch=master)
 # About CodeBlog
 
 [Codelog](https://github.com/ZsLinw/codeblog) is powered by [Flask](http://flask.pocoo.org/).
@@ -9,6 +10,7 @@ Codeblog aims to do it better, its features are as follow:
 - multiple user
 - roles: admin, moderator, user
 - posts, short posts, comments, tags, and categories
+- messages and mail
 - markdown support
 - admin interface
 - change configurations by configuration file or environment variable
@@ -25,11 +27,12 @@ Codeblog aims to do it better, its features are as follow:
 - Flask
     - Flask-Script
     - Flask-Login
-    - Flask-Admin
     - Flask-WTF
     - Flask-Moment
     - Flask-SQLAlchemy
     - Flask-Migrate
+    - Flask-Mail
+    - Flask-Bootstrap
 - WTForms
 - Markdown
 
