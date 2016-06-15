@@ -166,18 +166,3 @@ def password_reset(token):
             flash('重设失败。')
             return redirect(url_for('main.index'))
     return render_template('auth/reset_password.html', form=form)
-
-
-@auth.route('/forbidden')
-def forbidden():
-    abort(403)
-
-
-@auth.route('/page_not_found')
-def page_not_found():
-    abort(404)
-
-
-@auth.route('/internal_server_error')
-def internal_server_error():
-    abort(500)

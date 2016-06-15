@@ -430,6 +430,21 @@ def new_dialogue(username):
         return redirect(url_for('main.dialogues', dialogue_id=dialogue.id))
 
 
+@main.route('/forbidden')
+def forbidden():
+    abort(403)
+
+
+@main.route('/page_not_found')
+def page_not_found():
+    abort(404)
+
+
+@main.route('/internal_server_error')
+def internal_server_error():
+    abort(500)
+
+
 @main.route('/shutdown')
 def server_shutdown():
     if not current_app.config['TESTING']:
