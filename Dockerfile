@@ -15,7 +15,6 @@ RUN npm install -g n && \
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 RUN pip install --upgrade pip && \
-	pip install python-coveralls && \
     pip install supervisor gunicorn
 
 ADD supervisord.conf /etc/supervisord.conf
@@ -35,5 +34,5 @@ RUN bower install --allow-root
 RUN ln -s /usr/src/app/codeblog_nginx.conf /etc/nginx/sites-enabled
 
 EXPOSE 8000 25
-RUN coverage run --source=app manage.py test && coveralls --ignore-errors
+
 CMD ["/usr/local/bin/supervisord", "-n"]
