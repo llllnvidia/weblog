@@ -83,16 +83,11 @@ class SeleniumTestCase(unittest.TestCase):
         self.client.find_element_by_name('password').send_keys('123456')
         self.client.find_element_by_name('submit').click()
         self.assertTrue('你好, susan' in self.client.page_source)
-        self.client.get(url_for('auth.logout'))
 
         user_susan = User.query.filter_by(username='susan').first()
         token = user_susan.generate_confirmation_token()
-        self.client.get(url_for('auth.confirm', token=token))
-        self.client.find_element_by_link_text('登陆').click()
-        self.client.find_element_by_name('email').send_keys('susan@example.com')
-        self.client.find_element_by_name('password').send_keys('123456')
-        self.client.find_element_by_name('submit').click()
-        self.assertTrue('已确认你的身份，欢迎加入我们。' in self.client.page_source)
+        self.client.get(base_dir + '/auth/confirm/' + token)
+        self.assertTrue('已确认你的身份，欢迎加入我们' in self.client.page_source)
         self.assertTrue(re.search('Demo', self.client.page_source))
         self.assertTrue('个人' in self.client.page_source)
 
