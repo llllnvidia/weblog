@@ -28,10 +28,14 @@ class MessageModelTestCase(unittest.TestCase):
         admin = User.query.filter_by(username='Admin').first()
         tester = User.query.filter_by(username='tester').first()
         dialogue = Dialogue.get_dialogue(admin, tester)
+        dialogue.new_chat(author=admin, content='test')
         self.assertTrue(dialogue.galleries.count() == 2)
         self.assertTrue(Dialogue.query.count() == 1)
+        self.assertTrue(Chat.query.count() == 1)
         dialogue.delete()
         self.assertTrue(Dialogue.query.count() == 0)
+        self.assertTrue(Gallery.query.count() == 0)
+        self.assertTrue(Chat.query.count() == 0)
 
     def test_01_gallery_save_repr_and_delete(self):
         admin = User.query.filter_by(username='Admin').first()
