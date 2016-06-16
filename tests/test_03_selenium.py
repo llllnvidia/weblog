@@ -2,7 +2,6 @@
 import unittest
 import threading
 import re
-from flask import url_for
 from app import create_app, db
 from app.models.account import User, Role
 from app.models.post import Category
