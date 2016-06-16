@@ -43,6 +43,9 @@ class Post(db.Model):
         db.session.commit()
 
     def delete(self):
+        if self.comments.count():
+            for comment_need_delete in self.comments:
+                comment_need_delete.delete()
         db.session.delete(self)
         db.session.commit()
 

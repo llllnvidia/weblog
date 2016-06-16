@@ -63,6 +63,7 @@ def new_article():
                 post_new.tag(new_tag)
         post_new.ping()
         post_new.save()
+        flash('发文成功！')
         return redirect(url_for('post.article', post_id=post_new.id, page=-1))
     return render_template('post/editor.html', form=form)
 
@@ -71,6 +72,8 @@ def new_article():
 @login_required
 def edit_article(post_id):
     post_edit = Post.query.get_or_404(post_id)
+    if not post_edit.is_article:
+        abort(404)
     if current_user != post_edit.author and \
             not current_user.can(Permission.MODERATE_COMMENTS):
         abort(403)
@@ -119,8 +122,6 @@ def delete_post(post_id):
             not current_user.can(0x0f):
         abort(403)
     else:
-        for comment_need_delete in post_delete.comments:
-            comment_need_delete.delete()
         post_delete.delete()
         flash('已删除！')
     if next_url:
@@ -138,6 +139,7 @@ def new_talk():
                     is_article=False,
                     author=current_user)
         talk.save()
+        flash('吐槽成功！')
         return redirect(url_for('main.neighbourhood'))
     return render_template('post/edit_talk.html', form=form)
 
@@ -146,6 +148,8 @@ def new_talk():
 @login_required
 def edit_talk(post_id):
     talk = Post.query.get_or_404(post_id)
+    if talk.is_article:
+        abort(404)
     form = TalkForm()
     if form.validate_on_submit():
         talk.body = form.body.data

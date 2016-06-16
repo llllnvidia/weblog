@@ -28,9 +28,13 @@ class PostModelTestCase(unittest.TestCase):
     def test_00_post_save_and_delete(self):
         post = Post(body='Post is editing!')
         post.save()
-        self.assertTrue(post.id == 1)
+        comment = Comment(post=post)
+        comment.save()
+        self.assertTrue(Post.query.count() == 1)
+        self.assertTrue(Comment.query.count() == 1)
         post.delete()
         self.assertTrue(Post.query.count() == 0)
+        self.assertTrue(Comment.query.count() == 0)
 
     def test_01_post_repr(self):
         admin = User.query.get(1)
