@@ -258,12 +258,12 @@ class FlaskClientTestCase(unittest.TestCase):
         self.assertTrue('你的密码已重设' in response.data)
 
     def test_08_error_handler(self):
-        response = self.client.get(url_for('auth.forbidden'))
+        response = self.client.get(url_for('main.forbidden'))
         self.assertTrue(response.status_code == 403)
         self.assertTrue(b'<h1 align="center">Forbidden</h1>' in response.data)
-        response = self.client.get(url_for('auth.page_not_found'))
+        response = self.client.get(url_for('main.page_not_found'))
         self.assertTrue(response.status_code == 404)
         self.assertTrue(b'<h1 align="center">NOT FOUND</h1>' in response.data)
-        response = self.client.get(url_for('auth.internal_server_error'))
+        response = self.client.get(url_for('main.internal_server_error'))
         self.assertTrue(response.status_code == 500)
         self.assertTrue(b'<h1 align="center">Internal Server Error</h1>' in response.data)
