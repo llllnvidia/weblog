@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=)](https://coveralls.io/github/ZsLinw/codeblog?branch=)
+[![Build Status](https://travis-ci.org/ZsLinw/codeblog.svg?branch=master)](https://travis-ci.org/ZsLinw/codeblog)&nbsp;[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/codeblog?branch=master)
 # About CodeBlog
 
 [Codelog](https://github.com/ZsLinw/codeblog) is powered by [Flask](http://flask.pocoo.org/).
