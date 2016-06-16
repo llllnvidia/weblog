@@ -113,9 +113,13 @@ class PostModelTestCase(unittest.TestCase):
         tag = Tag('test')
         self.assertTrue(Tag.query.count() == 0)
         tag.save()
+        post = Post(tags=[tag])
+        post.save()
         self.assertTrue(Tag.query.count() == 1)
+        self.assertTrue(tag in post.tags)
         tag.delete()
         self.assertTrue(Tag.query.count() == 0)
+        self.assertTrue(len(post.tags) == 0)
 
     def test_09_tag_and_post(self):
         tag = Tag('test')
