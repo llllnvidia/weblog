@@ -86,7 +86,7 @@ class SeleniumTestCase(unittest.TestCase):
 
         user_susan = User.query.filter_by(username='susan').first()
         token = user_susan.generate_confirmation_token()
-        self.client.get(base_dir + '/auth/confirm/' + token)
+        self.client.get(self.base_url + '/auth/confirm/' + token)
         self.assertTrue('已确认你的身份，欢迎加入我们' in self.client.page_source)
         self.assertTrue(re.search('Demo', self.client.page_source))
         self.assertTrue('个人' in self.client.page_source)
