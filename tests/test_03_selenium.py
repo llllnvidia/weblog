@@ -88,6 +88,7 @@ class SeleniumTestCase(unittest.TestCase):
         user_susan = User.query.filter_by(username='susan').first()
         token = user_susan.generate_confirmation_token()
         self.client.get(url_for('auth.confirm', token=token))
+        self.client.find_element_by_link_text('登陆').click()
         self.client.find_element_by_name('email').send_keys('susan@example.com')
         self.client.find_element_by_name('password').send_keys('123456')
         self.client.find_element_by_name('submit').click()
