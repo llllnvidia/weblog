@@ -79,8 +79,6 @@ def edit_article(post_id):
         abort(403)
     if post_edit.category:
         form = ArticleForm(category=post_edit.category.id)
-    else:
-        form = ArticleForm()
     if request.method == 'POST' and form.validate():
         post_edit.title = form.title.data
         post_edit.body = request.form['editor-markdown-doc']

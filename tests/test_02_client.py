@@ -305,9 +305,13 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('吐槽成功' in response.data)
         self.assertTrue('test' == talk.body)
         # worry entry
+        response = self.client.get(url_for('post.article', post_id=talk.id))
+        self.assertTrue('NOT FOUND' in response.data)
         response = self.client.get(url_for('post.edit_article', post_id=talk.id))
         self.assertTrue('NOT FOUND' in response.data)
         # edit talk
+        response = self.client.get(url_for('post.edit_talk', post_id=talk.id))
+        self.assertTrue('test' in response.data)
         response = self.client.post(url_for('post.edit_talk', post_id=talk.id), data={
             'body': 'test_changed'
         }, follow_redirects=True)
@@ -362,6 +366,12 @@ class FlaskClientTestCase01(unittest.TestCase):
         # edit post
         new_category = Category(name='test', parent_category=Category.query.first())
         new_category.save()
+        response = self.client.get(url_for('post.edit_article', post_id=post.id))
+        self.assertTrue('title' in response.data)
+        self.assertTrue('summary' in response.data)
+        self.assertTrue('test' in response.data)
+        self.assertTrue('test again' in response.data)
+        self.assertTrue('None' in response.data)
         response = self.client.post(url_for('post.edit_article', post_id=post.id), data={
             'title': 'title again',
             'summary': 'summary again',
