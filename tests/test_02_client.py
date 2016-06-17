@@ -298,8 +298,8 @@ class FlaskClientTestCase01(unittest.TestCase):
             'body': 'test'
         }, follow_redirects=True)
         talk = Post.query.first()
-        self.assertTrue('test' == talk.body)
         self.assertTrue('吐槽成功' in response.data)
+        self.assertTrue('test' == talk.body)
         response = self.client.get(url_for('post.edit_article', post_id=talk.id))
         self.assertTrue('NOT FOUND' in response.data)
         response = self.client.post(url_for('post.edit_talk', post_id=talk.id), data={
@@ -308,5 +308,51 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('test_changed' == talk.body)
         self.assertTrue('已修改' in response.data)
         response = self.client.get(url_for('post.delete_post', post_id=talk.id), follow_redirects=True)
+        self.assertTrue(Post.query.count() == 0)
+        self.assertTrue('已删除' in response.data)
+
+    def test_01_post(self):
+        # login
+        response = self.client.post(url_for('auth.login'), data={
+            'email': 'Admin@CodeBlog.com',
+            'password': '1234',
+            'remember_me': True
+        }, follow_redirects=True)
+        self.assertTrue('个人' in response.data)
+        # new post
+        response = self.client.post(url_for('post.new_article'), data={
+            'title': 'title',
+            'summary': 'summary',
+            'editor-markdown-doc': 'test',
+            'category': 1,
+            'tags': 'TEST,test again'
+        }, follow_redirects=True)
+        post = Post.query.first()
+        self.assertTrue('发文成功' in response.data)
+        self.assertTrue('title' == post.title)
+        self.assertTrue('summary' == post.summary)
+        self.assertTrue('test' == post.body)
+        self.assertTrue('None' == post.category.name)
+        self.assertTrue('TEST' in [tag.content for tag in post.tags])
+        self.assertTrue('test again' in [tag.content for tag in post.tags])
+        # edit post
+        new_category = Category(name='test', parent_category=Category.query.first())
+        new_category.save()
+        response = self.client.post(url_for('post.edit_article', post_id=post.id), data={
+            'title': 'title again',
+            'summary': 'summary again',
+            'editor-markdown-doc': 'test again',
+            'category': 2,
+            'tags': 'TEST'
+        }, follow_redirects=True)
+        self.assertTrue('该文章已修改' in response.data)
+        self.assertTrue('title again' == post.title)
+        self.assertTrue('summary again' == post.summary)
+        self.assertTrue('test again' == post.body)
+        self.assertTrue('test' == post.category.name)
+        self.assertFalse('test again' in [tag.content for tag in post.tags])
+        self.assertTrue('TEST' in [tag.content for tag in post.tags])
+        # delete post
+        response = self.client.get(url_for('post.delete_post', post_id=post.id), follow_redirects=True)
         self.assertTrue(Post.query.count() == 0)
         self.assertTrue('已删除' in response.data)
