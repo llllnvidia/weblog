@@ -353,6 +353,9 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('None' == post.category.name)
         self.assertTrue('TEST' in [tag.content for tag in post.tags])
         self.assertTrue('test again' in [tag.content for tag in post.tags])
+        # show post
+        response = self.client.get(url_for('post.article', post_id=post.id))
+        self.assertTrue('title' in response.data)
         # worry entry
         response = self.client.get(url_for('post.edit_talk', post_id=post.id))
         self.assertTrue('NOT FOUND' in response.data)
@@ -373,6 +376,27 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('test' == post.category.name)
         self.assertFalse('test again' in [tag.content for tag in post.tags])
         self.assertTrue('TEST' in [tag.content for tag in post.tags])
+        # worry user
+        response = self.client.get(url_for('auth.logout'), follow_redirects=True)
+        self.assertTrue('已注销' in response.data)
+        response = self.client.post(url_for('auth.login'), data={
+            'email': 'user@CodeBlog.com',
+            'password': '1234',
+            'remember_me': True
+        }, follow_redirects=True)
+        self.assertTrue('个人' in response.data)
+        response = self.client.get(url_for('post.edit_article', post_id=post.id))
+        self.assertTrue('Forbidden' in response.data)
+        response = self.client.get(url_for('post.delete_post', post_id=post.id), follow_redirects=True)
+        self.assertTrue('Forbidden' in response.data)
+        response = self.client.get(url_for('auth.logout'), follow_redirects=True)
+        self.assertTrue('已注销' in response.data)
+        response = self.client.post(url_for('auth.login'), data={
+            'email': 'Admin@CodeBlog.com',
+            'password': '1234',
+            'remember_me': True
+        }, follow_redirects=True)
+        self.assertTrue('个人' in response.data)
         # delete post
         response = self.client.get(url_for('post.delete_post', post_id=post.id), follow_redirects=True)
         self.assertTrue(Post.query.count() == 0)
