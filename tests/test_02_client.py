@@ -288,25 +288,32 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.app_context.pop()
 
     def test_00_short_post(self):
+        # login
         response = self.client.post(url_for('auth.login'), data={
             'email': 'Admin@CodeBlog.com',
             'password': '1234',
             'remember_me': True
         }, follow_redirects=True)
         self.assertTrue('个人' in response.data)
+        # new talk
+        response = self.client.get(url_for('post.new_talk'))
+        self.assertTrue('吐槽' in response.data)
         response = self.client.post(url_for('post.new_talk'), data={
             'body': 'test'
         }, follow_redirects=True)
         talk = Post.query.first()
         self.assertTrue('吐槽成功' in response.data)
         self.assertTrue('test' == talk.body)
+        # worry entry
         response = self.client.get(url_for('post.edit_article', post_id=talk.id))
         self.assertTrue('NOT FOUND' in response.data)
+        # edit talk
         response = self.client.post(url_for('post.edit_talk', post_id=talk.id), data={
             'body': 'test_changed'
         }, follow_redirects=True)
         self.assertTrue('test_changed' == talk.body)
         self.assertTrue('已修改' in response.data)
+        # delete talk
         response = self.client.get(url_for('post.delete_post', post_id=talk.id), follow_redirects=True)
         self.assertTrue(Post.query.count() == 0)
         self.assertTrue('已删除' in response.data)
@@ -320,6 +327,17 @@ class FlaskClientTestCase01(unittest.TestCase):
         }, follow_redirects=True)
         self.assertTrue('个人' in response.data)
         # new post
+        response = self.client.get(url_for('post.new_article'))
+        self.assertTrue('博文' in response.data)
+        response = self.client.post(url_for('post.new_article'), data={
+            'title': 'title',
+            'summary': 'summary',
+            'editor-markdown-doc': 'test',
+            'category': 1,
+            # worry tags
+            'tags': 'TEST，test again'
+        }, follow_redirects=True)
+        self.assertTrue('请使用英文逗号‘,’来分隔标签' in response.data)
         response = self.client.post(url_for('post.new_article'), data={
             'title': 'title',
             'summary': 'summary',
@@ -335,6 +353,9 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('None' == post.category.name)
         self.assertTrue('TEST' in [tag.content for tag in post.tags])
         self.assertTrue('test again' in [tag.content for tag in post.tags])
+        # worry entry
+        response = self.client.get(url_for('post.edit_talk', post_id=post.id))
+        self.assertTrue('NOT FOUND' in response.data)
         # edit post
         new_category = Category(name='test', parent_category=Category.query.first())
         new_category.save()
