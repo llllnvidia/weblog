@@ -146,7 +146,8 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('key', cur_key, path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key) | Post.summary.contains(cur_key))
+        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key) |
+                             Post.summary.contains(cur_key))
     if key_disable:
         resp = make_response(redirect(url_for('main.neighbourhood')))
         resp.set_cookie('key', '', path=url_for('main.neighbourhood'), max_age=0)
@@ -270,7 +271,8 @@ def user(username):
             resp = make_response(redirect(url_for('main.user', username=username)))
             resp.set_cookie('key', cur_key, path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
-        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key) | Post.summary.contains(cur_key))
+        query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key) |
+                             Post.summary.contains(cur_key))
     if key_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
         resp.set_cookie('key', '', path=url_for('main.user', username=username), max_age=0)
