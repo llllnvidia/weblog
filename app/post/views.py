@@ -87,7 +87,8 @@ def edit_article(post_id):
         post_edit.is_article = True
         tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
         if tags:
-            for tag in post_edit.tags:
+            post_tags = [tag for tag in post_edit.tags]
+            for tag in post_tags:
                 if tag.content not in tags:
                     post_edit.not_tag(tag)
             for tag in tags:

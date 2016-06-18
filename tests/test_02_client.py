@@ -433,3 +433,35 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue(Post.query.count() == 0)
         self.assertTrue('已删除' in response.data)
 
+    def test_02_comment(self):
+        # login
+        response = self.client.post(url_for('auth.login'), data={
+            'email': 'Admin@CodeBlog.com',
+            'password': '1234',
+            'remember_me': True
+        }, follow_redirects=True)
+        self.assertTrue('个人' in response.data)
+        # new post
+        response = self.client.post(url_for('post.new_article'), data={
+            'title': 'title',
+            'summary': 'summary',
+            'editor-markdown-doc': 'test',
+            'category': 1,
+            'tags': 'TEST,test again'
+        }, follow_redirects=True)
+        post = Post.query.first()
+        self.assertTrue('发文成功' in response.data)
+        # new comment
+        response = self.client.post(url_for('post.article', post_id=post.id), data={
+            'body': 'test comment'
+        }, follow_redirects=True)
+        self.assertTrue('你的评论已提交' in response.data)
+        # worry user
+        response = self.client.get(url_for('auth.logout'), follow_redirects=True)
+        self.assertTrue('已注销' in response.data)
+        response = self.client.post(url_for('post.article', post_id=post.id), data={
+            'body': 'test comment'
+        }, follow_redirects=True)
+        self.assertTrue('请先登录' in response.data)
+
+
