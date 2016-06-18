@@ -31,9 +31,9 @@ class FlaskClientTestCase00(unittest.TestCase):
 
     def test_01_register(self):
         # register a new account
-        response = self.client.get(url_for('auth.register')[22:])
+        response = self.client.get(url_for('auth.register')[21:])
         self.assertTrue(re.search('Email', response.data))
-        response = self.client.post(url_for('auth.register')[22:], data={
+        response = self.client.post(url_for('auth.register')[21:], data={
             'email': 'john_example.com',
             'username': 'john',
             'password': 'cat_cat',
@@ -41,14 +41,14 @@ class FlaskClientTestCase00(unittest.TestCase):
         })
         self.assertTrue(re.search('请输入合法的邮箱地址', response.data))
         self.assertTrue(re.search('两个密码必须相同', response.data))
-        response = self.client.post(url_for('auth.register')[22:], data={
+        response = self.client.post(url_for('auth.register')[21:], data={
             'email': 'john@example.com',
             'username': 'john',
             'password': 'cat_cat',
             'password2': 'cat_cat'
         }, follow_redirects=True)
         self.assertTrue('一封包含身份确认链接的邮件已发往你的邮箱' in response.data)
-        response = self.client.post(url_for('auth.register')[22:], data={
+        response = self.client.post(url_for('auth.register')[21:], data={
             'email': 'john@example.com',
             'username': 'john',
             'password': 'cat_cat',
@@ -62,24 +62,24 @@ class FlaskClientTestCase00(unittest.TestCase):
         User(email='john@example.com',
              password='cat_cat',
              username='john')
-        response = self.client.get(url_for('auth.login')[22:])
+        response = self.client.get(url_for('auth.login')[21:])
         self.assertTrue(re.search('忘记密码？', response.data))
-        response = self.client.post(url_for('auth.login')[22:], data={
+        response = self.client.post(url_for('auth.login')[21:], data={
             'email': 'john_example.com',
             'password': 'cat_cat'
         })
         self.assertTrue(re.search('请输入合法的邮箱地址', response.data))
-        response = self.client.post(url_for('auth.login')[22:], data={
+        response = self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.com',
             'password': 'cat_catt'
         })
         self.assertTrue(re.search('无效的用户名或密码', response.data))
-        response = self.client.post(url_for('auth.login')[22:], data={
+        response = self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.org',
             'password': 'cat_cat'
         })
         self.assertTrue(re.search('无效的用户名或密码', response.data))
-        response = self.client.post(url_for('auth.login')[22:], data={
+        response = self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'remember_me': True
@@ -92,24 +92,24 @@ class FlaskClientTestCase00(unittest.TestCase):
         user = User(email='john@example.com',
                     password='cat_cat',
                     username='john')
-        self.client.post(url_for('auth.login')[22:], data={
+        self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'remember_me': True
         }, follow_redirects=True)
         token = 'asdhfjasdkhfadsfasdfasdf'
-        response = self.client.get(url_for('auth.confirm', token=token)[22:],
+        response = self.client.get(url_for('auth.confirm', token=token)[21:],
                                    follow_redirects=True)
         self.assertTrue('确认链接非法或已过期' in response.data)
-        response = self.client.get(url_for('auth.resend_confirmation')[22:],
+        response = self.client.get(url_for('auth.resend_confirmation')[21:],
                                    follow_redirects=True)
         self.assertTrue('一封新的包含身份确认链接的邮件已发往你的邮箱' in response.data)
         token = user.generate_confirmation_token()
-        response = self.client.get(url_for('auth.confirm', token=token)[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.confirm', token=token)[21:], follow_redirects=True)
         self.assertTrue('已确认你的身份，欢迎加入我们' in response.data)
-        response = self.client.get(url_for('auth.confirm', token=token)[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.confirm', token=token)[21:], follow_redirects=True)
         self.assertTrue('Github' in response.data)
-        response = self.client.get(url_for('auth.unconfirmed')[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.unconfirmed')[21:], follow_redirects=True)
         self.assertTrue('Github' in response.data)
 
     def test_04_change_password(self):
@@ -118,26 +118,26 @@ class FlaskClientTestCase00(unittest.TestCase):
              password='cat_cat',
              confirmed=True,
              username='john')
-        self.client.post(url_for('auth.login')[22:], data={
+        self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'remember_me': True
         }, follow_redirects=True)
-        response = self.client.get(url_for('auth.password_change')[22:])
+        response = self.client.get(url_for('auth.password_change')[21:])
         self.assertTrue('旧密码' in response.data)
-        response = self.client.post(url_for('auth.password_change')[22:], data={
+        response = self.client.post(url_for('auth.password_change')[21:], data={
             'old_password': 'cat_catt',
             'password': 'cat_cat',
             'password2': 'cat_cat'
         }, follow_redirects=True)
         self.assertTrue('请输入正确的密码' in response.data)
-        response = self.client.post(url_for('auth.password_change')[22:], data={
+        response = self.client.post(url_for('auth.password_change')[21:], data={
             'old_password': 'cat_cat',
             'password': 'cat_cat',
             'password2': 'cat_catt'
         }, follow_redirects=True)
         self.assertTrue('两个密码必须相同' in response.data)
-        response = self.client.post(url_for('auth.password_change')[22:], data={
+        response = self.client.post(url_for('auth.password_change')[21:], data={
             'old_password': 'cat_cat',
             'password': 'cat_cat',
             'password2': 'cat_cat'
@@ -150,38 +150,38 @@ class FlaskClientTestCase00(unittest.TestCase):
                     password='cat_cat',
                     confirmed=True,
                     username='john')
-        self.client.post(url_for('auth.login')[22:], data={
+        self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'remember_me': True
         }, follow_redirects=True)
-        response = self.client.get(url_for('auth.send_confirmation_email')[22:],
+        response = self.client.get(url_for('auth.send_confirmation_email')[21:],
                                    follow_redirects=True)
         self.assertTrue('确认邮件已发送，请确认' in response.data)
         token = 'asdhfjasdkhfadsfasdfasdf'
-        response = self.client.get(url_for('auth.email_change_confirm', token=token)[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.email_change_confirm', token=token)[21:], follow_redirects=True)
         self.assertTrue('确认链接非法或已过期' in response.data)
         token = user.generate_confirmation_token()
-        response = self.client.get(url_for('auth.email_change_confirm', token=token)[22:])
+        response = self.client.get(url_for('auth.email_change_confirm', token=token)[21:])
         self.assertTrue('修改邮箱地址' in response.data)
-        response = self.client.post(url_for('auth.email_change_confirm', token=token)[22:], data={
+        response = self.client.post(url_for('auth.email_change_confirm', token=token)[21:], data={
             'email': 'john_example.com'
         }, follow_redirects=True)
         self.assertTrue('请输入合法的邮箱地址' in response.data)
-        response = self.client.post(url_for('auth.email_change_confirm', token=token)[22:], data={
+        response = self.client.post(url_for('auth.email_change_confirm', token=token)[21:], data={
             'email': 'john@example.com'
         }, follow_redirects=True)
         self.assertTrue('Email已被占用' in response.data)
-        response = self.client.post(url_for('auth.email_change_confirm', token=token)[22:], data={
+        response = self.client.post(url_for('auth.email_change_confirm', token=token)[21:], data={
             'email': 'jack@example.com'
         }, follow_redirects=True)
         self.assertTrue('修改成功' in response.data)
         self.assertTrue('一封包含身份确认链接的邮件已发往你的新邮箱' in response.data)
         token = user.generate_confirmation_token()
-        response = self.client.get(url_for('auth.confirm', token=token)[22:],
+        response = self.client.get(url_for('auth.confirm', token=token)[21:],
                                    follow_redirects=True)
         self.assertTrue('已确认你的身份，欢迎加入我们' in response.data)
-        response = self.client.get(url_for('auth.confirm', token=token)[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.confirm', token=token)[21:], follow_redirects=True)
         self.assertTrue('Github' in response.data)
 
     def test_06_logout(self):
@@ -190,12 +190,12 @@ class FlaskClientTestCase00(unittest.TestCase):
              password='cat_cat',
              confirmed=True,
              username='john')
-        self.client.post(url_for('auth.login')[22:], data={
+        self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'remember_me': True
         }, follow_redirects=True)
-        response = self.client.get(url_for('auth.logout')[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.logout')[21:], follow_redirects=True)
         self.assertTrue('已注销' in response.data)
 
     def test_07_reset_password(self):
@@ -204,40 +204,40 @@ class FlaskClientTestCase00(unittest.TestCase):
                     password='cat_cat',
                     confirmed=True,
                     username='john')
-        self.client.post(url_for('auth.login')[22:], data={
+        self.client.post(url_for('auth.login')[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'remember_me': True
         }, follow_redirects=True)
-        response = self.client.get(url_for('auth.password_reset_request')[22:])
+        response = self.client.get(url_for('auth.password_reset_request')[21:])
         self.assertTrue(response.status_code == 404)
         token = 'asdhfjasdkhfadsfasdfasdf'
-        response = self.client.get(url_for('auth.password_reset', token=token)[22:])
+        response = self.client.get(url_for('auth.password_reset', token=token)[21:])
         self.assertTrue(response.status_code == 404)
-        self.client.get(url_for('auth.logout')[22:], follow_redirects=True)
-        response = self.client.get(url_for('auth.password_reset_request')[22:])
+        self.client.get(url_for('auth.logout')[21:], follow_redirects=True)
+        response = self.client.get(url_for('auth.password_reset_request')[21:])
         self.assertTrue(response.status_code == 200)
         self.assertTrue('重设密码' in response.data)
-        response = self.client.post(url_for('auth.password_reset_request')[22:], data={
+        response = self.client.post(url_for('auth.password_reset_request')[21:], data={
             'email': 'jack_example.com'
         })
         self.assertTrue('请输入合法的邮箱地址' in response.data)
-        response = self.client.post(url_for('auth.password_reset_request')[22:], data={
+        response = self.client.post(url_for('auth.password_reset_request')[21:], data={
             'email': 'jack@example.com'
         }, follow_redirects=True)
         self.assertTrue('无效的账号' in response.data)
-        response = self.client.post(url_for('auth.password_reset_request')[22:], data={
+        response = self.client.post(url_for('auth.password_reset_request')[21:], data={
             'email': 'john@example.com'
         }, follow_redirects=True)
         self.assertTrue('一封含有重设密码的链接已发给你，请注意查收' in response.data)
-        response = self.client.post(url_for('auth.password_reset', token=token)[22:], data={
+        response = self.client.post(url_for('auth.password_reset', token=token)[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'password2': 'cat_cat'
         }, follow_redirects=True)
         self.assertTrue('重设失败' in response.data)
         token = user.generate_reset_token()
-        response = self.client.post(url_for('auth.password_reset', token=token)[22:], data={
+        response = self.client.post(url_for('auth.password_reset', token=token)[21:], data={
             'email': 'john_example.com',
             'password': 'cat_cat',
             'password2': 'cat_catt'
@@ -245,13 +245,13 @@ class FlaskClientTestCase00(unittest.TestCase):
         self.assertTrue('密码重设' in response.data)
         self.assertTrue('请输入合法的邮箱地址' in response.data)
         self.assertTrue('两个密码必须一样' in response.data)
-        response = self.client.post(url_for('auth.password_reset', token=token)[22:], data={
+        response = self.client.post(url_for('auth.password_reset', token=token)[21:], data={
             'email': 'jack@example.com',
             'password': 'cat_cat',
             'password2': 'cat_cat'
         })
         self.assertTrue('无效的账号' in response.data)
-        response = self.client.post(url_for('auth.password_reset', token=token)[22:], data={
+        response = self.client.post(url_for('auth.password_reset', token=token)[21:], data={
             'email': 'john@example.com',
             'password': 'cat_cat',
             'password2': 'cat_cat'
@@ -259,13 +259,13 @@ class FlaskClientTestCase00(unittest.TestCase):
         self.assertTrue('你的密码已重设' in response.data)
 
     def test_08_error_handler(self):
-        response = self.client.get(url_for('main.forbidden')[22:])
+        response = self.client.get(url_for('main.forbidden')[21:])
         self.assertTrue(response.status_code == 403)
         self.assertTrue(b'<h1 align="center">Forbidden</h1>' in response.data)
-        response = self.client.get(url_for('main.page_not_found')[22:])
+        response = self.client.get(url_for('main.page_not_found')[21:])
         self.assertTrue(response.status_code == 404)
         self.assertTrue(b'<h1 align="center">NOT FOUND</h1>' in response.data)
-        response = self.client.get(url_for('main.internal_server_error')[22:])
+        response = self.client.get(url_for('main.internal_server_error')[21:])
         self.assertTrue(response.status_code == 500)
         self.assertTrue(b'<h1 align="center">Internal Server Error</h1>' in response.data)
 
@@ -288,7 +288,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.app_context.pop()
 
     def login_admin(self):
-        response = self.client.post(url_for('auth.login')[22:], data={
+        response = self.client.post(url_for('auth.login')[21:], data={
             'email': 'Admin@CodeBlog.com',
             'password': '1234',
             'remember_me': True
@@ -296,7 +296,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('个人' in response.data)
 
     def login_user(self):
-        response = self.client.post(url_for('auth.login')[22:], data={
+        response = self.client.post(url_for('auth.login')[21:], data={
             'email': 'user@CodeBlog.com',
             'password': '1234',
             'remember_me': True
@@ -304,19 +304,19 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('个人' in response.data)
 
     def logout(self):
-        response = self.client.get(url_for('auth.logout')[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.logout')[21:], follow_redirects=True)
         self.assertTrue('已注销' in response.data)
 
     def new_talk(self):
-        response = self.client.get(url_for('post.new_talk')[22:])
+        response = self.client.get(url_for('post.new_talk')[21:])
         self.assertTrue('吐槽' in response.data)
-        response = self.client.post(url_for('post.new_talk')[22:], data={
+        response = self.client.post(url_for('post.new_talk')[21:], data={
             'body': 'test'
         }, follow_redirects=True)
         self.assertTrue('吐槽成功' in response.data)
 
     def new_post(self):
-        response = self.client.post(url_for('post.new_article')[22:], data={
+        response = self.client.post(url_for('post.new_article')[21:], data={
             'title': 'title',
             'summary': 'summary',
             'editor-markdown-doc': 'test',
@@ -333,20 +333,20 @@ class FlaskClientTestCase01(unittest.TestCase):
         talk = Post.query.first()
         self.assertTrue('test' == talk.body)
         # worry entry
-        response = self.client.get(url_for('post.article', post_id=talk.id)[22:])
+        response = self.client.get(url_for('post.article', post_id=talk.id)[21:])
         self.assertTrue('NOT FOUND' in response.data)
-        response = self.client.get(url_for('post.edit_article', post_id=talk.id)[22:])
+        response = self.client.get(url_for('post.edit_article', post_id=talk.id)[21:])
         self.assertTrue('NOT FOUND' in response.data)
         # edit talk
-        response = self.client.get(url_for('post.edit_talk', post_id=talk.id)[22:])
+        response = self.client.get(url_for('post.edit_talk', post_id=talk.id)[21:])
         self.assertTrue('test' in response.data)
-        response = self.client.post(url_for('post.edit_talk', post_id=talk.id)[22:], data={
+        response = self.client.post(url_for('post.edit_talk', post_id=talk.id)[21:], data={
             'body': 'test_changed'
         }, follow_redirects=True)
         self.assertTrue('test_changed' == talk.body)
         self.assertTrue('已修改' in response.data)
         # delete talk
-        response = self.client.get(url_for('post.delete_post', post_id=talk.id)[22:], follow_redirects=True)
+        response = self.client.get(url_for('post.delete_post', post_id=talk.id)[21:], follow_redirects=True)
         self.assertTrue(Post.query.count() == 0)
         self.assertTrue('已删除' in response.data)
 
@@ -354,9 +354,9 @@ class FlaskClientTestCase01(unittest.TestCase):
         # login
         self.login_admin()
         # new post with worry tags
-        response = self.client.get(url_for('post.new_article')[22:])
+        response = self.client.get(url_for('post.new_article')[21:])
         self.assertTrue('博文' in response.data)
-        response = self.client.post(url_for('post.new_article')[22:], data={
+        response = self.client.post(url_for('post.new_article')[21:], data={
             'title': 'title',
             'summary': 'summary',
             'editor-markdown-doc': 'test',
@@ -375,21 +375,21 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('TEST' in [tag.content for tag in post.tags])
         self.assertTrue('test again' in [tag.content for tag in post.tags])
         # show post
-        response = self.client.get(url_for('post.article', post_id=post.id)[22:])
+        response = self.client.get(url_for('post.article', post_id=post.id)[21:])
         self.assertTrue('title' in response.data)
         # worry entry
-        response = self.client.get(url_for('post.edit_talk', post_id=post.id)[22:])
+        response = self.client.get(url_for('post.edit_talk', post_id=post.id)[21:])
         self.assertTrue('NOT FOUND' in response.data)
         # edit post
         new_category = Category(name='test', parent_category=Category.query.first())
         new_category.save()
-        response = self.client.get(url_for('post.edit_article', post_id=post.id)[22:])
+        response = self.client.get(url_for('post.edit_article', post_id=post.id)[21:])
         self.assertTrue('title' in response.data)
         self.assertTrue('summary' in response.data)
         self.assertTrue('test' in response.data)
         self.assertTrue('test again' in response.data)
         self.assertTrue('None' in response.data)
-        response = self.client.post(url_for('post.edit_article', post_id=post.id)[22:], data={
+        response = self.client.post(url_for('post.edit_article', post_id=post.id)[21:], data={
             'title': 'title again',
             'summary': 'summary again',
             'editor-markdown-doc': 'test again',
@@ -404,7 +404,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertFalse('test again' in [tag.content for tag in post.tags])
         self.assertTrue('TEST' in [tag.content for tag in post.tags])
         self.assertTrue('TEST_TEST' in [tag.content for tag in post.tags])
-        response = self.client.post(url_for('post.edit_article', post_id=post.id)[22:], data={
+        response = self.client.post(url_for('post.edit_article', post_id=post.id)[21:], data={
             'title': 'title again',
             'summary': 'summary again',
             'editor-markdown-doc': 'test again',
@@ -415,7 +415,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertFalse('TEST_TEST' in [tag.content for tag in post.tags])
         self.assertTrue('TEST' in [tag.content for tag in post.tags])
         self.assertTrue('test again' in [tag.content for tag in post.tags])
-        response = self.client.post(url_for('post.edit_article', post_id=post.id)[22:], data={
+        response = self.client.post(url_for('post.edit_article', post_id=post.id)[21:], data={
             'title': 'title again',
             'summary': 'summary again',
             'editor-markdown-doc': 'test again',
@@ -427,15 +427,15 @@ class FlaskClientTestCase01(unittest.TestCase):
         # worry user
         self.logout()
         self.login_user()
-        response = self.client.get(url_for('post.edit_article', post_id=post.id)[22:])
+        response = self.client.get(url_for('post.edit_article', post_id=post.id)[21:])
         self.assertTrue('Forbidden' in response.data)
-        response = self.client.get(url_for('post.delete_post', post_id=post.id)[22:], follow_redirects=True)
+        response = self.client.get(url_for('post.delete_post', post_id=post.id)[21:], follow_redirects=True)
         self.assertTrue('Forbidden' in response.data)
-        response = self.client.get(url_for('auth.logout')[22:], follow_redirects=True)
+        response = self.client.get(url_for('auth.logout')[21:], follow_redirects=True)
         self.assertTrue('已注销' in response.data)
         self.login_admin()
         # delete post
-        response = self.client.get(url_for('post.delete_post', post_id=post.id)[22:], follow_redirects=True)
+        response = self.client.get(url_for('post.delete_post', post_id=post.id)[21:], follow_redirects=True)
         self.assertTrue(Post.query.count() == 0)
         self.assertTrue('已删除' in response.data)
 
@@ -446,19 +446,19 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.new_post()
         post = Post.query.first()
         # new comment
-        response = self.client.post(url_for('post.article', post_id=post.id)[22:], data={
+        response = self.client.post(url_for('post.article', post_id=post.id)[21:], data={
             'body': 'test comment'
         }, follow_redirects=True)
         self.assertTrue('你的评论已提交' in response.data)
         # user is none
         self.logout()
-        response = self.client.post(url_for('post.article', post_id=post.id)[22:], data={
+        response = self.client.post(url_for('post.article', post_id=post.id)[21:], data={
             'body': 'test comment'
         }, follow_redirects=True)
         self.assertIn('请先登录', response.data)
 
     def test_03_neighbourhood(self):
-        response = self.client.get(url_for('main.neighbourhood')[22:])
+        response = self.client.get(url_for('main.neighbourhood')[21:])
         self.assertIn('无栏目', response.data)
         self.assertIn('无标签', response.data)
         self.assertIn('无文章', response.data)
@@ -474,7 +474,7 @@ class FlaskClientTestCase01(unittest.TestCase):
                             category=category_test, author=User.query.first(), is_article=True)
         article_test.save()
         article_test.tag(tag_one)
-        response = self.client.get(url_for('main.neighbourhood')[22:])
+        response = self.client.get(url_for('main.neighbourhood')[21:])
         self.assertNotIn('无栏目', response.data)
         self.assertNotIn('无标签', response.data)
         self.assertNotIn('无文章', response.data)
@@ -487,25 +487,25 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('test', response.data)
         self.assertNotIn('article_body', response.data)
         # get key
-        response = self.client.get(url_for('main.neighbourhood', key='article')[22:], follow_redirects=True)
+        response = self.client.get(url_for('main.neighbourhood', key='article')[21:], follow_redirects=True)
         self.assertNotIn('test_talk', response.data)
         self.assertIn('article_title', response.data)
         self.assertIn('article_summary', response.data)
         self.assertIn('tag_one', response.data)
         self.assertIn('other', response.data)
         self.assertIn('test', response.data)
-        response = self.client.get(url_for('main.neighbourhood', key='talk')[22:], follow_redirects=True)
+        response = self.client.get(url_for('main.neighbourhood', key='talk')[21:], follow_redirects=True)
         self.assertIn('test_talk', response.data)
         self.assertNotIn('article_title', response.data)
         self.assertNotIn('tag_one', response.data)
 
     def test_04_user_page(self):
-        response = self.client.get(url_for('main.user', username='Admin')[22:])
+        response = self.client.get(url_for('main.user', username='Admin')[21:])
         self.assertIn('Admin', response.data)
         self.assertIn('无栏目', response.data)
         self.assertIn('无标签', response.data)
         self.assertIn('无文章', response.data)
-        response = self.client.get(url_for('main.user', username='tester')[22:])
+        response = self.client.get(url_for('main.user', username='tester')[21:])
         self.assertIn('tester', response.data)
         self.assertIn('无栏目', response.data)
         self.assertIn('无标签', response.data)
@@ -513,7 +513,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.login_admin()
         self.new_post()
         self.new_talk()
-        response = self.client.get(url_for('main.user', username='Admin')[22:])
+        response = self.client.get(url_for('main.user', username='Admin')[21:])
         self.assertNotIn('无栏目', response.data)
         self.assertNotIn('无标签', response.data)
         self.assertNotIn('无文章', response.data)
