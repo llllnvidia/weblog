@@ -154,21 +154,15 @@ def neighbourhood():
         return resp
 
     # query
-    if query:
-        pagination = query.order_by(Post.timestamp.desc()).paginate(
-            page, per_page=current_app.config['POSTS_PER_PAGE'],
-            error_out=False)
-        posts = pagination.items
-        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts,
-                               categories=categories_list, tags=tags, cur_tags=cur_tags,
-                               cur_category=cur_category, show_talk=show_talk, key=cur_key,
-                               show_followed=show_followed, query_category_count=query_category_count,
-                               query_tag_count=query, pagination=pagination)
-    else:
-        return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User,
-                               categories=categories_list, tags=tags, cur_tags=cur_tags,
-                               cur_category=cur_category, show_talk=show_talk, key=cur_key,
-                               show_followed=show_followed, query_category_count=query_category_count)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts,
+                           categories=categories_list, tags=tags, cur_tags=cur_tags,
+                           cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                           show_followed=show_followed, query_category_count=query_category_count,
+                           query_tag_count=query, pagination=pagination)
 
 
 @main.route('/user/<username>')
@@ -279,19 +273,14 @@ def user(username):
         return resp
 
     # query
-    if query:
-        pagination = query.order_by(Post.timestamp.desc()).paginate(
-            page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
-            error_out=False)
-        posts = pagination.items
-        return render_template('user.html', user=user_showed, posts=posts, query_category_count=query_category_count,
-                               tags=tags, query_tag_count=query,
-                               cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
-                               categories=categories_list, pagination=pagination)
-    else:
-        return render_template('user.html', user=user_showed, query_category_count=query_category_count, tags=tags,
-                               cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
-                               categories=categories_list)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('user.html', user=user_showed, posts=posts, query_category_count=query_category_count,
+                           tags=tags, query_tag_count=query,
+                           cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                           categories=categories_list, pagination=pagination)
 
 
 @main.route('/follow/<username>')
