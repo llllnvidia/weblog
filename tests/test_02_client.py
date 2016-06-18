@@ -377,7 +377,7 @@ class FlaskClientTestCase01(unittest.TestCase):
             'summary': 'summary again',
             'editor-markdown-doc': 'test again',
             'category': 2,
-            'tags': 'TEST'
+            'tags': 'TEST,TEST_TEST'
         }, follow_redirects=True)
         self.assertTrue('该文章已修改' in response.data)
         self.assertTrue('title again' == post.title)
@@ -386,6 +386,27 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue('test' == post.category.name)
         self.assertFalse('test again' in [tag.content for tag in post.tags])
         self.assertTrue('TEST' in [tag.content for tag in post.tags])
+        self.assertTrue('TEST_TEST' in [tag.content for tag in post.tags])
+        response = self.client.post(url_for('post.edit_article', post_id=post.id), data={
+            'title': 'title again',
+            'summary': 'summary again',
+            'editor-markdown-doc': 'test again',
+            'category': 2,
+            'tags': 'TEST,test again'
+        }, follow_redirects=True)
+        self.assertTrue('该文章已修改' in response.data)
+        self.assertFalse('TEST_TEST' in [tag.content for tag in post.tags])
+        self.assertTrue('TEST' in [tag.content for tag in post.tags])
+        self.assertTrue('test again' in [tag.content for tag in post.tags])
+        response = self.client.post(url_for('post.edit_article', post_id=post.id), data={
+            'title': 'title again',
+            'summary': 'summary again',
+            'editor-markdown-doc': 'test again',
+            'category': 2,
+            'tags': ''
+        }, follow_redirects=True)
+        self.assertTrue('该文章已修改' in response.data)
+        self.assertTrue(len(post.tags) == 0)
         # worry user
         response = self.client.get(url_for('auth.logout'), follow_redirects=True)
         self.assertTrue('已注销' in response.data)
@@ -411,3 +432,4 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('post.delete_post', post_id=post.id), follow_redirects=True)
         self.assertTrue(Post.query.count() == 0)
         self.assertTrue('已删除' in response.data)
+

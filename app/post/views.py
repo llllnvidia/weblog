@@ -98,8 +98,9 @@ def edit_article(post_id):
                 if new_tag not in post_edit.tags:
                     post_edit.tag(new_tag)
         else:
-            for tag in post_edit.tags:
-                    post_edit.not_tag(tag)
+            tags_delete = [tag for tag in post_edit.tags]
+            for tag in tags_delete:
+                post_edit.not_tag(tag)
         post_edit.ping()
         post_edit.save()
         flash('该文章已修改。')
