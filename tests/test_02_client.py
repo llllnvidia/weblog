@@ -464,4 +464,12 @@ class FlaskClientTestCase01(unittest.TestCase):
         }, follow_redirects=True)
         self.assertTrue('请先登录' in response.data)
 
+    def test_03_user_page(self):
+        pass
+
+    def test_04_message(self):
+        pass
+
+
+
 
