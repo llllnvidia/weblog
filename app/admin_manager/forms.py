@@ -59,5 +59,5 @@ class CategoryForm(Form):
         self.parent.choices = choices
 
     def validate_name(self, field):
-        if Category.filter(name=field.data).first():
+        if Category.query.filter_by(name=field.data).first():
             raise ValidationError('已有同名的栏目')

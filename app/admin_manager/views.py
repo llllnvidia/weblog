@@ -35,7 +35,6 @@ def edit_profile_admin(user_id=None):
         form.name.data = user_edited.name
         form.location.data = user_edited.location
         form.about_me.data = user_edited.about_me
-        return render_template('admin_manager/edit_profile_admin.html', form=form)
     else:
         form = EditProfileAdminForm()
         if form.validate_on_submit():
@@ -47,8 +46,9 @@ def edit_profile_admin(user_id=None):
                             location=form.location.data,
                             about_me=form.about_me.data,)
             new_user.save()
+            flash('用户创建成功。')
             return redirect(url_for('admin_manager.users'))
-        return render_template('admin_manager/edit_profile_admin.html', form=form)
+    return render_template('admin_manager/edit_profile_admin.html', form=form)
 
 
 @admin_manager.route('/comments')

@@ -269,6 +269,14 @@ class FlaskClientTestCase00(unittest.TestCase):
         self.assertTrue(response.status_code == 500)
         self.assertTrue(b'Internal Server Error' in response.data)
 
+    def test_09_shutdown(self):
+        self.app.testing = False
+        response = self.client.get('/shutdown')
+        self.assertIn('NOT FOUND', response.data)
+        self.app.testing = True
+        response = self.client.get('/shutdown')
+        self.assertIn('Internal Server Error', response.data)
+
 
 class FlaskClientTestCase01(unittest.TestCase):
     def setUp(self):
@@ -741,28 +749,124 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('main.new_dialogue', username='tester2'), follow_redirects=True)
         self.assertIn('tester2', response.data)
 
+    def test_08_users(self):
+        # worry user
+        self.login_user()
+        response = self.client.get(url_for('admin_manager.users'))
+        self.assertIn('Forbidden', response.data)
+        self.logout()
+        # right user
+        self.login_admin()
+        response = self.client.get(url_for('admin_manager.users'))
+        self.assertIn('tester', response.data)
+        self.assertIn('Admin', response.data)
+        # edit profile
+        response = self.client.get(url_for('admin_manager.edit_profile_admin', user_id=2))
+        self.assertIn('user@CodeBlog.com', response.data)
+        response = self.client.post(url_for('admin_manager.edit_profile_admin', user_id=2), data={
+            'email': 'tester@CodeBlog.com',
+            'username': 'tester?',
+            'confirmed': True,
+            'role': 1,
+            'name': '',
+            'location': '',
+            'about_me': ''
+        }, follow_redirects=True)
+        self.assertIn('资料已修改', response.data)
+        self.assertNotIn('user@CodeBlog.com', response.data)
+        self.assertIn('tester?', response.data)
+        # delete user
+        response = self.client.get(url_for('admin_manager.delete_user', user_id=2), follow_redirects=True)
+        self.assertIn('已删除', response.data)
+        self.assertNotIn('tester?', response.data)
+        # new user
+        response = self.client.post(url_for('admin_manager.edit_profile_admin'), data={
+            'email': 'tester@CodeBlog.com',
+            'username': 'tester?',
+            'confirmed': True,
+            'role': 1,
+            'name': '',
+            'location': '',
+            'about_me': ''
+        }, follow_redirects=True)
+        self.assertIn('用户创建成功', response.data)
+        self.assertIn('tester?', response.data)
 
-class FlaskClientTestCase02(unittest.TestCase):
-    def setUp(self):
-        self.app = create_app('testing')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-        Role.insert_roles()
-        self.client = self.app.test_client(use_cookies=True)
+    def test_09_moderate(self):
+        self.login_admin()
+        response = self.client.get(url_for('admin_manager.moderate'))
+        self.assertIn('所有评论', response.data)
+        self.new_post()
+        post = Post.query.first()
+        post.save()
+        comment = Comment(body='test comment', post=post)
+        comment.save()
+        response = self.client.get(url_for('admin_manager.moderate'))
+        self.assertIn('test comment', response.data)
+        response = self.client.get(url_for('admin_manager.moderate_disable', comment_id=1), follow_redirects=True)
+        self.assertIn('禁止显示', response.data)
+        response = self.client.get(url_for('admin_manager.moderate_enable', comment_id=1), follow_redirects=True)
+        self.assertIn('解禁成功', response.data)
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+    def test_10_categories(self):
+        self.login_admin()
+        response = self.client.get(url_for('admin_manager.categories'))
+        self.assertIn('所有栏目', response.data)
+        self.assertIn('None', response.data)
+        category = Category(name='other', parent_category=Category.query.first())
+        category.save()
+        response = self.client.get(url_for('admin_manager.categories'))
+        self.assertIn('other', response.data)
+        response = self.client.post(url_for('admin_manager.categories', category_id=2), data={
+            'name': '其他',
+            'parent': 1
+        }, follow_redirects=True)
+        self.assertIn('其他', response.data)
+        response = self.client.get(url_for('admin_manager.delete_category', category_id=2), follow_redirects=True)
+        self.assertNotIn('其他', response.data)
 
-    def test_shutdown(self):
-        self.app.testing = False
-        response = self.client.get('/shutdown')
-        self.assertIn('NOT FOUND', response.data)
-        self.app.testing = True
-        response = self.client.get('/shutdown')
-        self.assertIn('Internal Server Error', response.data)
+    def test_11_talks(self):
+        self.login_user()
+        self.new_talk()
+        self.logout()
+        self.login_admin()
+        self.new_talk()
+        response = self.client.get(url_for('admin_manager.talks'))
+        self.assertIn('所有吐槽', response.data)
+        self.assertIn('test', response.data)
+        talk_one = Post.query.first()
+        response = self.client.get('/delete/post/%s?next=/admin_manager/talks' % talk_one.id, follow_redirects=True)
+        self.assertIn('所有吐槽', response.data)
+        self.assertIn('test', response.data)
+        talk_two = Post.query.first()
+        response = self.client.get('/delete/post/%s?next=/admin_manager/talks' % talk_two.id, follow_redirects=True)
+        self.assertIn('所有吐槽', response.data)
+        self.assertNotIn('test', response.data)
+
+    def test_12_articles(self):
+        self.login_admin()
+        self.new_post()
+        response = self.client.get(url_for('admin_manager.articles'))
+        self.assertIn('所有博文', response.data)
+        self.assertIn('summary', response.data)
+        post = Post.query.first()
+        response = self.client.get('/delete/post/%s?next=/admin_manager/articles' % post.id, follow_redirects=True)
+        self.assertIn('所有博文', response.data)
+        self.assertNotIn('summary', response.data)
+
+    def test_13_tags(self):
+        self.login_admin()
+        self.new_post()
+        response = self.client.get(url_for('admin_manager.tags'))
+        self.assertIn('所有标签', response.data)
+        self.assertIn('TEST', response.data)
+        self.assertIn('test again', response.data)
+        self.client.get(url_for('admin_manager.delete_tag', tag_id=1))
+        response = self.client.get(url_for('admin_manager.delete_tag', tag_id=2), follow_redirects=True)
+        self.assertIn('所有标签', response.data)
+        self.assertNotIn('TEST', response.data)
+        self.assertNotIn('test again', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()
