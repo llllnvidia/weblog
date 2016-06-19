@@ -697,9 +697,72 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('main.not_follow', username='tester'), follow_redirects=True)
         self.assertIn('你没有关注过tester', response.data)
 
-    def test_06_message(self):
-        pass
+    def test_06_edit_profile(self):
+        self.login_user()
+        response = self.client.get(url_for('main.edit_profile'))
+        self.assertIn('修改资料', response.data)
+        response = self.client.post(url_for('main.edit_profile'), data={
+            'name': 'Susan',
+            'location': 'city',
+            'about': ''
+        }, follow_redirects=True)
+        self.assertIn('你的资料已修改', response.data)
+        self.assertIn('Susan', response.data)
+        self.assertIn('city', response.data)
 
+    def test_07_message(self):
+        self.login_user()
+        response = self.client.get(url_for('main.dialogues'))
+        self.assertIn('系统消息', response.data)
+        response = self.client.post(url_for('main.dialogues', dialogue_id=1), data={
+            'content': 'test chat'
+        }, follow_redirects=True)
+        self.assertIn('test chat', response.data)
+        self.assertNotIn('没有聊天记录', response.data)
+        self.logout()
+        self.login_admin()
+        response = self.client.get('/')
+        self.assertIn('个人 <span class="badge badge-xs">1</span>', response.data)
+        response = self.client.get(url_for('main.dialogues'))
+        self.assertIn('tester', response.data)
+        response = self.client.get(url_for('main.dialogues', dialogue_id=1))
+        self.assertNotIn('个人 <span class="badge badge-xs">1</span>', response.data)
+        self.assertIn('test chat', response.data)
+        response = self.client.get('/dialogues/1?delete_true=1', follow_redirects=True)
+        self.assertNotIn('tester', response.data)
+        response = self.client.get(url_for('main.dialogues', dialogue_id=1))
+        self.assertIn('NOT FOUND', response.data)
+        response = self.client.get(url_for('main.new_dialogue', username='tester'), follow_redirects=True)
+        self.assertIn('tester', response.data)
+        self.logout()
+        user_tester2 = User(username='tester2')
+        user_tester2.save()
+        self.login_user()
+        response = self.client.get(url_for('main.new_dialogue', username='tester2'), follow_redirects=True)
+        self.assertIn('tester2', response.data)
+
+
+class FlaskClientTestCase02(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+        Role.insert_roles()
+        self.client = self.app.test_client(use_cookies=True)
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+
+    def test_shutdown(self):
+        self.app.testing = False
+        response = self.client.get('/shutdown')
+        self.assertIn('NOT FOUND', response.data)
+        self.app.testing = True
+        response = self.client.get('/shutdown')
+        self.assertIn('Internal Server Error', response.data)
 
 if __name__ == '__main__':
     unittest.main()

@@ -11,7 +11,7 @@ from app.models.account import Permission, User
 from app.models.message import Dialogue
 from app.models.post import Post, Category, Tag
 from . import main
-from .forms import EditProfileForm, UploadImagesForm, ChatForm
+from .forms import EditProfileForm, ChatForm
 from ..decorators import permission_required
 
 
@@ -357,24 +357,11 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         current_user.save()
         flash('你的资料已修改。')
-        return redirect(url_for('.user', username=current_user.username))
+        return redirect(url_for('main.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', form=form)
-
-
-@main.route('/upload/images', methods=('GET', 'POST'))
-@login_required
-def upload_images():
-    form = UploadImagesForm()
-    if form.validate_on_submit():
-        import os
-        filename = secure_filename(form.upload.data.filename)
-        form.upload.data.save(os.path.join(current_app.config['IMG_PATH'], filename))
-        flash("上传成功！")
-        return redirect(url_for('main.upload_images'))
-    return render_template('upload.html', form=form)
 
 
 @main.route('/dialogues/<int:dialogue_id>', methods=('GET', 'POST'))

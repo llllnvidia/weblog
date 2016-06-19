@@ -12,14 +12,6 @@ class EditProfileForm(Form):
     submit = SubmitField('提交')
 
 
-class UploadImagesForm(Form):
-    upload = FileField('image', validators=[
-        FileRequired(),
-        FileAllowed(['jpg', 'png'], 'Images only!')
-    ])
-    submit = SubmitField("提交")
-
-
 class ChatForm(Form):
     content = StringField('', validators=[DataRequired(), Length(1, 200, message="太长了。")])
     submit = SubmitField('发送')
