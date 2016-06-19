@@ -280,7 +280,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         User.add_admin()
         User.add_test_user()
         Category.add_none()
-        self.client = self.app.test_client(use_cookies=True)
+        self.client = self.app.test_client()
 
     def tearDown(self):
         db.session.remove()
@@ -535,7 +535,12 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         # show followed
+        self.login_admin()
+        response = self.client.get('/neighbourhood?show_followed=1', follow_redirects=True)
+        self.assertIn('article_title', response.data)
+        self.logout()
         # get tag
+        self.client.get('/neighbourhood')
         response = self.client.get('/neighbourhood?tag=tag_one', follow_redirects=True)
         self.assertNotIn('test_talk', response.data)
         self.assertIn('article_title', response.data)
@@ -558,6 +563,8 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('tag_one', response.data)
 
     def test_04_user_page(self):
+        response = self.client.get(url_for('main.user', username='Nobody'))
+        self.assertIn('NOT FOUND', response.data)
         response = self.client.get(url_for('main.user', username='Admin'))
         self.assertIn('Admin', response.data)
         self.assertIn('无栏目', response.data)
@@ -664,6 +671,35 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('test_talk', response.data)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
+
+    def test_05_follow(self):
+        self.login_admin()
+        response = self.client.get(url_for('main.follow', username='test'), follow_redirects=True)
+        self.assertIn('NOT FOUND', response.data)
+        response = self.client.get(url_for('main.follow', username='tester'), follow_redirects=True)
+        self.assertIn('tester', response.data)
+        self.assertIn('取消关注', response.data)
+        response = self.client.get(url_for('main.follow', username='tester'), follow_redirects=True)
+        self.assertIn('你已经关注了tester', response.data)
+        response = self.client.get(url_for('main.followed_by', username='Admin'))
+        self.assertIn('tester', response.data)
+        response = self.client.get(url_for('main.followers', username='tester'))
+        self.assertIn('Admin', response.data)
+        response = self.client.get(url_for('main.followed_by', username='test'))
+        self.assertIn('NOT FOUND', response.data)
+        response = self.client.get(url_for('main.followers', username='test'))
+        self.assertIn('NOT FOUND', response.data)
+        response = self.client.get(url_for('main.not_follow', username='test'), follow_redirects=True)
+        self.assertIn('NOT FOUND', response.data)
+        response = self.client.get(url_for('main.not_follow', username='tester'), follow_redirects=True)
+        self.assertIn('tester', response.data)
+        self.assertIn('关注', response.data)
+        response = self.client.get(url_for('main.not_follow', username='tester'), follow_redirects=True)
+        self.assertIn('你没有关注过tester', response.data)
+
+    def test_06_message(self):
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

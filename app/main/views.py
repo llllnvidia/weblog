@@ -68,7 +68,7 @@ def neighbourhood():
     # show_followed
     if show_followed is None and current_user.is_authenticated:
         show_followed = show_followed_cookie
-    if show_followed:
+    if show_followed and current_user.is_authenticated:
         if not show_followed_cookie:
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
@@ -77,7 +77,7 @@ def neighbourhood():
     else:
         if show_followed_cookie:
             resp = make_response(redirect(url_for('main.neighbourhood')))
-            resp.set_cookie('show_followed', '0', path=url_for('main.neighbourhood'), max_age=60 * 3)
+            resp.set_cookie('show_followed', '', path=url_for('main.neighbourhood'), max_age=0)
             return resp
         query_category_count = query = Post.query
 
@@ -288,6 +288,8 @@ def user(username):
 @permission_required(Permission.FOLLOW)
 def follow(username):
     user_follow = User.query.filter_by(username=username).first()
+    if not user_follow:
+        abort(404)
     if current_user.is_following(user_follow):
         flash('你已经关注了%s。' % username)
         return redirect(url_for('.user', username=username))
@@ -302,6 +304,8 @@ def follow(username):
 @permission_required(Permission.FOLLOW)
 def not_follow(username):
     user_not_follow = User.query.filter_by(username=username).first()
+    if not user_not_follow:
+        abort(404)
     if current_user.is_following(user_not_follow):
         current_user.not_follow(user_not_follow)
         user_not_follow.get_message_from_admin(content=u'你失去了一位粉丝。', link_id=current_user.username, link_type='user')
