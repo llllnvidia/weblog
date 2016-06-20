@@ -842,6 +842,11 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('other', response.data)
         self.client.get(url_for('admin_manager.categories', category_id=2))
         response = self.client.post(url_for('admin_manager.categories', category_id=2), data={
+            'name': 'None',
+            'parent': 1
+        }, follow_redirects=True)
+        self.assertIn('已有同名的栏目', response.data)
+        response = self.client.post(url_for('admin_manager.categories', category_id=2), data={
             'name': '其他',
             'parent': 1
         }, follow_redirects=True)
