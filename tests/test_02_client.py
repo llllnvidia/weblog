@@ -569,6 +569,17 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('test_talk', response.data)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
+        # get something with prev_url
+        response = self.client.get('/neighbourhood?show_talk=1', follow_redirects=True)
+        self.assertIn('test_talk', response.data)
+        self.assertNotIn('article_title', response.data)
+        self.assertNotIn('tag_one', response.data)
+        self.assertIn('无标签', response.data)
+        response = self.client.get('/neighbourhood?tag=tag_one&prev_url=/article', follow_redirects=True)
+        self.assertNotIn('test_talk', response.data)
+        self.assertIn('article_title', response.data)
+        self.assertIn('tag_one', response.data)
+        self.assertNotIn('无标签', response.data)
 
     def test_04_user_page(self):
         response = self.client.get(url_for('main.user', username='Nobody'))
@@ -896,6 +907,35 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertNotIn('TEST', response.data)
         self.assertNotIn('test again', response.data)
 
+    def test_14_calculator(self):
+        self.login_user()
+        response = self.client.get(url_for('tools.calculator'))
+        self.assertIn('实验数据表', response.data)
+        self.assertIn('None', response.data)
+        response = self.client.post(url_for('tools.calculator'), data={
+            'number': '1..2'
+        }, follow_redirects=True)
+        self.assertIn('请输入一个数字', response.data)
+        response = self.client.post(url_for('tools.calculator'), data={
+            'number': '1.9'
+        }, follow_redirects=True)
+        self.assertIn('1.9', response.data)
+        for i in range(6):
+            self.client.post(url_for('tools.calculator'), data={
+                'number': '1.5%s' % i
+            })
+        response = self.client.get(url_for('tools.calculator'))
+        self.assertIn('1.51', response.data)
+        self.assertIn('1.53', response.data)
+        response = self.client.get('/tools/calculator?table_method=chauvenet', follow_redirects=True)
+        self.assertIn('<tr class="danger">', response.data)
+        response = self.client.get('/tools/calculator?number_erase=1.9', follow_redirects=True)
+        self.assertNotIn('1.9', response.data)
+        response = self.client.get('/tools/calculator?table_method=handle', follow_redirects=True)
+        self.assertNotIn('None', response.data)
+        response = self.client.get('/tools/calculator?table_method=clear', follow_redirects=True)
+        self.assertNotIn('1.51', response.data)
+        self.assertNotIn('1.53', response.data)
 
 if __name__ == '__main__':
     unittest.main()
