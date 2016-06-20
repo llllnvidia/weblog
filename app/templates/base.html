@@ -107,8 +107,8 @@
 {% block content %}
 <div class="container-fluid">
     {% for message in get_flashed_messages() %}
-    <div class="alert  alert-dismissible alert-danger">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <div class="alert  alert-dismissible" style="background: white;color: black;opacity: 0.9">
+        <button type="button" class="close" data-dismiss="alert" style="color: black">&times;</button>
         <lu>{{ message }}</lu>
     </div>
     {% endfor %}
