@@ -131,8 +131,6 @@ def categories(category_id=None):
         form.name.data = category.name
         form.parent.choices = [(category.parent_id,
                                 Category.query.filter_by(id=category.parent_id).first().name)]
-        return render_template('admin_manager/categories.html', form=form,
-                               pagination=pagination, categories=categories_list)
     else:
         form = CategoryForm()
         if request.method == 'POST' and form.validate():
@@ -140,8 +138,8 @@ def categories(category_id=None):
             new_category.save()
             flash("已添加")
             return redirect(url_for('admin_manager.categories', page=page, form=form))
-        return render_template('admin_manager/categories.html', form=form, pagination=pagination,
-                               categories=categories_list)
+    return render_template('admin_manager/categories.html', form=form, pagination=pagination,
+                           categories=categories_list)
 
 
 @admin_manager.route('/categories/delete/<int:category_id>')

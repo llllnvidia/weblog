@@ -764,6 +764,17 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('admin_manager.edit_profile_admin', user_id=2))
         self.assertIn('user@CodeBlog.com', response.data)
         response = self.client.post(url_for('admin_manager.edit_profile_admin', user_id=2), data={
+            'email': 'Admin@CodeBlog.com',
+            'username': 'Admin',
+            'confirmed': True,
+            'role': 1,
+            'name': '',
+            'location': '',
+            'about_me': ''
+        }, follow_redirects=True)
+        self.assertIn('邮箱地址已被使用', response.data)
+        self.assertIn('用户名已被使用', response.data)
+        response = self.client.post(url_for('admin_manager.edit_profile_admin', user_id=2), data={
             'email': 'tester@CodeBlog.com',
             'username': 'tester?',
             'confirmed': True,
@@ -781,8 +792,19 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertNotIn('tester?', response.data)
         # new user
         response = self.client.post(url_for('admin_manager.edit_profile_admin'), data={
+            'email': 'Admin@CodeBlog.com',
+            'username': 'Admin',
+            'confirmed': True,
+            'role': 1,
+            'name': '',
+            'location': '',
+            'about_me': ''
+        }, follow_redirects=True)
+        self.assertIn('邮箱地址已被使用', response.data)
+        self.assertIn('用户名已被使用', response.data)
+        response = self.client.post(url_for('admin_manager.edit_profile_admin'), data={
             'email': 'tester@CodeBlog.com',
-            'username': 'tester?',
+            'username': 'tester',
             'confirmed': True,
             'role': 1,
             'name': '',
@@ -790,7 +812,7 @@ class FlaskClientTestCase01(unittest.TestCase):
             'about_me': ''
         }, follow_redirects=True)
         self.assertIn('用户创建成功', response.data)
-        self.assertIn('tester?', response.data)
+        self.assertIn('tester', response.data)
 
     def test_09_moderate(self):
         self.login_admin()
@@ -813,10 +835,12 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('admin_manager.categories'))
         self.assertIn('所有栏目', response.data)
         self.assertIn('None', response.data)
-        category = Category(name='other', parent_category=Category.query.first())
-        category.save()
-        response = self.client.get(url_for('admin_manager.categories'))
+        response = self.client.post(url_for('admin_manager.categories'), data={
+            'name': 'other',
+            'parent': 1
+        }, follow_redirects=True)
         self.assertIn('other', response.data)
+        self.client.get(url_for('admin_manager.categories', category_id=2))
         response = self.client.post(url_for('admin_manager.categories', category_id=2), data={
             'name': '其他',
             'parent': 1
