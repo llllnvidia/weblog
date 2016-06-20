@@ -1,27 +1,27 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% import "_macros.html" as macros %}
-{% block title %}CodeBlog - Article{% endblock %}
+{%- extends "base.html" %}
+{%- import "bootstrap/wtf.html" as wtf %}
+{%- import "_macros.html" as macros %}
+{%- block title %}CodeBlog - Article{%- endblock %}
 
-{% block head %}
+{%- block head %}
 {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/editor.md/css/') }}editormd.preview.css" />
-{% endblock %}
+{%- endblock %}
 
-{% block page_content %}
-{% include 'post/_posts.html' %}
+{%- block page_content %}
+{%- include 'post/_posts.html' %}
 <h4 id='comments'>评论</h4>
 {{ wtf.quick_form(form) }}
 <p></p>
-{% include 'post/_comments.html' %}
-{% if pagination and pagination.total//pagination.per_page %}
+{%- include 'post/_comments.html' %}
+{%- if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.article', fragment='#comments', post_id=posts[0].id) }}
 </div>
-{% endif %}
-{% endblock %}
+{%- endif %}
+{%- endblock %}
 
-{% block scripts %}
+{%- block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}marked.min.js"></script>
 <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}prettify.min.js"></script>
@@ -48,4 +48,4 @@
         });
     });
 </script>
-{% endblock %}
+{%- endblock %}

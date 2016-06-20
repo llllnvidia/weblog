@@ -1,18 +1,18 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{%- extends "base.html" %}
+{%- import "_macros.html" as macros %}
 
-{% block title %}CodeBlog - 所有评论{% endblock %}
+{%- block title %}CodeBlog - 所有评论{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h4>所有评论</h4>
 </div>
-{% set moderate = True %}
-{% include 'post/_comments.html' %}
-{% if pagination and pagination.total//pagination.per_page %}
+{%- set moderate = True %}
+{%- include 'post/_comments.html' %}
+{%- if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, request.endpoint) }}
 </div>
-{% endif %}
-{% endblock %}
+{%- endif %}
+{%- endblock %}
     

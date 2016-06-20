@@ -1,20 +1,21 @@
-{% extends "bootstrap/base.html" %}
-{% block title %}CodeBlog{% endblock %}
-{% block head %}
+{%- extends "bootstrap/base.html" -%}
+{%- block title -%}CodeBlog{%- endblock -%}
+{%- block head -%}
 {{ super() }}
-<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<script type="text/javascript" src="{{ url_for('static', filename='bower_components/jquery/dist/') }}jquery.js"></script>
-{% endblock %}
-{% block styles %}
-    {{ super() }}
+{%- block favicon -%}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+{%- endblock -%}
+{%- endblock -%}
+{%- block styles -%}
+{{ super() }}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/paper/bootstrap.min.css">
-{% endblock %}
-{% block body %}
+{%- endblock -%}
+{%- block body -%}
     {{ super() }}
     <style>body {background: url({{ url_for('static', filename='background.png')}})repeat}</style>
-{% endblock %}
-{% block navbar %}
+{%- endblock -%}
+{%- block navbar -%}
 <div class="navbar navbar-default" role="navigation" style="z-index: 3">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -28,7 +29,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                {% if current_user.is_authenticated %}
+                {%- if current_user.is_authenticated -%}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">
@@ -38,11 +39,11 @@
                         <li><a href="/neighbourhood?show_followed=1#neighbourhood">关注</a></li>
                     </ul>     
                 </li>
-                {% else %}
+                {%- else -%}
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
-                {% endif %}
-                {% if current_user.is_authenticated %}
-                    {% if current_user.new_messages_count %}
+                {%- endif -%}
+                {%- if current_user.is_authenticated -%}
+                    {%- if current_user.new_messages_count -%}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">个人 <span class="badge badge-xs">{{ current_user.new_messages_count }}</span>
@@ -54,7 +55,7 @@
                         <li><a href="{{ url_for('post.new_talk') }}">吐槽</a></li>
                     </ul>
                 </li>
-                {% else %}
+                {%- else -%}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">个人
@@ -66,7 +67,7 @@
                         <li><a href="{{ url_for('post.new_talk') }}">吐槽</a></li>
                     </ul>
                 </li>
-                    {% endif %}
+                    {%- endif -%}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">工具
@@ -75,8 +76,8 @@
                         <li><a href="{{ url_for('tools.calculator') }}">实验数据处理器</a></li>
                     </ul>
                 </li>
-                {% endif %}
-                {% if current_user.is_authenticated and current_user.is_moderator() %}
+                {%- endif -%}
+                {%- if current_user.is_authenticated and current_user.is_moderator() -%}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
                   aria-haspopup="true" aria-expanded="false">管理
@@ -90,35 +91,32 @@
                         <li><a href="{{ url_for('admin_manager.tags') }}">所有标签</a></li>
                     </ul>
                 </li>
-                {% endif %}
+                {%- endif -%}
             </ul>
             <div>
-                {% if current_user.is_authenticated %}
+                {%- if current_user.is_authenticated -%}
                 <a href="{{ url_for('auth.logout') }}" type="button" class="btn navbar-btn navbar-right btn-default">注销</a>
-                {% else %}
+                {%- else -%}
                 <a href="{{ url_for('auth.login') }}?next={{ request.url }}" type="button" class="btn navbar-btn navbar-right btn-default">登陆</a>
-                {% endif %}
+                {%- endif -%}
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block content %}
+{%- endblock -%}
+{%- block content -%}
 <div class="container-fluid">
-    {% for message in get_flashed_messages() %}
+    {%- for message in get_flashed_messages() -%}
     <div class="alert  alert-dismissible" style="background: white;color: black;opacity: 0.9">
         <button type="button" class="close" data-dismiss="alert" style="color: black">&times;</button>
         <lu>{{ message }}</lu>
     </div>
-    {% endfor %}
-    {% block page_content %}{% endblock %}
+    {%- endfor -%}
+    {%- block page_content -%}{%- endblock -%}
 </div>
-{% endblock %}
-
-{% block scripts %}
+{%- endblock -%}
+{%- block scripts -%}
 {{ super() }}
-{{ moment.include_jquery() }}
 {{ moment.include_moment() }}
 {{ moment.lang("zh-CN") }}
-{% endblock %}
+{%- endblock -%}

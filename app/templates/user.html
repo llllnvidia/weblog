@@ -1,145 +1,145 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{%- extends "base.html" %}
+{%- import "_macros.html" as macros %}
 
-{% block title %}CodeBlog - {{ user.username }}{% endblock %}
+{%- block title %}CodeBlog - {{ user.username }}{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="container-fluid">
 <div class="well  well-lg" style="background-color: transparent">
     <h1>{{ user.username }}</h1>
-    {% if user.name or user.location %}
+    {%- if user.name or user.location %}
     <p>
-        {% if user.name %}{{ user.name }}{% endif %}
-        {% if user.location %}
+        {%- if user.name %}{{ user.name }}{%- endif %}
+        {%- if user.location %}
             From <a href="http://api.map.baidu.com/geocoder?address={{ user.location }}&output=html" target="_blank">
                {{ user.location }}
             </a>
-        {% endif %}
+        {%- endif %}
     </p>
-    {% endif %}
-    {% if current_user.is_administrator() or user == current_user %}
+    {%- endif %}
+    {%- if current_user.is_administrator() or user == current_user %}
     <p>{{ user.email }}</p>
-    {% endif %}
-    {% if user.about_me %}
+    {%- endif %}
+    {%- if user.about_me %}
         <p>{{ user.about_me }}</p>
-    {% endif %}
+    {%- endif %}
     <p>
         {{ moment(user.member_since).format('LL') }}那一天来到这个网站，
         最后一次出没在{{ moment(user.last_seen).fromNow(1) }}前。
     </p>
     <div class="btn-group">
-    {% if user == current_user %}
+    {%- if user == current_user %}
     <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">修改资料</a>
-    {% endif %}
+    {%- endif %}
     </div>
-    {% if current_user.can(Permission.FOLLOW) and user != current_user %}
-        {% if not current_user.is_following(user) %}
+    {%- if current_user.can(Permission.FOLLOW) and user != current_user %}
+        {%- if not current_user.is_following(user) %}
             <a href="{{ url_for('main.follow',username=user.username) }}"
                 class="btn btn-primary">关注</a>
-        {% else %}
+        {%- else %}
             <a href="{{ url_for('main.not_follow',username=user.username) }}"
                 class="btn btn-warning">取消关注</a>
-        {% endif %}
+        {%- endif %}
             <a href="{{ url_for('main.new_dialogue',username=user.username) }}"
                class="btn btn-primary">发消息</a>
-    {% endif %}
+    {%- endif %}
         &nbsp;
         <a href="{{ url_for('.followers',username=user.username) }}#user">粉丝</a>: <span class="badge">{{ user.followers.count() - 1 }}</span>&nbsp;
         <a href="{{ url_for('.followed_by',username=user.username) }}#user">关注</a>: <span class="badge">{{ user.followed.count() - 1 }}</span>&nbsp;
         <a href="{{ url_for('main.user',username=user.username) }}#user">文章</a>: <span class="badge">{{ user.posts.filter_by(is_article=True).count() }}</span>&nbsp;
         <a href="?show_talk=1#user">吐槽</a>: <span class="badge">{{ user.posts.filter_by(is_article=False).count() }}</span>&nbsp;
-        {% if current_user.is_authenticated and user != current_user and
+        {%- if current_user.is_authenticated and user != current_user and
             user.is_following(current_user) %}
           | <span class="label label-default">正在关注你</span>
-        {% endif %}
+        {%- endif %}
 </div>
     <hr/>
     <div class="row" id='user'>
         <aside class="col-md-3 hidden-xs">
         <form role="search" method="get" id="searchform" action="">
         <div class="well well-sm input-group" style="background-color: rgba(255, 255, 255, 1);border-radius: 5px">
-            <input type="text" name='key' id="search" value="{% if key %}{{ key }}{% endif %}" class="form-control">
+            <input type="text" name='key' id="search" value="{%- if key %}{{ key }}{%- endif %}" class="form-control">
             <span class="input-group-btn">
-            {% if key %}
+            {%- if key %}
                 <a type="button" class="btn btn-primary" href="?key_disable=1#user">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
-            {% else %}
+            {%- else %}
                 <button type="submit" id="searchsubmit" class="btn btn-primary">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
-            {% endif %}
+            {%- endif %}
             </span>
         </div>
         </form>
         <div class="panel panel-primary">
             <div class="panel-heading">栏目<a href="?category_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
             <ul class="list-group" id="listcontrol">
-            {% if query_category_count.filter(Post.is_article==False).count() %}
-                <a href="?show_talk=1#user" class="list-group-item{% if show_talk %} active{% endif %}">
+            {%- if query_category_count.filter(Post.is_article==False).count() %}
+                <a href="?show_talk=1#user" class="list-group-item{%- if show_talk %} active{%- endif %}">
                     <span class="badge">{{ query_category_count.filter(Post.is_article==False).count() }}</span>
                     吐槽
                 </a>
-            {% endif %}
-            {% for category in categories if category.posts_count(query_category_count) %}
-            {% if category.son_categories %}
-                <a href="?category={{ category.name }}#user" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
+            {%- endif %}
+            {%- for category in categories if category.posts_count(query_category_count) %}
+            {%- if category.son_categories %}
+                <a href="?category={{ category.name }}#user" class="list-group-item{%- if cur_category == category.name %} active{%- endif %}">
                     <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
-                {% for son_category in category.son_categories if son_category.posts_count(query_category_count) %}
-                    <a href="?category={{ son_category.name }}#user" class="list-group-item{% if cur_category == son_category.name %} active{% endif %}">&nbsp;&nbsp;
+                {%- for son_category in category.son_categories if son_category.posts_count(query_category_count) %}
+                    <a href="?category={{ son_category.name }}#user" class="list-group-item{%- if cur_category == son_category.name %} active{%- endif %}">&nbsp;&nbsp;
                         <span class="badge">{{ son_category.posts_count(query_category_count) }}</span>
                         {{ son_category.name }}
                     </a>
-                {% endfor %}
-            {% else %}
-                <a href="?category={{ category.name }}#user" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
+                {%- endfor %}
+            {%- else %}
+                <a href="?category={{ category.name }}#user" class="list-group-item{%- if cur_category == category.name %} active{%- endif %}">
                     <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
-            {% endif %}
-            {% else %}
-                {% if not query_category_count.filter(Post.is_article==False).count() %}
+            {%- endif %}
+            {%- else %}
+                {%- if not query_category_count.filter(Post.is_article==False).count() %}
                 <div class="panel-body">
                 无栏目
                 </div>
-                {% endif %}
-            {% endfor %}
+                {%- endif %}
+            {%- endfor %}
             </ul>
         </div>
         <div class="panel panel-primary">
             <div class="panel-heading">标签<a href="?tag_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
             <div class="panel-body">
-            {% for tag in tags if tag.posts_count(query_tag_count)%}
-                {% if tag.content in cur_tags %}
+            {%- for tag in tags if tag.posts_count(query_tag_count)%}
+                {%- if tag.content in cur_tags %}
                 <a href="?tag={{tag.content}}#user" class="btn btn-primary btn-sm" style= "margin: 4px">
                     {{ tag.content }}
                     <span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span>
                 </a>
-                {% else %}
+                {%- else %}
                 <a href="?tag={{tag.content}}#user" class="btn btn-default btn-xs" style= "margin: 4px">
                     {{ tag.content }}
                 </a>
-                {% endif %}
-            {% else %}
+                {%- endif %}
+            {%- else %}
                  无标签
-            {% endfor %}
+            {%- endfor %}
             </div>
         </div>
         </aside>
         <div class="col-md-9">
             <div>
                 <div>
-                    {% include 'post/_posts.html' %}
+                    {%- include 'post/_posts.html' %}
                 </div>
-                {% if pagination and pagination.total//pagination.per_page %}
+                {%- if pagination and pagination.total//pagination.per_page %}
                 <div>
                     {{ macros.pagination_widget(pagination, 'main.user', username=user.username) }}
                 </div>
-                {% endif %}
+                {%- endif %}
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{%- endblock %}

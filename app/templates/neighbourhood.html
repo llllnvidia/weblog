@@ -1,106 +1,106 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% import "_macros.html" as macros %}
+{%- extends "base.html" %}
+{%- import "bootstrap/wtf.html" as wtf %}
+{%- import "_macros.html" as macros %}
 
-{% block title %}CodeBlog{% endblock %}
+{%- block title %}CodeBlog{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="container-fluid">
 <div class="row" id='neighbourhood'>
     <aside class="col-md-3 hidden-xs">
     <form role="search" method="get" id="searchform" action="#neighbourhood">
         <div class="well well-sm input-group" style="background-color: rgba(255, 255, 255, 1);border-radius: 5px">
-            <input type="text" name='key' id="search" value="{% if key %}{{ key }}{% endif %}" class="form-control">
+            <input type="text" name='key' id="search" value="{%- if key %}{{ key }}{%- endif %}" class="form-control">
             <span class="input-group-btn">
-            {% if key %}
+            {%- if key %}
                 <a type="button" class="btn btn-primary" href="?key_disable=1#neighbourhood">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
-            {% else %}
+            {%- else %}
                 <button type="submit" id="searchsubmit" class="btn btn-primary">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
-            {% endif %}
+            {%- endif %}
             </span>
         </div>
     </form>
     <div class="panel panel-primary">
         <div class="panel-heading">栏目<a href="?category_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
         <ul class="list-group" id="listcontrol">
-        {% if query_category_count.filter(Post.is_article == False).count() %}
-            <a href="?show_talk=1#neighbourhood" class="list-group-item{% if show_talk %} active{% endif %}">
+        {%- if query_category_count.filter(Post.is_article == False).count() %}
+            <a href="?show_talk=1#neighbourhood" class="list-group-item{%- if show_talk %} active{%- endif %}">
                 <span class="badge">{{ query_category_count.filter(Post.is_article == False).count() }}</span>
                 吐槽
             </a>
-        {% endif %}
-        {% for category in categories  %}
-            {% if category.son_categories %}
-                <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
+        {%- endif %}
+        {%- for category in categories  %}
+            {%- if category.son_categories %}
+                <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{%- if cur_category == category.name %} active{%- endif %}">
                     <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
-                {% for son_category in category.son_categories %}
-                    <a href="?category={{ son_category.name }}#neighbourhood" class="list-group-item{% if cur_category == son_category.name %} active{% endif %}">&nbsp;&nbsp;
+                {%- for son_category in category.son_categories %}
+                    <a href="?category={{ son_category.name }}#neighbourhood" class="list-group-item{%- if cur_category == son_category.name %} active{%- endif %}">&nbsp;&nbsp;
                         <span class="badge">{{ son_category.posts_count(query_category_count) }}</span>
                         {{ son_category.name }}
                     </a>
-                {% endfor %}
-            {% else %}
-                <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{% if cur_category == category.name %} active{% endif %}">
+                {%- endfor %}
+            {%- else %}
+                <a href="?category={{ category.name }}#neighbourhood" class="list-group-item{%- if cur_category == category.name %} active{%- endif %}">
                     <span class="badge">{{ category.posts_count(query_category_count) }}</span>
                     {{ category.name }}
                 </a>
-            {% endif %}
-        {% else %}
-                {% if not query_category_count.filter(Post.is_article == False).count() %}
+            {%- endif %}
+        {%- else %}
+                {%- if not query_category_count.filter(Post.is_article == False).count() %}
                 <div class="panel-body">
                 无栏目
                 </div>
-                {% endif %}
-        {% endfor %}
+                {%- endif %}
+        {%- endfor %}
         </ul>
     </div>
     <div class="panel panel-primary">
         <div class="panel-heading">标签<a href="?tag_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
         <div class="panel-body">
-            {% for tag in tags if tag.posts_count(query_tag_count) %}
-                {% if tag.content in cur_tags %}
+            {%- for tag in tags if tag.posts_count(query_tag_count) %}
+                {%- if tag.content in cur_tags %}
                 <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-primary btn-sm" style= "margin: 4px">
                     {{ tag.content }}
                     <span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span>
                 </a>
-                {% else %}
+                {%- else %}
                 <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-default btn-xs" style= "margin: 4px">
                     {{ tag.content }}
                 </a>
-                {% endif %}
-            {% else %}
+                {%- endif %}
+            {%- else %}
                  无标签
-            {% endfor %}
+            {%- endfor %}
         </div>
     </div>
     </aside>
     <div class="col-md-9">
         <div>
             <div>
-                {% if current_user.is_authenticated %}
+                {%- if current_user.is_authenticated %}
                 <ul class="nav nav-tabs">
-                    <li role="presentation"{% if not show_followed %} class="active"{% endif %}><a href="?show_followed=0#neighbourhood">All</a></li>
-                    <li role="presentation"{% if show_followed %} class="active"{% endif %}><a href="?show_followed=1#neighbourhood">Follow</a></li>
+                    <li role="presentation"{%- if not show_followed %} class="active"{%- endif %}><a href="?show_followed=0#neighbourhood">All</a></li>
+                    <li role="presentation"{%- if show_followed %} class="active"{%- endif %}><a href="?show_followed=1#neighbourhood">Follow</a></li>
                 </ul>
                     <br/>
-                {% endif %}
+                {%- endif %}
             </div>
             <div>
-                {% include 'post/_posts.html' %}
+                {%- include 'post/_posts.html' %}
             </div>
-            {% if pagination and pagination.total//pagination.per_page %}
+            {%- if pagination and pagination.total//pagination.per_page %}
             <div>
                 {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
             </div>
-            {% endif %}
+            {%- endif %}
         </div>
     </div>
 </div>
 </div>
-{% endblock %}
+{%- endblock %}

@@ -1,24 +1,24 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{%- extends "base.html" %}
+{%- import "_macros.html" as macros %}
 
-{% block title %}Codeblog - 所有用户{% endblock %}
+{%- block title %}Codeblog - 所有用户{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h4>所有用户</h4>
 </div>
 <div class="container-fluid">
-    {% if current_user.is_administrator() %}
+    {%- if current_user.is_administrator() %}
     <div class="row">
         <a href="{{ url_for('admin_manager.edit_profile_admin') }}" type="button" class="btn btn-primary">新增用户</a>
     </div>
     <br/>
-    {% endif %}
+    {%- endif %}
     <div class="row">
     <div class="panel panel-default">
     <table class="table table-hover">
         <thead><tr><th>#</th><th>User</th><th>Name</th><th>Member_since</th><th>Last_since</th><th>文章数</th><th>操作</th></tr></thead>
-        {% for user in users %}
+        {%- for user in users %}
         <tr>
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
@@ -31,25 +31,25 @@
                 <a class="btn btn-default" href="{{ url_for('main.user', username=user.username) }}" target="_blank">
                     详情
                 </a>
-                {% if current_user.is_administrator() %}
+                {%- if current_user.is_administrator() %}
                 <a class="btn btn-warning" href="{{ url_for('admin_manager.edit_profile_admin',user_id=user.id) }}">
                     修改资料
                 </a>
                 <a class="btn btn-danger" href="{{ url_for('admin_manager.delete_user',user_id=user.id) }}">
                     删除用户
                 </a>
-                {% endif %}
+                {%- endif %}
                 </div>
             </td>
         </tr>
-        {% endfor %}
+        {%- endfor %}
     </table>
     </div>
     </div>
-    {% if pagination and pagination.total//pagination.per_page %}
+    {%- if pagination and pagination.total//pagination.per_page %}
         <div class="pagination-right">
         {{ macros.pagination_widget(pagination,request.endpoint) }}
         </div>
-    {% endif %}
+    {%- endif %}
 </div>
-{% endblock %}
+{%- endblock %}

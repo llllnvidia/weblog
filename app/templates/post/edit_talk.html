@@ -1,16 +1,16 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{%- extends "base.html" %}
+{%- import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}CodeBlog - Edit{% endblock %}
+{%- block title %}CodeBlog - Edit{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
     <div class="container-fluid well well-lg" style="background-color: rgba(255, 255, 255, 1)">
         <legend>吐槽</legend>
-        {% if request.endpoint == 'post.edit_talk' %}
+        {%- if request.endpoint == 'post.edit_talk' %}
             <a type="button" class="btn btn-sm btn-danger"
                href="{{ url_for('post.delete_post', post_id=post.id) }}?next={{ url_for('main.neighbourhood') }}">删除</a>
         <br/>
-        {% endif %}
+        {%- endif %}
         {{ wtf.quick_form(form) }}
     </div>
-{% endblock %}
+{%- endblock %}

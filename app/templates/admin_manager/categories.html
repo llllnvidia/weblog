@@ -1,10 +1,10 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
-{% import "bootstrap/wtf.html" as wtf %}
+{%- extends "base.html" %}
+{%- import "_macros.html" as macros %}
+{%- import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Codeblog - 所有栏目{% endblock %}
+{%- block title %}Codeblog - 所有栏目{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h4>所有栏目</h4>
 </div>
@@ -17,48 +17,48 @@
     <div class="panel panel-default">
     <table class="table table-hover followers">
         <thead><tr><th>栏目</th><th>父栏目</th><th>子栏目</th><th>文章数</th><th>文章</th><th>操作</th></tr></thead>
-    {% if categories %}
-        {% for category in categories %}
+    {%- if categories %}
+        {%- for category in categories %}
         <tr>
             <td>{{ category.name }}</td>
             <td>{{ category.parent_category.name }}</td>
             <td>
-                {% for son_category in category.son_categories %}
-                    {% if not loop.first %}&nbsp;{% endif %}
+                {%- for son_category in category.son_categories %}
+                    {%- if not loop.first %}&nbsp;{%- endif %}
                 {{  son_category.name }}
-                {% endfor %}
+                {%- endfor %}
             </td>
             <td>
                 {{ category.posts.count() }}
             </td>
             <td>
-            {% for article in category.posts %}
-            {% if not loop.first %}&nbsp;{% endif %}
+            {%- for article in category.posts %}
+            {%- if not loop.first %}&nbsp;{%- endif %}
                 &lt;&lt;
                 <a href="{{ url_for('post.article',post_id=article.id) }}" target="_blank">{{ article.title }}</a>
                 &gt;&gt;
-            {% endfor %}
+            {%- endfor %}
             </td>
             <td>
-                {% if category.id != 1 %}
+                {%- if category.id != 1 %}
                 <a href="{{ url_for('admin_manager.categories') }}/edit/{{ category.id }}">
                     <span class="btn btn-xs btn-warning">修改</span>
                 </a>
                 <a href="{{ url_for('admin_manager.delete_category',category_id=category.id) }}">
                     <span class="btn btn-xs btn-danger">删除</span>
                 </a>
-                {% endif %}
+                {%- endif %}
             </td>
         </tr>
-        {% endfor %}
-    {% endif %}
+        {%- endfor %}
+    {%- endif %}
     </table>
     </div>
     </div>
 </div>
-{% if pagination and pagination.total//pagination.per_page %}
+{%- if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, request.endpoint) }}
 </div>
-{% endif %}
-{% endblock %}
+{%- endif %}
+{%- endblock %}

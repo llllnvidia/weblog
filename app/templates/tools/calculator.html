@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block scripts %}
+{%- extends "base.html" %}
+{%- block scripts %}
 {{ super() }}
     <script type="text/javascript">
         var num_result;
@@ -24,10 +24,10 @@
             }
         }
     </script>
-{% endblock scripts %}
+{%- endblock scripts %}
 
-{% block title %}实验数据处理{% endblock %}
-{% block page_content %}
+{%- block title %}实验数据处理{%- endblock %}
+{%- block page_content %}
 <div class="container-fluid">
     <div class="row">
     <div class="col-lg-4">
@@ -100,9 +100,9 @@
                 </tr>
             </thead>
             <tbody>
-            {% if number_list %}
-            {% for number in number_list if number %}
-                <tr{% if bool_number_list_show and not bool_number_list_show[loop.index0] %} class="danger"{% endif %}>
+            {%- if number_list %}
+            {%- for number in number_list if number %}
+                <tr{%- if bool_number_list_show and not bool_number_list_show[loop.index0] %} class="danger"{%- endif %}>
                 <td>{{ loop.index }}</td>
                 <td>
                     <i>{{ number }}</i>
@@ -112,15 +112,15 @@
                     </a>
                 </td>
                 </tr>
-            {% endfor %}
-            {% endif %}
+            {%- endfor %}
+            {%- endif %}
             </tbody>
             </table>
         <div class="panel-footer">
             <div class="btn-group" align="center">
                 <a href="?table_method=clear" type="button" class="btn btn-danger">清空</a>
-                <a href="?table_method=chauvenet" type="button" class="btn btn-primary{% if not number_list or (number_list and number_list.__len__() < 5) %} disabled{% endif %}">剔除坏值</a>
-                <a href="?table_method=handle" type="button" class="btn btn-warning{% if not number_list %} disabled{% endif %}">标准偏差</a>
+                <a href="?table_method=chauvenet" type="button" class="btn btn-primary{%- if not number_list or (number_list and number_list.__len__() < 5) %} disabled{%- endif %}">剔除坏值</a>
+                <a href="?table_method=handle" type="button" class="btn btn-warning{%- if not number_list %} disabled{%- endif %}">标准偏差</a>
             </div>
         </div>
         </div>
@@ -139,4 +139,4 @@
     </div>
     </div>
 </div>
-{% endblock %}
+{%- endblock %}

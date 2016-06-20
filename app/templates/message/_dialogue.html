@@ -1,23 +1,23 @@
-{% for chat in chats %}
-    {% if chat.author_id != current_user.id %}
+{%- for chat in chats %}
+    {%- if chat.author_id != current_user.id %}
     <div class="chat_host" align="left">
-    {% else %}
+    {%- else %}
     <div class="chat_host" align="right">
-    {% endif %}
+    {%- endif %}
     <div class="chat_heading">
         <a href="{{ url_for('main.user', username=chat.author.username) }}" style="font-size: large">{{ chat.author.username }}</a>
         <i style="font-size: smaller">{{ moment(chat.timestamp).format('YY-MM-DD HH:mm') }}</i>
     </div>
-    {% if chat.link %}
+    {%- if chat.link %}
     <div class="chat_body">
         {{ chat.content }} <a type="button" class="btn btn-primary btn-xs" href={{ chat.link }}>详情</a>
     </div>
-    {% else %}
+    {%- else %}
     <div class="chat_body">
         {{ chat.content }}
     </div>
-    {% endif %}
+    {%- endif %}
     </div>
     <br>
-{% endfor %}
+{%- endfor %}
 

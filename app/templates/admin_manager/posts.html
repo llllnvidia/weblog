@@ -1,22 +1,22 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{%- extends "base.html" %}
+{%- import "_macros.html" as macros %}
 
-{% block title %}CodeBlog - {{ title }}{% endblock %}
+{%- block title %}CodeBlog - {{ title }}{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h4>{{ title }}</h4>
 </div>
 <div class="panel panel-primary">
 <table class="table table-hover followers">
-{% if talks %}
+{%- if talks %}
     <thead>
     <tr>
         <th>#</th><th>author</th><th>内容</th><th>操作</th>
     </tr>
     </thead>
     <tbody>
-    {% for talk in talks %}
+    {%- for talk in talks %}
     <tr>
         <td>{{ talk.id }}</td>
         <td>
@@ -33,10 +33,10 @@
             </div>
         </td>
     </tr>
-    {% endfor %}
+    {%- endfor %}
     </tbody>
-{% endif %}
-{% if articles %}
+{%- endif %}
+{%- if articles %}
     <thead>
     <tr>
         <th>#</th><th>author</th><th>timestamp</th>
@@ -45,7 +45,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for article in articles %}
+    {%- for article in articles %}
     <tr>
         <td>{{ article.id }}</td>
         <td>
@@ -56,7 +56,7 @@
         <td>{{ moment(article.timestamp).format('YY-MM-DD HH:mm') }}</td>
         <td>{{ moment(article.last_edit).format('YY-MM-DD HH:mm') }}</td>
         <td>{{ article.category.name }}</td>
-        <td>{% for tag in article.tags %}{% if not loop.first %},{% endif %}{{ tag.content }}{% endfor %}</td>
+        <td>{%- for tag in article.tags %}{%- if not loop.first %},{%- endif %}{{ tag.content }}{%- endfor %}</td>
         <td>{{ article.title }}</td>
         <td>{{ article.summary | truncate(25, true) }}</td>
         <td>
@@ -68,14 +68,14 @@
             </div>
         </td>
     </tr>
-    {% endfor %}
+    {%- endfor %}
     </tbody>
-{% endif %}
+{%- endif %}
 </table>
 </div>
-{% if pagination and pagination.total//pagination.per_page %}
+{%- if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, request.endpoint) }}
 </div>
-{% endif %}
-{% endblock %}
+{%- endif %}
+{%- endblock %}

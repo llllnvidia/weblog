@@ -1,8 +1,8 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% block title %}Codeblog - 修改邮箱地址{% endblock %}
+{%- extends "base.html" %}
+{%- import "bootstrap/wtf.html" as wtf %}
+{%- block title %}Codeblog - 修改邮箱地址{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h2>修改邮箱地址</h2>
     <h3>更改提交后，会给你新的邮箱地址发送身份确认邮件。<br>请注意查收。</h3>
@@ -10,4 +10,4 @@
 <div class="col-md-4 well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius: 10px">
     {{ wtf.quick_form(form) }}
 </div>
-{% endblock %}
+{%- endblock %}

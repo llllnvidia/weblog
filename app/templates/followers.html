@@ -1,16 +1,16 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{%- extends "base.html" %}
+{%- import "_macros.html" as macros %}
 
-{% block title %}Codeblog - {{ title }} {{ user.username }}{% endblock %}
+{%- block title %}Codeblog - {{ title }} {{ user.username }}{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h4>{{ title }} {{ user.username }}</h4>
 </div>
 <table class="table table-hover well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius: 10px">
     <thead><tr><th>User</th><th>Since</th></tr></thead>
-    {% for follow in follows %}
-    {% if follow.user.username != user.username %}
+    {%- for follow in follows %}
+    {%- if follow.user.username != user.username %}
     <tr>
         <td>
             <a href="{{ url_for('.user', username = follow.user.username) }}">
@@ -19,12 +19,12 @@
         </td>
         <td>{{ moment(follow.timestamp).format('L') }}</td>
     </tr>
-    {% endif %}
-    {% endfor %}
+    {%- endif %}
+    {%- endfor %}
 </table>
-{% if pagination and pagination.total//pagination.per_page %}
+{%- if pagination and pagination.total//pagination.per_page %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, endpoint, username = user.username) }}
 </div>
-{% endif %}
-{% endblock %}
+{%- endif %}
+{%- endblock %}

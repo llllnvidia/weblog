@@ -1,24 +1,24 @@
-{% for post in posts if post %}
+{%- for post in posts if post %}
     <div class="well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius: 10px">
-        {% if post.is_article %}
-            {% if request.endpoint != 'post.article' %}
+        {%- if post.is_article %}
+            {%- if request.endpoint != 'post.article' %}
             <a href="{{ url_for('post.article', post_id=post.id, prev_url=request.url) }}"><h3>{{ post.title }}</h3></a>
-            {% else %}
+            {%- else %}
             <h3>
                 {{ post.title }}
-                {% if post.is_article and request.endpoint == 'post.article' %}
-                    {% if current_user == post.author %}
+                {%- if post.is_article and request.endpoint == 'post.article' %}
+                    {%- if current_user == post.author %}
                         <a type="button" class="btn btn-warning btn-xs" href="{{ url_for('post.edit_article',post_id=post.id) }}">
                             修改
                         </a>
-                    {% elif current_user.is_moderator() %}
+                    {%- elif current_user.is_moderator() %}
                         <a type="button" class="btn btn-danger btn-xs" href="{{ url_for('post.edit_article',post_id=post.id) }}">
                             修改[Admin]
                         </a>
-                    {% endif %}
-                {% endif %}
+                    {%- endif %}
+                {%- endif %}
             </h3>
-            {% endif %}
+            {%- endif %}
             <div class="row">
             <div class="col-lg-4">
                 最后一次编辑：<i style="color: gray">{{ moment(post.last_edit).fromNow() }}</i>
@@ -26,11 +26,11 @@
                 创建时间：<i style="color: gray">{{ moment(post.timestamp).format('LL') }}</i>
                 <br/>
                 评论：
-                {% if post.comments.count() %}
+                {%- if post.comments.count() %}
                     <i style="color: gray">{{ post.comments.count() }}</i>
-                {% else %}
+                {%- else %}
                     <i style="color: gray">none</i>
-                {% endif %}
+                {%- endif %}
             </div>
             <div class="col-lg-8">
                 作者：
@@ -39,44 +39,44 @@
                 </a>
                 <br/>
                 栏目：
-                <a href="{% if prev_url %}{{ prev_url.split('?')[0] }}{% else %}{{ url_for('main.neighbourhood') }}{% endif %}?category={{ post.category.name }}&prev_url={{ request.url }}" style="color: gray">
+                <a href="{%- if prev_url %}{{ prev_url.split('?')[0] }}{%- else %}{{ url_for('main.neighbourhood') }}{%- endif %}?category={{ post.category.name }}&prev_url={{ request.url }}" style="color: gray">
                     <i>{{ post.category.name }}</i>
                 </a>
                 <br/>
                 标签：
-                {% for tag in post.tags %}
-                <a href="{% if prev_url %}{{ prev_url.split('?')[0] }}{% else %}{{ url_for('main.neighbourhood') }}{% endif %}?tag={{ tag.content }}&prev_url={{ request.url }}" style="color: gray">
+                {%- for tag in post.tags %}
+                <a href="{%- if prev_url %}{{ prev_url.split('?')[0] }}{%- else %}{{ url_for('main.neighbourhood') }}{%- endif %}?tag={{ tag.content }}&prev_url={{ request.url }}" style="color: gray">
                 <i>{{ tag.content }}</i>
                 </a>
-                {% else %}
+                {%- else %}
                     无
-                {% endfor %}
+                {%- endfor %}
             </div>
             </div><br/>
-            {% if request.endpoint == 'post.article' or not post.summary %}
+            {%- if request.endpoint == 'post.article' or not post.summary %}
                  <div id="editormd-view">
                 <textarea id="append-test" style="display:none;">{{ post.body  }}</textarea>
                 </div>
-            {% else %}
+            {%- else %}
                 {{ post.summary | markdown | safe }}
-            {% endif %}
-            {% else %}
-                {% if not request.endpoint == 'main.user' %}
+            {%- endif %}
+            {%- else %}
+                {%- if not request.endpoint == 'main.user' %}
                 <a href="{{ url_for('main.user', username=post.author.username) }}">
                     <h3> {{ post.author.username }}
                         <small>{{ moment(post.timestamp).format('YY-MM-DD HH:mm') }}</small>
                     </h3>
                 </a>
-                {% else %}
+                {%- else %}
                     <h3> {{ post.author.username }}
                         <small>{{ moment(post.timestamp).format('YY-MM-DD HH:mm') }}</small>
                     </h3>
-                {% endif %}
+                {%- endif %}
             {{ post.body | markdown | safe }}
-            {% endif %}
+            {%- endif %}
     </div>
-{% else %}
+{%- else %}
     <div class="well well-lg" style="background-color: rgba(255, 255, 255, 1);border-radius: 10px">
     <h3 align="center">无文章</h3>
     </div>
-{% endfor %}
+{%- endfor %}

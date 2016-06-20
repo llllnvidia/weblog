@@ -1,9 +1,9 @@
-{% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{%- extends "base.html" %}
+{%- import "_macros.html" as macros %}
 
-{% block title %}Codeblog - 所有标签{% endblock %}
+{%- block title %}Codeblog - 所有标签{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h4>所有标签</h4>
 </div>
@@ -13,30 +13,30 @@
     <table class="table table-hover">
         <thead><tr><th>#</th><th>Content</th><th>文章数</th><th>articles</th><th>操作</th></tr></thead>
     <tbody>
-    {% for tag in tags %}
+    {%- for tag in tags %}
         <tr>
         <td>{{ tag.id }}</td><td>{{ tag.content }}</td><td>{{ tag.posts.count() }}</td>
         <td>
-            {% for article in tag.posts %}
-            {% if not loop.first %}&nbsp;{% endif %}
+            {%- for article in tag.posts %}
+            {%- if not loop.first %}&nbsp;{%- endif %}
                 &lt;&lt;
                 <a href="{{ url_for('post.article',post_id=article.id) }}" target="_blank">{{ article.title }}</a>
                 &gt;&gt;
-            {% endfor %}
+            {%- endfor %}
         </td>
         <td>
             <a href="{{ url_for('admin_manager.delete_tag',tag_id=tag.id) }}" type="button" class="btn btn-danger">删除</a>
         </td>
         </tr>
-    {% endfor %}
+    {%- endfor %}
     </tbody>
-    {% if pagination and pagination.total//pagination.per_page %}
+    {%- if pagination and pagination.total//pagination.per_page %}
         <div class="pagination-right">
         {{ macros.pagination_widget(pagination,request.endpoint) }}
         </div>
-    {% endif %}
+    {%- endif %}
     </table>
     </div>
     </div>
 </div>
-{% endblock %}
+{%- endblock %}

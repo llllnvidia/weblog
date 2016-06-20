@@ -1,9 +1,9 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% import "_macros.html" as macros %}
-{% block title %}CodeBlog - 消息{% endblock %}
+{%- extends "base.html" %}
+{%- import "bootstrap/wtf.html" as wtf %}
+{%- import "_macros.html" as macros %}
+{%- block title %}CodeBlog - 消息{%- endblock %}
 
-{% block page_content %}
+{%- block page_content %}
 <div class="page-header">
     <h4>消息</h4>
 </div>
@@ -12,14 +12,14 @@
     <div class="panel panel-primary">
         <div class="panel-heading">消息列表</div>
         <ul class="list-group">
-            {% for dialogue in dialogues if dialogue.get_gallery(current_user).show %}
+            {%- for dialogue in dialogues if dialogue.get_gallery(current_user).show %}
                 <li class="list-group-item">
-                    {% if dialogue.having_new_chats(current_user) %}
+                    {%- if dialogue.having_new_chats(current_user) %}
                     <span class="badge">{{ dialogue.having_new_chats(current_user) }}</span>
                     <a href="/dialogues/{{ dialogue.id }}">
                         {{ dialogue.name(current_user) }}
                     </a>
-                    {% else %}
+                    {%- else %}
                     <a href="/dialogues/{{ dialogue.id }}">
                         {{ dialogue.name(current_user) }}
                         <a href="/dialogues/{{ dialogue.id }}?delete_true=1">
@@ -28,13 +28,13 @@
                         </button>
                         </a>
                     </a>
-                    {% endif %}
+                    {%- endif %}
                 </li>
-            {% else %}
+            {%- else %}
                 <li class="list-group-item">
                 无消息
                 </li>
-            {% endfor %}
+            {%- endfor %}
         </ul>
     </div>
     </aside>
@@ -42,31 +42,31 @@
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <div class="panel-title">
-                    {% if dialogue %}
+                    {%- if dialogue %}
                     {{ dialogue.name(current_user) }}
-                    {% else %}
+                    {%- else %}
                         消息
-                    {% endif %}
+                    {%- endif %}
                 </div>
             </div>
             <div class="panel-body">
-                {% if chats %}
-                   {% include "message/_dialogue.html" %}
-                {% else %}
+                {%- if chats %}
+                   {%- include "message/_dialogue.html" %}
+                {%- else %}
                     没有聊天记录
-                {% endif %}
+                {%- endif %}
             </div>
-            {% if pagination and pagination.total//pagination.per_page %}
+            {%- if pagination and pagination.total//pagination.per_page %}
             <div class="panel-footer">
                     {{ macros.pagination_widget(pagination, 'main.dialogues', dialogue_id=dialogue.id) }}
             </div>
-            {% endif %}
+            {%- endif %}
         </div>
-    {% if form %}
+    {%- if form %}
     <div class="form">
         {{ wtf.quick_form(form) }}
     </div>
-    {% endif %}
+    {%- endif %}
     </div>
 </div>
-{% endblock %}
+{%- endblock %}
