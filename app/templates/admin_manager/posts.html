@@ -41,7 +41,7 @@
     <tr>
         <th>#</th><th>author</th><th>timestamp</th>
         <th>last_edit</th><th>栏目</th><th>标签</th>
-        <th>摘要</th><th>内容</th><th>操作</th>
+        <th>标题</th><th>摘要</th><th>操作</th>
     </tr>
     </thead>
     <tbody>
@@ -57,8 +57,8 @@
         <td>{{ moment(article.last_edit).format('YY-MM-DD HH:mm') }}</td>
         <td>{{ article.category.name }}</td>
         <td>{% for tag in article.tags %}{% if not loop.first %},{% endif %}{{ tag.content }}{% endfor %}</td>
+        <td>{{ article.title }}</td>
         <td>{{ article.summary | truncate(25, true) }}</td>
-        <td>{{ article.body | truncate(50, true) }}</td>
         <td>
             <div  class="btn-group-vertical">
             <a type="button" class="btn btn-sm btn-default" href="{{ url_for('post.article',post_id=article.id) }}" target="_blank">详情</a>
