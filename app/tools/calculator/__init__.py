@@ -36,11 +36,6 @@ def str_list_to_num_list(y):
     return number_list
 
 
-def num_list_to_str_list(y):
-    str_list = [str(a) for a in y]
-    return str_list
-
-
 def get_bool_list_of_number_list(str_list):
     array_list = numpy.array(str_list_to_num_list(str_list))
     list_bool = chauvenet(array_list)
@@ -51,21 +46,3 @@ def get_bool_list_of_number_list(str_list):
 def handle(str_list):
     array_list = numpy.array(str_list_to_num_list(str_list))
     return array_list.mean(), array_list.std(ddof=1), array_list.std(ddof=1)/numpy.sqrt(len(array_list))
-
-if __name__ == "__main__":
-    """test function"""
-    test = ['1.54', '1.56', '1.58', '1.54', '1.56', '1.57', '1.53', '1.59', '1.2e+10', '1.2e-12', '-1', '132',
-            '1.2e+32']
-    for number_str in test:
-        print is_number(number_str)
-    num_list = str_list_to_num_list(test)
-    bool_list = chauvenet(numpy.array(str_list_to_num_list(test)))
-    new_list = numpy.array(str_list_to_num_list(test))[bool_list].tolist()
-    new_list_str = num_list_to_str_list(new_list)
-    mean, std_dev, std_dev_mean = handle(new_list_str)
-    print test
-    print num_list
-    print bool_list
-    print new_list
-    print mean, std_dev, std_dev_mean
-

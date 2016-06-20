@@ -580,6 +580,9 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         self.assertNotIn('无标签', response.data)
+        response = self.client.get('/neighbourhood?category=test&prev_url=/article', follow_redirects=True)
+        self.assertIn('article_title', response.data)
+        self.assertIn('tag_one', response.data)
 
     def test_04_user_page(self):
         response = self.client.get(url_for('main.user', username='Nobody'))
@@ -688,6 +691,20 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('tag_two', response.data)
         response = self.client.get('/user/Admin?tag_disable=1', follow_redirects=True)
         self.assertIn('test_talk', response.data)
+        self.assertIn('article_title', response.data)
+        self.assertIn('tag_one', response.data)
+        # get something with prev_url
+        response = self.client.get('/user/Admin?show_talk=1', follow_redirects=True)
+        self.assertIn('test_talk', response.data)
+        self.assertNotIn('article_title', response.data)
+        self.assertNotIn('tag_one', response.data)
+        self.assertIn('无标签', response.data)
+        response = self.client.get('/user/Admin?tag=tag_one&prev_url=/article', follow_redirects=True)
+        self.assertNotIn('test_talk', response.data)
+        self.assertIn('article_title', response.data)
+        self.assertIn('tag_one', response.data)
+        self.assertNotIn('无标签', response.data)
+        response = self.client.get('/user/Admin?category=test&prev_url=/article', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
 
@@ -914,6 +931,10 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('None', response.data)
         response = self.client.post(url_for('tools.calculator'), data={
             'number': '1..2'
+        }, follow_redirects=True)
+        self.assertIn('请输入一个数字', response.data)
+        response = self.client.post(url_for('tools.calculator'), data={
+            'number': '@..'
         }, follow_redirects=True)
         self.assertIn('请输入一个数字', response.data)
         response = self.client.post(url_for('tools.calculator'), data={
