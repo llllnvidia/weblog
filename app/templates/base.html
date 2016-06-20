@@ -8,7 +8,8 @@
 {%- endblock -%}
 {%- endblock -%}
 {%- block styles -%}
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+{{ super() }}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/paper/bootstrap.min.css">
 {%- endblock -%}
 {%- block body -%}
     {{ super() }}
@@ -116,6 +117,6 @@
 {%- endblock -%}
 {%- block scripts -%}
 {{ super() }}
-<script src="{{ url_for('static', filename='bower_components/moment/min/moment-with-locales.js') }}"></script>
+{{ moment.include_moment() }}
 {{ moment.lang("zh-CN") }}
 {%- endblock -%}
