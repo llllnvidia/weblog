@@ -63,6 +63,7 @@ def new_article():
                 post_new.tag(new_tag)
         post_new.ping()
         post_new.save()
+        current_app.logger.info('新博文 %s : %s', post_new.title, post_new.author.username)
         flash('发文成功！')
         return redirect(url_for('post.article', post_id=post_new.id, page=-1))
     return render_template('post/editor.html', form=form)

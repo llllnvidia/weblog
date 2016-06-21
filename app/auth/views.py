@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from flask import render_template, redirect, request, url_for, flash, abort
+from flask import render_template, redirect, request, url_for, flash, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 
 from app.models.account import User
@@ -72,6 +72,7 @@ def confirm(token):
     if current_user.confirm(token):
         current_user.confirmed = True
         current_user.save()
+        current_app.logger.info('新用户 %s : %s', current_user.email, current_user.username)
         flash('已确认你的身份，欢迎加入我们。')
     else:
         flash('确认链接非法或已过期。')

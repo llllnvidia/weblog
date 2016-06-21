@@ -45,15 +45,15 @@ class DevelopmentConfig(Config):
         if getattr(cls, 'MAIL_USERNAME', None) is not None:
             credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
             if getattr(cls, 'MAIL_USE_TLS', None):
-                secure =()
+                secure = ()
         mail_handler = SMTPHandler(
             mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
             fromaddr=cls.MAIL_SENDER,
             toaddrs=[cls.MAIL_USERNAME],
-            subject=cls.MAIL_SUBJECT_PREFIX + ' Application Error',
+            subject=cls.MAIL_SUBJECT_PREFIX + ' Application Info',
             credentials=credentials,
             secure=secure)
-        mail_handler.setLevel(logging.ERROR)
+        mail_handler.setLevel(logging.INFO)
         app.logger.addHandler(mail_handler)
 
 
