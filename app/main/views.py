@@ -73,13 +73,13 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query_category_count = query = current_user.followed_posts
+        query_category_count = query = current_user.followed_posts.filter_by(is_draft=False)
     else:
         if show_followed_cookie:
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '', path=url_for('main.neighbourhood'), max_age=0)
             return resp
-        query_category_count = query = Post.query
+        query_category_count = query = Post.query.filter_by(is_draft=False)
 
     # show_talk
     if not show_talk and not category_disable:
@@ -170,7 +170,7 @@ def user(username):
     user_showed = User.query.filter_by(username=username).first()
     if user_showed is None:
         abort(404)
-    query_category_count = query = user_showed.posts
+    query_category_count = query = user_showed.posts.filter_by(is_draft=False)
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
 

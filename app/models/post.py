@@ -13,6 +13,7 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
+    is_draft = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     is_article = db.Column(db.Boolean, default=False)
@@ -59,6 +60,12 @@ class Post(db.Model):
 
     def is_tagging(self, tag):
         return tag in self.tags
+
+    @staticmethod
+    def add_all_post_is_draft():
+        for post in Post.query.all():
+            post.is_draft = False
+            post.save()
 
 
 class Comment(db.Model):
