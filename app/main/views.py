@@ -73,13 +73,13 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query_category_count = query = current_user.followed_posts.filter_by(is_draft=False)
+        query_category_count = query = current_user.followed_posts.filter(Post.is_draft==False)
     else:
         if show_followed_cookie:
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '', path=url_for('main.neighbourhood'), max_age=0)
             return resp
-        query_category_count = query = Post.query.filter_by(is_draft=False)
+        query_category_count = query = Post.query.filter(Post.is_draft==False)
 
     # show_talk
     if not show_talk and not category_disable:
