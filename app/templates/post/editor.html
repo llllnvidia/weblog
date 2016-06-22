@@ -29,6 +29,9 @@
             <div class="col-lg-4">
                 {{ wtf.form_field(form.tags) }}
             </div>
+            <div class="col-lg-1">
+                {{ wtf.form_field(form.is_draft) }}
+            </div>
             <div class="col-lg-1 btn-group-vertical">
                 {{ wtf.form_field(form.submit) }}
                 {%- if request.endpoint == 'post.edit_article' %}
@@ -36,7 +39,6 @@
                    href="{{ url_for('post.delete_post', post_id=post.id) }}?next={{url_for('main.neighbourhood') }}">删除</a>
                 {%- endif %}
             </div>
-
         </div>
         </form>
     </div>
@@ -44,28 +46,28 @@
 
 {%- block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='bower_components/editor.md/') }}editormd.min.js"></script>
-<script type="text/javascript">
-    var testEditor;
-    $(function() {
-        testEditor = editormd("editormd", {
-            width   : "100%",
-            height  : 420,
-            syncScrolling : "single",
-            emoji           : true,
-            tex  : true,
-            delay : 300,
-            flowChart : true,
-            searchReplace : true,
-            codeFold : true,
-            tocm : true,
-            taskList        : true,
-            tocDropdown   : false,
-            sequenceDiagram : true,
-            htmlDecode : "iframe",
-            pageBreak : true,
-            path    : "{{ url_for('static', filename='bower_components/editor.md/') }}lib/"
+    <script src="{{ url_for('static', filename='bower_components/editor.md/') }}editormd.min.js"></script>
+    <script type="text/javascript">
+        var testEditor;
+        $(function() {
+            testEditor = editormd("editormd", {
+                width   : "100%",
+                height  : 420,
+                syncScrolling : "single",
+                emoji           : true,
+                tex  : true,
+                delay : 300,
+                flowChart : true,
+                searchReplace : true,
+                codeFold : true,
+                tocm : true,
+                taskList        : true,
+                tocDropdown   : false,
+                sequenceDiagram : true,
+                htmlDecode : "iframe",
+                pageBreak : true,
+                path    : "{{ url_for('static', filename='bower_components/editor.md/') }}lib/"
+            });
         });
-    });
-</script>
+    </script>
 {%- endblock %}

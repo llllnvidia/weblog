@@ -18,7 +18,8 @@ def txt_to_html(txt):
 def article(post_id):
     prev_url = request.args.get('prev_url', '')
     post_show = Post.query.get_or_404(post_id)
-    if not post_show.is_article:
+    if not post_show.is_article or \
+            (post_show.is_draft and (current_user != post_show.author and not current_user.is_moderator)):
         abort(404)
     form = CommentForm()
     if form.validate_on_submit():
@@ -52,6 +53,7 @@ def new_article():
         post_new = Post(body=request.form['editor-markdown-doc'], title=form.title.data,
                         author=current_user,
                         summary=form.summary.data,
+                        is_draft=form.is_draft.data,
                         is_article=True, category=Category.query.filter_by(id=form.category.data).first())
         tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
         if tags:
@@ -78,14 +80,13 @@ def edit_article(post_id):
     if current_user != post_edit.author and \
             not current_user.can(Permission.MODERATE_COMMENTS):
         abort(403)
-    if post_edit.category:
-        form = ArticleForm(category=post_edit.category.id)
+    form = ArticleForm(category=post_edit.category.id)
     if request.method == 'POST' and form.validate():
         post_edit.title = form.title.data
         post_edit.body = request.form['editor-markdown-doc']
         post_edit.summary = form.summary.data
         post_edit.category = Category.query.filter_by(id=form.category.data).first()
-        post_edit.is_article = True
+        post_edit.is_draft = form.is_draft.data
         tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
         if tags:
             post_tags = [tag for tag in post_edit.tags]
@@ -109,6 +110,7 @@ def edit_article(post_id):
         return redirect(url_for('post.article', post_id=post_id, page=-1))
     form.title.data = post_edit.title
     form.summary.data = post_edit.summary
+    form.is_draft.data = post_edit.is_draft
     post_body = post_edit.body
     form.tags.data = ','.join([str(tag.content) for tag in post_edit.tags])
     return render_template('post/editor.html', form=form, post=post_edit, post_body=post_body)

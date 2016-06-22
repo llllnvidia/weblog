@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import Form
-from wtforms import StringField, TextAreaField, SelectField, SubmitField, ValidationError
+from wtforms import StringField, TextAreaField, SelectField, SubmitField, ValidationError, BooleanField
 from wtforms.validators import DataRequired, Length
 
 from app.models.post import Category
@@ -16,7 +16,8 @@ class ArticleForm(Form):
     summary = TextAreaField('摘要', validators=[DataRequired(), Length(1, 250, message="太长了。")])
     tags = StringField('标签', validators=[validate_tag])
     category = SelectField("栏目", coerce=int)
-    submit = SubmitField('发表')
+    is_draft = BooleanField("作为草稿")
+    submit = SubmitField('提交')
 
     def __init__(self, *args, **kwargs):
         super(ArticleForm, self).__init__(*args, **kwargs)

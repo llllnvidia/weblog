@@ -170,7 +170,10 @@ def user(username):
     user_showed = User.query.filter_by(username=username).first()
     if user_showed is None:
         abort(404)
-    query_category_count = query = user_showed.posts.filter_by(is_draft=False)
+    if current_user == user_showed or current_user.is_moderator():
+        query_category_count = query = user_showed.posts
+    else:
+        query_category_count = query = user_showed.posts.filter_by(is_draft=False)
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
 
