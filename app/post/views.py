@@ -19,7 +19,7 @@ def article(post_id):
     prev_url = request.args.get('prev_url', '')
     post_show = Post.query.get_or_404(post_id)
     if not post_show.is_article or \
-            (post_show.is_draft and (current_user != post_show.author and not current_user.is_moderator)):
+            (post_show.is_draft and (current_user != post_show.author and not current_user.is_moderator())):
         abort(404)
     form = CommentForm()
     if form.validate_on_submit():

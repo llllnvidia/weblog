@@ -119,7 +119,7 @@ def email_change_confirm(token):
     return render_template('auth/change_email.html', form=form)
 
 
-@auth.route('user/PasswordChange/', methods=['GET', 'POST'])
+@auth.route('/PasswordChange/', methods=['GET', 'POST'])
 @login_required
 def password_change():
     form = ChangePasswordForm()
