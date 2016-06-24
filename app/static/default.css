@@ -1,17 +1,20 @@
 .jumbotron{
      background-color: transparent;
 }
+body{
+    background: url("/static/background.png") repeat;
+}
 .alert{
     background: white;
     color: black;
     opacity: 0.9;
 }
 .post-default{
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgb(255, 255, 255);
     border-radius: 10px;
 }
 .post-draft{
-    background-color: rgba(160, 160, 160, 1);
+    background-color: rgb(240, 240, 240);
     border-radius: 10px;
 }
 .small-font{

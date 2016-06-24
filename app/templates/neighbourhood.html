@@ -25,7 +25,7 @@
         </div>
     </form>
     <div class="panel panel-primary">
-        <div class="panel-heading">栏目<a href="?category_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
+        <div class="panel-heading"><i class="fa fa-filter fa-lg"></i>&nbsp;栏目<a href="?category_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
         <ul class="list-group" id="listcontrol">
         {%- if query_category_count.filter(Post.is_article == False).count() %}
             <a href="?show_talk=1#neighbourhood" class="list-group-item{%- if show_talk %} active{%- endif %}">
@@ -61,7 +61,7 @@
         </ul>
     </div>
     <div class="panel panel-primary">
-        <div class="panel-heading">标签<a href="?tag_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
+        <div class="panel-heading"><i class="fa fa-tags fa-lg"></i>&nbsp;标签<a href="?tag_disable=1#neighbourhood"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
         <div class="panel-body">
             {%- for tag in tags if tag.posts_count(query_tag_count) %}
                 {%- if tag.content in cur_tags %}
@@ -71,7 +71,7 @@
                 </a>
                 {%- else %}
                 <a href="?tag={{tag.content}}#neighbourhood" class="btn btn-default btn-xs" style= "margin: 4px">
-                    {{ tag.content }}
+                   {{ tag.content }}
                 </a>
                 {%- endif %}
             {%- else %}
