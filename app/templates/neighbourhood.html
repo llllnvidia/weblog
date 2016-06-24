@@ -91,11 +91,11 @@
                     <br/>
                 {%- endif %}
             </div>
-            <div>
+            <div class="post-container">
                 {%- include 'post/_posts.html' %}
             </div>
             {%- if pagination and pagination.total//pagination.per_page %}
-            <div>
+            <div class="pagination-container">
                 {{ macros.pagination_widget(pagination, 'main.neighbourhood') }}
             </div>
             {%- endif %}
