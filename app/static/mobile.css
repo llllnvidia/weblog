@@ -2,33 +2,32 @@
      background-color: transparent
 }
 body{
-    background-color: whitesmoke;
+    background: url("background.png") repeat;
 }
 .alert{
     background: white;
     color: black;
     opacity: 0.9
 }
+.post-container{
+
+}
 .post-default{
     background-color: rgb(255, 255, 255);
     border-radius: 0;
-    border-bottom-style: dotted;
-    border-bottom-color: black;
-    border-bottom-width: 2px;
-    margin-bottom: 0px;
     margin-left: -31px;
     margin-right: -31px;
 }
 .post-draft{
     background-color: rgb(240, 240, 240);
     border-radius: 0;
-    border-bottom-style: dotted;
-    border-bottom-color: black;
-    border-bottom-width: 2px;
-    margin-bottom: 0px;
     margin-left: -31px;
     margin-right: -31px;
 }
 .small-font{
      color: darkgrey;
+}
+.pagination-container{
+    margin-left: -20px;
+    margin-right: -20px;
 }

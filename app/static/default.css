@@ -2,12 +2,15 @@
      background-color: transparent;
 }
 body{
-    background: url("/static/background.png") repeat;
+    background: url("background.png") repeat;
 }
 .alert{
     background: white;
     color: black;
     opacity: 0.9;
+}
+.post-container{
+
 }
 .post-default{
     background-color: rgb(255, 255, 255);
@@ -19,4 +22,7 @@ body{
 }
 .small-font{
      color: darkgrey;
+}
+.pagination-container{
+    margin-left: 10px;
 }
