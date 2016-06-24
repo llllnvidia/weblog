@@ -320,7 +320,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('post.new_talk'))
         self.assertIn('吐槽', response.data)
         response = self.client.post(url_for('post.new_talk'), data={
-            'body': 'test'
+            'body': '说说测试'
         }, follow_redirects=True)
         self.assertIn('吐槽成功', response.data)
 
@@ -340,7 +340,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         # new talk
         self.new_talk()
         talk = Post.query.first()
-        self.assertEqual(talk.body, 'test')
+        self.assertEqual(talk.body, '说说测试')
         # worry entry
         response = self.client.get(url_for('post.article', post_id=talk.id))
         self.assertIn('NOT FOUND', response.data)
@@ -348,11 +348,11 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('NOT FOUND', response.data)
         # edit talk
         response = self.client.get(url_for('post.edit_talk', post_id=talk.id))
-        self.assertIn('test', response.data)
+        self.assertIn('说说测试', response.data)
         response = self.client.post(url_for('post.edit_talk', post_id=talk.id), data={
-            'body': 'test_changed'
+            'body': '说说测试_changed'
         }, follow_redirects=True)
-        self.assertEqual(talk.body, 'test_changed')
+        self.assertEqual(talk.body, '说说测试_changed')
         self.assertIn('已修改', response.data)
         # delete talk
         response = self.client.get(url_for('post.delete_post', post_id=talk.id), follow_redirects=True)
@@ -902,12 +902,12 @@ class FlaskClientTestCase01(unittest.TestCase):
         }, follow_redirects=True)
         self.assertIn('已有同名的栏目', response.data)
         response = self.client.post(url_for('admin_manager.categories', category_id=2), data={
-            'name': '其他',
+            'name': '测试',
             'parent': 1
         }, follow_redirects=True)
-        self.assertIn('其他', response.data)
-        response = self.client.get(url_for('admin_manager.delete_category', category_id=2), follow_redirects=True)
-        self.assertNotIn('其他', response.data)
+        self.assertIn('测试', response.data)
+        response = self.client.get('/admin_manager/categories/delete/2', follow_redirects=True)
+        self.assertNotIn('测试', response.data)
 
     def test_12_talks(self):
         self.login(username='user', password='1234')
@@ -917,15 +917,13 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.new_talk()
         response = self.client.get(url_for('admin_manager.talks'))
         self.assertIn('所有吐槽', response.data)
-        self.assertIn('test', response.data)
-        talk_one = Post.query.first()
-        response = self.client.get('/delete/post/%s?next=/admin_manager/talks' % talk_one.id, follow_redirects=True)
+        self.assertIn('说说测试', response.data)
+        response = self.client.get('/delete/post/1?next=/admin_manager/talks', follow_redirects=True)
         self.assertIn('所有吐槽', response.data)
-        self.assertIn('test', response.data)
-        talk_two = Post.query.first()
-        response = self.client.get('/delete/post/%s?next=/admin_manager/talks' % talk_two.id, follow_redirects=True)
+        self.assertIn('说说测试', response.data)
+        response = self.client.get('/delete/post/2?next=/admin_manager/talks', follow_redirects=True)
         self.assertIn('所有吐槽', response.data)
-        self.assertNotIn('test', response.data)
+        self.assertNotIn('说说测试', response.data)
 
     def test_13_articles(self):
         self.login(username='Admin', password='1234')
