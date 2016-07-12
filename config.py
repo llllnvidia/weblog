@@ -8,7 +8,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or \
                  r"\x87\xb7t\xcc\x84\x1e\xff\n{IPF\xa9s\xf2\xf0\x8d9\xde'\x12\x1c\xa5\xe6"
     SQLALCEMY_COMMIT_ON_TEARDOWN = True
-    DB_QUERY_TIMEOUT = 0.5
+    DB_QUERY_TIMEOUT = 1
     ADMIN = os.environ.get('ADMIN', 'Admin')
     MAIL_SUBJECT_PREFIX = '[CodeBlog]'
     MAIL_SENDER = str(ADMIN) + ' <' + str(os.environ.get('MAIL_USERNAME', 'admin@codeblog.com')) + '>'

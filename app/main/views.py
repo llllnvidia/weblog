@@ -4,9 +4,8 @@ from datetime import date
 from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response
 from flask_login import current_user, login_required
-from werkzeug.utils import secure_filename
 from flask_sqlalchemy import get_debug_queries
-
+from app import cache
 from app.models.account import Permission, User
 from app.models.message import Dialogue
 from app.models.post import Post, Category, Tag
@@ -27,11 +26,13 @@ def after_request(response):
     return response
 
 
+@cache.cached
 @main.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
 
+@cache.cached(timeout=500)
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
     categories_list = Category.query.filter_by(parent_id=1).all()

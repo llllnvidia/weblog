@@ -61,12 +61,6 @@ class Post(db.Model):
     def is_tagging(self, tag):
         return tag in self.tags
 
-    @staticmethod
-    def add_all_post_is_draft():
-        for post in Post.query.all():
-            post.is_draft = False
-            post.save()
-
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -136,7 +130,7 @@ class Category(db.Model):
             sum_posts_count = 0
             for category in self.son_categories:
                 sum_posts_count = sum_posts_count + category.posts_count()
-        count = count + sum_posts_count
+        count += sum_posts_count
         return count
 
     def posts_query(self, query=None):
@@ -160,6 +154,9 @@ class Tag(db.Model):
 
     def __init__(self, content):
         self.content = content
+
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__, self.id)
 
     def save(self):
         db.session.add(self)
