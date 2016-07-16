@@ -949,40 +949,6 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertNotIn('TEST', response.data)
         self.assertNotIn('test again', response.data)
 
-    def test_15_calculator(self):
-        self.login(username='user', password='1234')
-        response = self.client.get(url_for('tools.calculator'))
-        self.assertIn('实验数据表', response.data)
-        self.assertIn('None', response.data)
-        response = self.client.post(url_for('tools.calculator'), data={
-            'number': '1..2'
-        }, follow_redirects=True)
-        self.assertIn('请输入一个数字', response.data)
-        response = self.client.post(url_for('tools.calculator'), data={
-            'number': '@..'
-        }, follow_redirects=True)
-        self.assertIn('请输入一个数字', response.data)
-        response = self.client.post(url_for('tools.calculator'), data={
-            'number': '1.9'
-        }, follow_redirects=True)
-        self.assertIn('1.9', response.data)
-        for i in range(6):
-            self.client.post(url_for('tools.calculator'), data={
-                'number': '1.5%s' % i
-            })
-        response = self.client.get(url_for('tools.calculator'))
-        self.assertIn('1.51', response.data)
-        self.assertIn('1.53', response.data)
-        response = self.client.get('/tools/calculator?table_method=chauvenet', follow_redirects=True)
-        self.assertIn('<tr class="danger">', response.data)
-        response = self.client.get('/tools/calculator?number_erase=1.9', follow_redirects=True)
-        self.assertNotIn('1.9', response.data)
-        response = self.client.get('/tools/calculator?table_method=handle', follow_redirects=True)
-        self.assertNotIn('None', response.data)
-        response = self.client.get('/tools/calculator?table_method=clear', follow_redirects=True)
-        self.assertNotIn('1.51', response.data)
-        self.assertNotIn('1.53', response.data)
-
 if __name__ == '__main__':
     unittest.main()
 

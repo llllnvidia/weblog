@@ -2,20 +2,6 @@
 from scipy.special import erfc
 import numpy
 
-
-# 判断数字是否合法
-def is_number(number_str):
-    import re
-    regex = re.match('(-?\d+.\d+e(-|\+)\d+)|(-?\d+\.\d+)|(-?\d+)', number_str)
-    if regex:
-        if regex.group() == number_str:
-            return True
-        else:
-            return False
-    else:
-        return False
-
-
 # 肖维捏准则
 def chauvenet(y, mean=None, stdv=None):
     if mean is None:
@@ -32,7 +18,7 @@ def chauvenet(y, mean=None, stdv=None):
 
 
 def str_list_to_num_list(y):
-    number_list = [float(a) if '.' in a else int(a) for a in y]
+    number_list = [float(a) for a in y]
     return number_list
 
 
