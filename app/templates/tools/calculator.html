@@ -31,6 +31,17 @@
                 id_num++;
             }
         }
+        function loading() {
+            var load = $("<div></div>").attr("class","sk-folding-cube sk-cube").attr("style","z-index: 3;float: left;top: 40%;left: 40%;position: fixed;");
+            load.append($("<div></div>").attr("class","sk-cube1 sk-cube"));
+            load.append($("<div></div>").attr("class","sk-cube2 sk-cube"));
+            load.append($("<div></div>").attr("class","sk-cube4 sk-cube"));
+            load.append($("<div></div>").attr("class","sk-cube3 sk-cube"));
+            $(".loader").append(load);
+        }
+        function loaded() {
+            $(".sk-folding-cube").remove();
+        }
         function onclick_num(nums) {
             str = document.getElementById("num_message");
             str.value = str.value + nums;
@@ -98,20 +109,24 @@
     <script type="text/javascript">
         $(function() {
             $('a#chauvenet').bind('click', function() {
+                loading();
                 $.getJSON('{{ url_for('tools.chauvenet') }}',{number_list:num_list.join(" ")},function(data) {
                     var tr = document.getElementById(data.index);
                     if(tr){
                         tr.setAttribute("class","danger");
                     }
                 });
+                loaded();
                 return false;
             });
             $('a#handle').bind('click', function() {
+                loading();
                 $.getJSON('{{ url_for('tools.handle') }}',{number_list:num_list.join(" ")},function (data) {
                     $("#mean").text(data.mean);
                     $("#std_dev").text(data.std_dev);
                     $("#std_dev_mean").text(data.std_dev_mean);
                 });
+                loaded();
                 return false;
             });
         });
@@ -120,7 +135,7 @@
 
 {%- block title %}实验数据处理{%- endblock %}
 {%- block page_content %}
-<div class="container-fluid">
+<div class="container-fluid loader">
     <div class="row">
     <div class="col-lg-4">
         <div class="well well-sm">
