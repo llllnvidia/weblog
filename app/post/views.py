@@ -32,7 +32,7 @@ def article(post_id):
         post_show.author.get_message_from_admin(content=u'你收到了一条评论。', link_id=post_show.id, link_type='comment')
         comment.save()
         flash('你的评论已提交。')
-        return redirect(url_for('post.article', post_id=post_show.id, page=-1))
+        return redirect(url_for('post.article', post_id=post_show.id))
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post_show.comments.count() - 1) / \
@@ -67,7 +67,7 @@ def new_article():
         post_new.save()
         current_app.logger.info('新博文 %s : %s', post_new.title, post_new.author.username)
         flash('发文成功！')
-        return redirect(url_for('post.article', post_id=post_new.id, page=-1))
+        return redirect(url_for('post.article', post_id=post_new.id))
     return render_template('post/editor.html', form=form)
 
 
@@ -107,12 +107,15 @@ def edit_article(post_id):
         post_edit.ping()
         post_edit.save()
         flash('该文章已修改。')
-        return redirect(url_for('post.article', post_id=post_id, page=-1))
-    form.title.data = post_edit.title
-    form.summary.data = post_edit.summary
-    form.is_draft.data = post_edit.is_draft
-    post_body = post_edit.body
-    form.tags.data = ','.join([str(tag.content) for tag in post_edit.tags])
+        return redirect(url_for('post.article', post_id=post_id))
+    if request.method == 'POST':
+        post_body = request.form['editor-markdown-doc']
+    else:
+        form.title.data = post_edit.title
+        form.summary.data = post_edit.summary
+        form.is_draft.data = post_edit.is_draft
+        post_body = post_edit.body
+        form.tags.data = ','.join([str(tag.content) for tag in post_edit.tags])
     return render_template('post/editor.html', form=form, post=post_edit, post_body=post_body)
 
 
@@ -160,5 +163,6 @@ def edit_talk(post_id):
         talk.save()
         flash("已修改。")
         return redirect(url_for('main.neighbourhood'))
-    form.body.data = talk.body
+    if request.method != 'POST':
+        form.body.data = talk.body
     return render_template('post/edit_talk.html', form=form, post=talk)
