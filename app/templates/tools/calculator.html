@@ -109,24 +109,26 @@
     <script type="text/javascript">
         $(function() {
             $('a#chauvenet').bind('click', function() {
+                loaded();
                 loading();
                 $.getJSON('{{ url_for('tools.chauvenet') }}',{number_list:num_list.join(" ")},function(data) {
                     var tr = document.getElementById(data.index);
                     if(tr){
                         tr.setAttribute("class","danger");
                     }
+                    loaded();
                 });
-                loaded();
                 return false;
             });
             $('a#handle').bind('click', function() {
+                loaded();
                 loading();
                 $.getJSON('{{ url_for('tools.handle') }}',{number_list:num_list.join(" ")},function (data) {
                     $("#mean").text(data.mean);
                     $("#std_dev").text(data.std_dev);
                     $("#std_dev_mean").text(data.std_dev_mean);
+                    loaded();
                 });
-                loaded();
                 return false;
             });
         });
