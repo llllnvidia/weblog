@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ZsLinw/codeblog.svg?branch=master)](https://travis-ci.org/ZsLinw/codeblog)&nbsp;&nbsp;[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/codeblog?branch=master)
+[![Build Status](https://travis-ci.org/ZsLinw/codeblog.svg?branch=master)](https://travis-ci.org/ZsLinw/codeblog)&nbsp;&nbsp;[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ec93b3f8640740878a48e07f38aa6c25/badge.svg)](https://www.quantifiedcode.com/app/project/ec93b3f8640740878a48e07f38aa6c25)[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/codeblog?branch=master)
 # About CodeBlog
 
 [Codelog](https://github.com/ZsLinw/codeblog) is powered by [Flask](http://flask.pocoo.org/).
