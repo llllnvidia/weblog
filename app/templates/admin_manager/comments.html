@@ -7,12 +7,18 @@
 <div class="page-header">
     <h4>所有评论</h4>
 </div>
+<div class="container-fluid">
+<div class="row">
 {%- set moderate = True %}
 {%- include 'post/_comments.html' %}
+</div>
 {%- if pagination and pagination.total//pagination.per_page %}
+<div class="row">
 <div class="pagination">
     {{ macros.pagination_widget(pagination, request.endpoint) }}
 </div>
+</div>
 {%- endif %}
+</div>
 {%- endblock %}
     

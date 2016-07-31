@@ -30,13 +30,13 @@
         </tr>
     {%- endfor %}
     </tbody>
+    </table>
+    </div>
     {%- if pagination and pagination.total//pagination.per_page %}
-        <div class="pagination-right">
+        <div class="pagination">
         {{ macros.pagination_widget(pagination,request.endpoint) }}
         </div>
     {%- endif %}
-    </table>
-    </div>
     </div>
 </div>
 {%- endblock %}

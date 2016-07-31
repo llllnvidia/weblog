@@ -47,9 +47,11 @@
     </div>
     </div>
     {%- if pagination and pagination.total//pagination.per_page %}
-        <div class="pagination-right">
-        {{ macros.pagination_widget(pagination,request.endpoint) }}
-        </div>
+    <div class="row">
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, request.endpoint) }}
+    </div>
+    </div>
     {%- endif %}
 </div>
 {%- endblock %}
