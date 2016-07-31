@@ -25,19 +25,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                {%- if current_user.is_authenticated -%}
-                <li role="presentation" class="dropdown"><a class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                  aria-haspopup="true" aria-expanded="false">
-                社区 <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/neighbourhood?show_followed=0#neighbourhood">所有</a></li>
-                        <li><a href="/neighbourhood?show_followed=1#neighbourhood">关注</a></li>
-                    </ul>
-                </li>
-                {%- else -%}
                 <li role="presentation"><a href="{{ url_for('main.neighbourhood') }}#neighbourhood" role="button">社区</a>
-                {%- endif -%}
                 {%- if current_user.is_authenticated -%}
                     {%- if current_user.new_messages_count -%}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
