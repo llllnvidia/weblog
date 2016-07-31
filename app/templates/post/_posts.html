@@ -1,84 +1,71 @@
-{%- for post in posts if post %}
+{% for post in posts if post %}
     <div class="well well-lg {% if post.is_draft and request.endpoint != 'post.article'%}post-draft{% else %}post-default{% endif %}">
-        {%- if post.is_article %}
-            {%- if request.endpoint != 'post.article' %}
-            <a href="{{ url_for('post.article', post_id=post.id, prev_url=request.url) }}"><h3>{{ post.title }}</h3></a>
-            {%- else %}
-            <h3>
-                {{ post.title }}
-                {%- if post.is_article and request.endpoint == 'post.article' %}
-                    {%- if current_user == post.author %}
-                        <a type="button" class="btn btn-warning btn-xs" href="{{ url_for('post.edit_article',post_id=post.id) }}">
-                            修改
-                        </a>
-                    {%- elif current_user.is_moderator() %}
-                        <a type="button" class="btn btn-danger btn-xs" href="{{ url_for('post.edit_article',post_id=post.id) }}">
-                            修改[Admin]
-                        </a>
-                    {%- endif %}
-                {%- endif %}
-            </h3>
-            {%- endif %}
-            <div class="row">
-            <div class="col-xs-6 col-lg-4">
-                <i class="fa fa-pencil fa-lg"></i>&nbsp;
-                <i class="small-font">{{ moment(post.last_edit).fromNow() }}</i>
-                <br/>
-                <i class="fa fa-calendar fa-lg"></i>&nbsp;
-                <i class="small-font">{{ moment(post.timestamp).format('LL') }}</i>
-                <br/>
-                <i class="fa fa-comments-o fa-lg"></i>&nbsp;
-                {%- if post.comments.count() %}
-                    <i class="small-font">{{ post.comments.count() }}</i>
-                {%- else %}
-                    <i class="small-font">无</i>
-                {%- endif %}
-            </div>
-            <div class="col-xs-6 col-lg-8">
-                <i class="fa fa-user fa-lg"></i>&nbsp;
-                <a class="small-font" href="{{ url_for('main.user', username=post.author.username) }}">
-                    <i>{{ post.author.username }}</i>
-                </a>
-                <br/>
-                <i class="fa fa-filter fa-lg"></i>&nbsp;
-                <a class="small-font" href="{%- if prev_url %}{{ prev_url.split('?')[0] }}{%- else %}{{ url_for('main.neighbourhood') }}{%- endif %}?category={{ post.category.name }}&prev_url={{ request.url }}">
-                    <i>{{ post.category.name }}</i>
-                </a>
-                <br/>
-                <i class="fa fa-tags fa-lg"></i>&nbsp;
-                {%- for tag in post.tags %}
-                <a class="small-font" href="{%- if prev_url %}{{ prev_url.split('?')[0] }}{%- else %}{{ url_for('main.neighbourhood') }}{%- endif %}?tag={{ tag.content }}&prev_url={{ request.url }}">
-                <i>{{ tag.content }}</i>
-                </a>
-                {%- else %}
-                    <i class="small-font">无</i>
-                {%- endfor %}
-            </div>
-            </div><br/>
-            {%- if request.endpoint == 'post.article' or not post.summary %}
-                 <div id="editormd-view">
-                <textarea id="append-test" style="display:none;">{{ post.body  }}</textarea>
-                </div>
-            {%- else %}
-                {{ post.summary | markdown | safe }}
-            {%- endif %}
-            {%- else %}
-                {%- if not request.endpoint == 'main.user' %}
-                <a href="{{ url_for('main.user', username=post.author.username) }}">
-                    <h3> {{ post.author.username }}
-                        <small>{{ moment(post.timestamp).format('YY-MM-DD HH:mm') }}</small>
-                    </h3>
-                </a>
-                {%- else %}
-                    <h3> {{ post.author.username }}
-                        <small>{{ moment(post.timestamp).format('YY-MM-DD HH:mm') }}</small>
-                    </h3>
-                {%- endif %}
-            {{ post.body | markdown | safe }}
-            {%- endif %}
+        {% if request.endpoint != 'post.article' %}
+        <a href="{{ url_for('post.article', post_id=post.id, prev_url=request.url) }}"><h3>{{ post.title }}</h3></a>
+        {% else %}
+        <h3>
+            {{ post.title }}
+            {% if request.endpoint == 'post.article' %}
+                {% if current_user == post.author %}
+                    <a type="button" class="btn btn-warning btn-xs" href="{{ url_for('post.edit_article',post_id=post.id) }}">
+                        修改
+                    </a>
+                {% elif current_user.is_moderator() %}
+                    <a type="button" class="btn btn-danger btn-xs" href="{{ url_for('post.edit_article',post_id=post.id) }}">
+                        修改[Admin]
+                    </a>
+                {% endif %}
+            {% endif %}
+        </h3>
+        {% endif %}
+        <div class="row">
+        <div class="col-xs-6 col-lg-4">
+            <i class="fa fa-pencil fa-lg"></i>&nbsp;
+            <i class="small-font">{{ moment(post.last_edit).fromNow() }}</i>
+            <br/>
+            <i class="fa fa-calendar fa-lg"></i>&nbsp;
+            <i class="small-font">{{ moment(post.timestamp).format('LL') }}</i>
+            <br/>
+            <i class="fa fa-comments-o fa-lg"></i>&nbsp;
+            {% if post.comments.count() %}
+                <i class="small-font">{{ post.comments.count() }}</i>
+            {% else %}
+                <i class="small-font">无</i>
+            {% endif %}
+        </div>
+        <div class="col-xs-6 col-lg-8">
+            <i class="fa fa-user fa-lg"></i>&nbsp;
+            <a class="small-font" href="{{ url_for('main.user', username=post.author.username) }}">
+                <i>{{ post.author.username }}</i>
+            </a>
+            <br/>
+            <i class="fa fa-filter fa-lg"></i>&nbsp;
+            <a class="small-font" href="{% if prev_url %}{{ prev_url.split('?')[0] }}{% else %}{{ url_for('main.neighbourhood') }}{% endif %}?category={{ post.category.name }}&prev_url={{ request.url }}">
+                <i>{{ post.category.name }}</i>
+            </a>
+            <br/>
+            <i class="fa fa-tags fa-lg"></i>&nbsp;
+            {% for tag in post.tags %}
+            <a class="small-font" href="{% if prev_url %}{{ prev_url.split('?')[0] }}{% else %}{{ url_for('main.neighbourhood') }}{% endif %}?tag={{ tag.content }}&prev_url={{ request.url }}">
+            <i>{{ tag.content }}</i>
+            </a>
+            {% else %}
+                <i class="small-font">无</i>
+            {% endfor %}
+        </div>
+    </div><br/>
+{% if request.endpoint == 'post.article'%}
+    <div id="editormd-view">
+    <textarea id="append-test" style="display:none;">{{ post.body  }}</textarea>
     </div>
-{%- else %}
+{% elif not post.summary %}
+    无摘要
+{% else %}
+    {{ post.summary | markdown | safe }}
+{% endif %}
+    </div>
+{% else %}
     <div class="well well-lg post-default">
     <h3 align="center">无文章</h3>
     </div>
-{%- endfor %}
+{% endfor %}

@@ -9,34 +9,6 @@
 </div>
 <div class="panel panel-primary">
 <table class="table table-hover followers">
-{%- if talks %}
-    <thead>
-    <tr>
-        <th>#</th><th>author</th><th>内容</th><th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    {%- for talk in talks %}
-    <tr>
-        <td>{{ talk.id }}</td>
-        <td>
-            <a href="{{ url_for('main.user',username=talk.author.username) }}" target="_blank">
-                {{ talk.author.username }}
-            </a>
-        </td>
-        <td>{{ talk.body | truncate(50, true)}}</td>
-        <td>
-            <div  class="btn-group-vertical">
-            <a type="button" class="btn btn-sm btn-warning" href="{{ url_for('post.edit_talk', post_id=talk.id) }}" target="_blank">修改</a>
-            <a type="button" class="btn btn-sm btn-danger"
-               href="{{ url_for('post.delete_post', post_id=talk.id) }}?next={{ request.url }}">删除</a>
-            </div>
-        </td>
-    </tr>
-    {%- endfor %}
-    </tbody>
-{%- endif %}
-{%- if articles %}
     <thead>
     <tr>
         <th>#</th><th>author</th><th>timestamp</th>
@@ -70,7 +42,6 @@
     </tr>
     {%- endfor %}
     </tbody>
-{%- endif %}
 </table>
 </div>
 {%- if pagination and pagination.total//pagination.per_page %}

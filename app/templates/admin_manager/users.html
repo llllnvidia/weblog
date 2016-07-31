@@ -25,7 +25,7 @@
             <td>{{ user.name }}</td>
             <td>{{ moment(user.member_since).format('LL') }}</td>
             <td>{{ moment(user.last_seen).format('LLL') }}</td>
-            <td>{{ user.posts.filter_by(is_article=True).count() }}</td>
+            <td>{{ user.posts.count() }}</td>
             <td>
                 <div class="btn-group">
                 <a class="btn btn-default" href="{{ url_for('main.user', username=user.username) }}" target="_blank">

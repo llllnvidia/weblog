@@ -18,8 +18,7 @@ def txt_to_html(txt):
 def article(post_id):
     prev_url = request.args.get('prev_url', '')
     post_show = Post.query.get_or_404(post_id)
-    if not post_show.is_article or \
-            (post_show.is_draft and (current_user != post_show.author and not current_user.is_moderator())):
+    if post_show.is_draft and (current_user != post_show.author and not current_user.is_moderator()):
         abort(404)
     form = CommentForm()
     if form.validate_on_submit():
@@ -54,7 +53,7 @@ def new_article():
                         author=current_user,
                         summary=form.summary.data,
                         is_draft=form.is_draft.data,
-                        is_article=True, category=Category.query.filter_by(id=form.category.data).first())
+                        category=Category.query.filter_by(id=form.category.data).first())
         tags = [tag.strip() for tag in form.tags.data.split(',')] if form.tags.data else None
         if tags:
             for tag in tags:
@@ -75,8 +74,6 @@ def new_article():
 @login_required
 def edit_article(post_id):
     post_edit = Post.query.get_or_404(post_id)
-    if not post_edit.is_article:
-        abort(404)
     if current_user != post_edit.author and \
             not current_user.can(Permission.MODERATE_COMMENTS):
         abort(403)
@@ -134,35 +131,3 @@ def delete_post(post_id):
         return redirect(next_url)
     else:
         return redirect(url_for('main.index'))
-
-
-@post.route('/new/talk', methods=['GET', 'POST'])
-@login_required
-def new_talk():
-    form = TalkForm()
-    if form.validate_on_submit():
-        talk = Post(body=form.body.data,
-                    is_article=False,
-                    author=current_user)
-        talk.save()
-        flash('吐槽成功！')
-        return redirect(url_for('main.neighbourhood'))
-    return render_template('post/edit_talk.html', form=form)
-
-
-@post.route('/edit/talk/<int:post_id>', methods=['GET', 'POST'])
-@login_required
-def edit_talk(post_id):
-    talk = Post.query.get_or_404(post_id)
-    if talk.is_article:
-        abort(404)
-    form = TalkForm()
-    if form.validate_on_submit():
-        talk.body = form.body.data
-        talk.ping()
-        talk.save()
-        flash("已修改。")
-        return redirect(url_for('main.neighbourhood'))
-    if request.method != 'POST':
-        form.body.data = talk.body
-    return render_template('post/edit_talk.html', form=form, post=talk)

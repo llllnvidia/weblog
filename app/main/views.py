@@ -49,8 +49,6 @@ def neighbourhood():
     cur_key = request.args.get('key', None)
     cur_key_cookie = request.cookies.get('key', None)
     key_disable = request.args.get('key_disable', None)
-    show_talk = request.args.get('show_talk', None, type=int)
-    show_talk_cookie = request.cookies.get('show_talk', None, type=int)
     show_followed = request.args.get('show_followed', None, type=int)
     show_followed_cookie = request.cookies.get('show_followed', None, type=int)
 
@@ -60,6 +58,8 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood', category=cur_category)))
         elif cur_tag:
             resp = make_response(redirect(url_for('main.neighbourhood', tag=cur_tag)))
+        else:
+            resp = make_response(redirect(url_for('main.neighbourhood')))
         resp.set_cookie('show_talk', '', path=url_for('main.neighbourhood'), max_age=0)
         resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
         resp.set_cookie('category', '', path=url_for('main.neighbourhood'), max_age=0)
@@ -82,25 +82,8 @@ def neighbourhood():
             return resp
         query_category_count = query = Post.query.filter(Post.is_draft==False)
 
-    # show_talk
-    if not show_talk and not category_disable:
-        show_talk = show_talk_cookie
-    if show_talk:
-        if not show_talk_cookie:
-            resp = make_response(redirect(url_for('main.neighbourhood')))
-            resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
-            resp.set_cookie('show_talk', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
-            return resp
-        elif show_talk_cookie and cur_category:
-            resp = make_response(redirect(url_for('main.neighbourhood')))
-            resp.set_cookie('show_talk', '', path=url_for('main.neighbourhood'), max_age=0)
-            resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
-            resp.set_cookie('category', cur_category, path=url_for('main.neighbourhood'), max_age=60 * 3)
-            return resp
-        query = query.filter(Post.is_article == False)
-
     # category
-    if not cur_category and not show_talk_cookie and not category_disable:
+    if not cur_category and not category_disable:
         cur_category = cur_category_cookie
     if cur_category:
         if not cur_category_cookie or cur_category_cookie != cur_category:
@@ -161,7 +144,7 @@ def neighbourhood():
     posts = pagination.items
     return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts,
                            categories=categories_list, tags=tags, cur_tags=cur_tags,
-                           cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                           cur_category=cur_category, key=cur_key,
                            show_followed=show_followed, query_category_count=query_category_count,
                            query_tag_count=query, pagination=pagination)
 
@@ -189,8 +172,6 @@ def user(username):
     cur_key = request.args.get('key', None)
     cur_key_cookie = request.cookies.get('key', None)
     key_disable = request.args.get('key_disable', None)
-    show_talk = request.args.get('show_talk', None, type=int)
-    show_talk_cookie = request.cookies.get('show_talk', None, type=int)
 
     # 处理从post.article栏目&标签跳转
     if prev_url:
@@ -198,31 +179,16 @@ def user(username):
             resp = make_response(redirect(url_for('main.user', username=username, category=cur_category)))
         elif cur_tag:
             resp = make_response(redirect(url_for('main.user', username=username, tag=cur_tag)))
+        else:
+            resp = make_response(redirect(url_for('main.user', username=username)))
         resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
         resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
         resp.set_cookie('category', '', path=url_for('main.user', username=username), max_age=0)
         resp.set_cookie('key', '', path=url_for('main.user', username=username), max_age=0)
         return resp
 
-    # show_talk
-    if not show_talk and not category_disable:
-        show_talk = show_talk_cookie
-    if show_talk:
-        if not show_talk_cookie:
-            resp = make_response(redirect(url_for('main.user', username=username)))
-            resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
-            resp.set_cookie('show_talk', '1', path=url_for('main.user', username=username), max_age=60 * 3)
-            return resp
-        elif show_talk_cookie and cur_category:
-            resp = make_response(redirect(url_for('main.user', username=username)))
-            resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
-            resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
-            resp.set_cookie('category', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
-            return resp
-        query = query.filter(Post.is_article == False)
-
     # category
-    if not cur_category and not show_talk_cookie and not category_disable:
+    if not cur_category and not category_disable:
         cur_category = cur_category_cookie
     if cur_category:
         if not cur_category_cookie or cur_category_cookie != cur_category:
@@ -283,7 +249,7 @@ def user(username):
     posts = pagination.items
     return render_template('user.html', user=user_showed, posts=posts, query_category_count=query_category_count,
                            tags=tags, query_tag_count=query,
-                           cur_tags=cur_tags, cur_category=cur_category, show_talk=show_talk, key=cur_key,
+                           cur_tags=cur_tags, cur_category=cur_category, key=cur_key,
                            categories=categories_list, pagination=pagination)
 
 

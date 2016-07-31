@@ -46,8 +46,7 @@
         &nbsp;
         <a href="{{ url_for('.followers',username=user.username) }}#user">粉丝</a>: <span class="badge">{{ user.followers.count() - 1 }}</span>&nbsp;
         <a href="{{ url_for('.followed_by',username=user.username) }}#user">关注</a>: <span class="badge">{{ user.followed.count() - 1 }}</span>&nbsp;
-        <a href="{{ url_for('main.user',username=user.username) }}#user">文章</a>: <span class="badge">{{ user.posts.filter_by(is_article=True).count() }}</span>&nbsp;
-        <a href="?show_talk=1#user">吐槽</a>: <span class="badge">{{ user.posts.filter_by(is_article=False).count() }}</span>&nbsp;
+        <a href="{{ url_for('main.user',username=user.username) }}#user">文章</a>: <span class="badge">{{ user.posts.count() }}</span>
         {%- if current_user.is_authenticated and user != current_user and
             user.is_following(current_user) %}
           | <span class="label label-default">正在关注你</span>
@@ -75,12 +74,6 @@
         <div class="panel panel-primary">
             <div class="panel-heading"><i class="fa fa-filter fa-lg"></i>&nbsp;栏目<a href="?category_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
             <ul class="list-group" id="listcontrol">
-            {%- if query_category_count.filter(Post.is_article==False).count() %}
-                <a href="?show_talk=1#user" class="list-group-item{%- if show_talk %} active{%- endif %}">
-                    <span class="badge">{{ query_category_count.filter(Post.is_article==False).count() }}</span>
-                    吐槽
-                </a>
-            {%- endif %}
             {%- for category in categories if category.posts_count(query_category_count) %}
             {%- if category.son_categories %}
                 <a href="?category={{ category.name }}#user" class="list-group-item{%- if cur_category == category.name %} active{%- endif %}">

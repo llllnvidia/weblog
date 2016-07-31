@@ -16,7 +16,6 @@ class Post(db.Model):
     is_draft = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    is_article = db.Column(db.Boolean, default=False)
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     title = db.Column(db.Text)
     summary = db.Column(db.Text)
@@ -30,10 +29,7 @@ class Post(db.Model):
                            backref=db.backref('posts', lazy='dynamic'))
 
     def __repr__(self):
-        if self.title:
-            return '<Post %s Author %s>' % (self.title, self.author.username)
-        else:
-            return '<Post %d Author %s>' % (self.id, self.author.username)
+        return '<Post %s Author %s>' % (self.title, self.author.username)
 
     def ping(self):
         self.last_edit = datetime.utcnow()

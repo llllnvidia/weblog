@@ -152,24 +152,12 @@ def delete_category(category_id):
     return redirect(url_for('admin_manager.categories'))
 
 
-@admin_manager.route('/talks', methods=['GET', 'POST'])
-@login_required
-@permission_required(Permission.MODERATE_COMMENTS)
-def talks():
-    page = request.args.get('page', 1, type=int)
-    pagination = Post.query.filter_by(is_article=False).order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['POSTS_PER_PAGE'],
-        error_out=False)
-    talks_list = pagination.items
-    return render_template('admin_manager/posts.html', title='所有吐槽', talks=talks_list, pagination=pagination)
-
-
 @admin_manager.route('/articles', methods=['GET', 'POST'])
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def articles():
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.filter_by(is_article=True).order_by(Post.timestamp.desc()).paginate(
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['POSTS_PER_PAGE'],
         error_out=False)
     articles_list = pagination.items

@@ -74,7 +74,6 @@
                         <li><a href="{{ url_for('main.user',username=current_user.username) }}">主页</a></li>
                         <li><a href="{{ url_for('main.dialogues') }}">消息 <span class="badge badge-xs">{{ current_user.new_messages_count }}</span></a></li>
                         <li><a href="{{ url_for('post.new_article') }}">发博文</a></li>
-                        <li><a href="{{ url_for('post.new_talk') }}">吐槽</a></li>
                     </ul>
                 </li>
                 {%- else -%}
@@ -86,18 +85,9 @@
                         <li><a href="{{ url_for('main.user',username=current_user.username) }}">主页</a></li>
                         <li><a href="{{ url_for('main.dialogues') }}">消息</a></li>
                         <li><a href="{{ url_for('post.new_article') }}">发博文</a></li>
-                        <li><a href="{{ url_for('post.new_talk') }}">吐槽</a></li>
                     </ul>
                 </li>
                     {%- endif -%}
-                <li role="presentation" class="dropdown"><a class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                  aria-haspopup="true" aria-expanded="false">工具
-                  <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('tools.calculator') }}">实验数据处理器</a></li>
-                    </ul>
-                </li>
                 {%- endif -%}
                 {%- if current_user.is_authenticated and current_user.is_moderator() -%}
                 <li role="presentation" class="dropdown"><a class="dropdown-toggle"
@@ -106,7 +96,6 @@
                   <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('admin_manager.users') }}">所有用户</a></li>
-                        <li><a href="{{ url_for('admin_manager.talks') }}">所有吐槽</a></li>
                         <li><a href="{{ url_for('admin_manager.articles') }}">所有文章</a></li>
                         <li><a href="{{ url_for('admin_manager.moderate')}}">所有评论</a></li>
                         <li><a href="{{ url_for('admin_manager.categories')}}">所有栏目</a></li>
