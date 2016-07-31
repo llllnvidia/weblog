@@ -7,7 +7,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login_manager
-from app.models.message import Dialogue, Gallery
+from app.models.message import Dialogue, Session
 
 
 class Role(db.Model):
@@ -100,8 +100,8 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all,delete-orphan')
     chats = db.relationship('Chat', backref='author', lazy='dynamic')
-    galleries = db.relationship('Gallery',
-                                foreign_keys=[Gallery.user_id],
+    sessions = db.relationship('Session',
+                                foreign_keys=[Session.user_id],
                                 backref=db.backref('user', lazy='joined'),
                                 lazy='dynamic',
                                 cascade='all,delete-orphan')
@@ -134,8 +134,8 @@ class User(UserMixin, db.Model):
             chat_delete.delete()
         for post_delete in self.posts:
             post_delete.delete()
-        for gallery_delete in self.galleries:
-            gallery_delete.delete()
+        for session_delete in self.sessions:
+            session_delete.delete()
         db.session.delete(self)
         db.session.commit()
 
@@ -184,8 +184,8 @@ class User(UserMixin, db.Model):
     def ping(self):
         self.new_messages_count = 0
         self.last_seen = datetime.utcnow()
-        for gallery in self.galleries:
-            self.new_messages_count = self.new_messages_count + gallery.having_new_chats
+        for session in self.sessions:
+            self.new_messages_count = self.new_messages_count + session.having_new_chats
         self.save()
 
     @property
@@ -223,7 +223,7 @@ class User(UserMixin, db.Model):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
-        except:
+        except Exception:
             return False
         if data.get('reset') != self.id:
             return False
@@ -257,8 +257,8 @@ class User(UserMixin, db.Model):
 
     @property
     def dialogues(self):
-        return Dialogue.query.join(Gallery, Gallery.dialogue_id == Dialogue.id) \
-            .filter(Gallery.user_id == self.id)
+        return Dialogue.query.join(Session, Session.dialogue_id == Dialogue.id) \
+            .filter(Session.user_id == self.id)
 
     def get_message_from_admin(self, content, link_id=None, link_type=None):
         admin = User.query.filter_by(username=current_app.config['ADMIN']).first()

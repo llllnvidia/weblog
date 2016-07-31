@@ -12,7 +12,7 @@
     <div class="panel panel-primary">
         <div class="panel-heading">消息列表</div>
         <ul class="list-group">
-            {%- for dialogue in dialogues if dialogue.get_gallery(current_user).show %}
+            {%- for dialogue in dialogues if dialogue.get_session(current_user).show %}
                 <li class="list-group-item">
                     {%- if dialogue.having_new_chats(current_user) %}
                     <span class="badge">{{ dialogue.having_new_chats(current_user) }}</span>

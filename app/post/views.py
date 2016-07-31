@@ -64,7 +64,7 @@ def new_article():
                 post_new.tag(new_tag)
         post_new.ping()
         post_new.save()
-        current_app.logger.info('新博文 %s : %s', post_new.title, post_new.author.username)
+        current_app.logger.info('新文章 %s|%s', post_new.title, post_new.author.username)
         flash('发文成功！')
         return redirect(url_for('post.article', post_id=post_new.id))
     return render_template('post/editor.html', form=form)
@@ -103,6 +103,8 @@ def edit_article(post_id):
                 post_edit.not_tag(tag)
         post_edit.ping()
         post_edit.save()
+        current_app.logger.info('修改文章 %s|%s by %s', post_edit.title,
+                                post_edit.author.username, current_user.username)
         flash('该文章已修改。')
         return redirect(url_for('post.article', post_id=post_id))
     if request.method == 'POST':
@@ -125,6 +127,8 @@ def delete_post(post_id):
             not current_user.can(0x0f):
         abort(403)
     else:
+        current_app.logger.info('删除文章 %s|%s by %s', post_delete.title,
+                                post_delete.author.username, current_user.username)
         post_delete.delete()
         flash('已删除！')
     if next_url:

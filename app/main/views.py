@@ -26,13 +26,11 @@ def after_request(response):
     return response
 
 
-@cache.cached
 @main.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
 
-@cache.cached(timeout=500)
 @main.route('/neighbourhood', methods=['GET'])
 def neighbourhood():
     categories_list = Category.query.filter_by(parent_id=1).all()
@@ -342,14 +340,14 @@ def dialogues(dialogue_id=None):
     if dialogue_id:
         delete_true = request.args.get('delete_true', False, type=bool)
         dialogue = Dialogue.query.get_or_404(dialogue_id)
-        if not dialogue.is_joining(current_user) or not dialogue.get_gallery(current_user).show:
+        if not dialogue.is_joining(current_user) or not dialogue.get_session(current_user).show:
             abort(404)
         if delete_true:
-            dialogue = dialogue.get_gallery(current_user)
+            dialogue = dialogue.get_session(current_user)
             dialogue.show = False
             dialogue.save()
             return redirect(url_for('main.dialogues'))
-        dialogue.update_chats(current_user)     # 更新gallery.count
+        dialogue.update_chats(current_user)     # 更新session.count
         current_user.ping()     # 更新current_user.new_messages_count
         form = ChatForm()
         page = request.args.get('page', 1, type=int)
@@ -373,9 +371,9 @@ def new_dialogue(username):
     user_visit = User.query.filter_by(username=username).first()
     if Dialogue.is_together(user_visit, current_user):
         dialogue = Dialogue.get_dialogue(user_visit, current_user)
-        gallery = dialogue.get_gallery(current_user)
-        gallery.show = True
-        gallery.save()
+        session = dialogue.get_session(current_user)
+        session.show = True
+        session.save()
         return redirect(url_for('main.dialogues', dialogue_id=dialogue.id))
     else:
         dialogue = Dialogue(current_user, user_visit)
@@ -383,16 +381,19 @@ def new_dialogue(username):
 
 
 @main.route('/forbidden')
+@cache.cached(timeout=60*60*24*30)
 def forbidden():
     abort(403)
 
 
 @main.route('/page_not_found')
+@cache.cached(timeout=60*60*24*30)
 def page_not_found():
     abort(404)
 
 
 @main.route('/internal_server_error')
+@cache.cached(timeout=60*60*24*30)
 def internal_server_error():
     abort(500)
 

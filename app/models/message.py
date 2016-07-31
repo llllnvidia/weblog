@@ -3,8 +3,8 @@ from datetime import datetime
 from app import db
 
 
-class Gallery(db.Model):
-    __tablename__ = 'galleries'
+class Session(db.Model):
+    __tablename__ = 'sessions'
     id = db.Column(db.Integer, primary_key=True)
     dialogue_id = db.Column(db.Integer, db.ForeignKey('dialogues.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -43,9 +43,9 @@ class Gallery(db.Model):
     def get_temporary_name(self):
         users = []
         dialogue = self.dialogue
-        for gallery in dialogue.galleries:
-            if gallery.id != self.id:
-                users.append(gallery.user.username)
+        for session in dialogue.sessions:
+            if session.id != self.id:
+                users.append(session.user.username)
         return ' '.join(users)
 
     @property
@@ -59,11 +59,11 @@ class Gallery(db.Model):
 class Dialogue(db.Model):
     __tablename__ = 'dialogues'
     id = db.Column(db.Integer, primary_key=True)
-    galleries = db.relationship('Gallery',
-                                foreign_keys=[Gallery.dialogue_id],
-                                backref=db.backref('dialogue', lazy='joined'),
-                                lazy='dynamic',
-                                cascade='all,delete-orphan')
+    sessions = db.relationship('Session',
+                               foreign_keys=[Session.dialogue_id],
+                               backref=db.backref('dialogue', lazy='joined'),
+                               lazy='dynamic',
+                               cascade='all,delete-orphan')
     chats = db.relationship('Chat', backref='dialogue', lazy='dynamic')
 
     def __init__(self, user=None, user_has_name=None, name=None):
@@ -77,8 +77,8 @@ class Dialogue(db.Model):
                 self.save()
                 self.user_join(user)
                 self.user_join(user_has_name)
-                for gallery in self.galleries:
-                    gallery.update_name()
+                for session in self.sessions:
+                    session.update_name()
         else:
             pass
 
@@ -87,59 +87,59 @@ class Dialogue(db.Model):
         db.session.commit()
 
     def delete(self):
-        for gallery in self.galleries:
-            gallery.delete()
+        for session in self.sessions:
+            session.delete()
         for chat in self.chats:
             chat.delete()
         db.session.delete(self)
         db.session.commit()
 
     def update_show(self):
-        for gallery in self.galleries:
-            gallery.show = True
-            gallery.save()
+        for session in self.sessions:
+            session.show = True
+            session.save()
 
     def name(self, user):
         if self.is_joining(user):
-            gallery = self.galleries.filter_by(user_id=user.id).first()
-            return gallery.name
+            session = self.sessions.filter_by(user_id=user.id).first()
+            return session.name
 
     def user_join(self, user, name=None):
         if not self.is_joining(user):
             if name:
-                gallery = Gallery(dialogue=self, user=user, name=name)
+                session = Session(dialogue=self, user=user, name=name)
             else:
-                gallery = Gallery(dialogue=self, user=user)
-            gallery.count = self.chats.count()
-            gallery.save()
+                session = Session(dialogue=self, user=user)
+            session.count = self.chats.count()
+            session.save()
 
     def user_leave(self, user):
         if self.is_joining(user):
-            gallery = self.galleries.filter_by(user_id=user.id).first()
-            gallery.delete()
+            session = self.sessions.filter_by(user_id=user.id).first()
+            session.delete()
 
     def is_joining(self, user):
-        if self.galleries.filter_by(user=user).first():
+        if self.sessions.filter_by(user=user).first():
             return True
         else:
             return False
 
-    def get_gallery(self, user):
-        return self.galleries.filter_by(user_id=user.id).first()
+    def get_session(self, user):
+        return self.sessions.filter_by(user_id=user.id).first()
 
     def update_chats(self, user):
         if self.is_joining(user):
-            gallery = self.galleries.filter_by(user_id=user.id).first()
-            gallery.count = self.chats.count()
-            gallery.timestamp = datetime.utcnow()
-            gallery.save()
+            session = self.sessions.filter_by(user_id=user.id).first()
+            session.count = self.chats.count()
+            session.timestamp = datetime.utcnow()
+            session.save()
         else:
             self.user_join(user)
 
     def having_new_chats(self, user):
         if self.is_joining(user):
-            gallery = self.galleries.filter_by(user_id=user.id).first()
-            return gallery.having_new_chats
+            session = self.sessions.filter_by(user_id=user.id).first()
+            return session.having_new_chats
         else:
             return 0
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import unittest
+from time import sleep
 from flask import url_for
 from app import create_app, db
 from app.models.account import User, Role
@@ -184,6 +185,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         self.assertIn('修改成功', response.data)
         self.assertIn('一封包含身份确认链接的邮件已发往你的新邮箱', response.data)
         token = user.generate_confirmation_token()
+        sleep(0.5)
         response = self.client.get('/auth/confirm/%s' % token, follow_redirects=True)
         self.assertIn('已确认你的身份，欢迎加入我们', response.data)
 
@@ -410,7 +412,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         # delete post
         response = self.client.get(url_for('post.delete_post', post_id=post.id), follow_redirects=True)
         self.assertTrue(Post.query.count() == 0)
-        self.assertTrue('已删除' in response.data)
+        self.assertIn('已删除', response.data)
 
     def test_02_post_is_draft(self):
         self.login(username='Admin', password='1234')
@@ -474,6 +476,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         article_test.save()
         article_test.tag(tag_one)
         article_test.tag(tag_two)
+        article_test.save()
         response = self.client.get(url_for('main.neighbourhood'))
         self.assertNotIn('无栏目', response.data)
         self.assertNotIn('无标签', response.data)
