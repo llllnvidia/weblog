@@ -38,17 +38,17 @@ def neighbourhood():
 
     prev_url = request.args.get('prev_url', '')
     page = request.args.get('page', 1, type=int)
-    cur_category = request.args.get('category', None)
-    cur_category_cookie = request.cookies.get('category', None)
-    category_disable = request.args.get('category_disable', None)
-    cur_tag = request.args.get('tag', None)
+    cur_category = request.args.get('category', '')
+    cur_category_cookie = request.cookies.get('category', '')
+    category_disable = request.args.get('category_disable', '')
+    cur_tag = request.args.get('tag', '')
     cur_tag_cookie = request.cookies.get('tags', '')
-    tag_disable = request.args.get('tag_disable', None)
-    cur_key = request.args.get('key', None)
-    cur_key_cookie = request.cookies.get('key', None)
-    key_disable = request.args.get('key_disable', None)
-    show_followed = request.args.get('show_followed', None, type=int)
-    show_followed_cookie = request.cookies.get('show_followed', None, type=int)
+    tag_disable = request.args.get('tag_disable', '')
+    cur_key = request.args.get('key', '')
+    cur_key_cookie = request.cookies.get('key', '')
+    key_disable = request.args.get('key_disable', '')
+    show_followed = request.args.get('show_followed', -1, type=int)
+    show_followed_cookie = request.cookies.get('show_followed', 0, type=int)
 
     # 处理从post.article栏目&标签跳转
     if prev_url:
@@ -65,7 +65,7 @@ def neighbourhood():
         return resp
 
     # show_followed
-    if show_followed is None and current_user.is_authenticated:
+    if show_followed == -1 and current_user.is_authenticated:
         show_followed = show_followed_cookie
     if show_followed and current_user.is_authenticated:
         if not show_followed_cookie:
@@ -161,15 +161,15 @@ def user(username):
 
     prev_url = request.args.get('prev_url', '')
     page = request.args.get('page', 1, type=int)
-    cur_category = request.args.get('category', None)
-    cur_category_cookie = request.cookies.get('category', None)
-    category_disable = request.args.get('category_disable', None)
-    cur_tag = request.args.get('tag', None)
+    cur_category = request.args.get('category', '')
+    cur_category_cookie = request.cookies.get('category', '')
+    category_disable = request.args.get('category_disable', '')
+    cur_tag = request.args.get('tag', '')
     cur_tag_cookie = request.cookies.get('tags', '')
-    tag_disable = request.args.get('tag_disable', None)
-    cur_key = request.args.get('key', None)
-    cur_key_cookie = request.cookies.get('key', None)
-    key_disable = request.args.get('key_disable', None)
+    tag_disable = request.args.get('tag_disable', '')
+    cur_key = request.args.get('key', '')
+    cur_key_cookie = request.cookies.get('key', '')
+    key_disable = request.args.get('key_disable', '')
 
     # 处理从post.article栏目&标签跳转
     if prev_url:
