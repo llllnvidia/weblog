@@ -38,9 +38,6 @@ class PostModelTestCase(unittest.TestCase):
 
     def test_01_post_repr(self):
         admin = User.query.get(1)
-        post = Post(body='Post is editing!', author=admin)
-        post.save()
-        self.assertTrue('<Post 1 Author Admin>' == post.__repr__())
         post = Post(body='Post is editing!', author=admin, title='admin\'s post')
         post.save()
         self.assertTrue('<Post admin\'s post Author Admin>' == post.__repr__())
