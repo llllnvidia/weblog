@@ -67,18 +67,16 @@ class Dialogue(db.Model):
     chats = db.relationship('Chat', backref='dialogue', lazy='dynamic')
 
     def __init__(self, user=None, user_has_name=None, name=None):
-        if name and user_has_name and user:
-            if not Dialogue.is_together(user_has_name, user):
-                self.save()
-                self.user_join(user_has_name, name)
-                self.user_join(user)
-        elif user_has_name and user:
-            if not Dialogue.is_together(user_has_name, user):
-                self.save()
-                self.user_join(user)
-                self.user_join(user_has_name)
-                for session in self.sessions:
-                    session.update_name()
+        if name and user_has_name and user and not Dialogue.is_together(user_has_name, user):
+            self.save()
+            self.user_join(user_has_name, name)
+            self.user_join(user)
+        elif user_has_name and user and not Dialogue.is_together(user_has_name, user):
+            self.save()
+            self.user_join(user)
+            self.user_join(user_has_name)
+            for session in self.sessions:
+                session.update_name()
         else:
             pass
 

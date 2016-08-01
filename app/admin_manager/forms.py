@@ -27,22 +27,24 @@ class EditProfileAdminForm(Form):
             self.user = None
 
     def validate_email(self, field):
-        if self.user:
-            if field.data != self.user.email and \
-                    User.query.filter_by(email=field.data).first():
-                raise ValidationError('邮箱地址已被使用')
-        else:
-            if User.query.filter_by(email=field.data).first():
-                raise ValidationError('邮箱地址已被使用')
+        guard = False
+        if self.user and field.data != self.user.email and \
+                User.query.filter_by(email=field.data).first():
+            guard = True
+        elif not self.user and User.query.filter_by(email=field.data).first():
+            guard = True
+        if guard:
+            raise ValidationError('邮箱地址已被使用')
 
     def validate_username(self, field):
-        if self.user:
-            if field.data != self.user.username and \
-                    User.query.filter_by(username=field.data).first():
-                raise ValidationError('用户名已被使用')
-        else:
-            if User.query.filter_by(username=field.data).first():
-                raise ValidationError('用户名已被使用')
+        guard = False
+        if self.user and field.data != self.user.username and \
+                User.query.filter_by(username=field.data).first():
+            guard = True
+        elif not self.user and User.query.filter_by(username=field.data).first():
+            guard = True
+        if guard:
+            raise ValidationError('用户名已被使用')
 
 
 class CategoryForm(Form):
