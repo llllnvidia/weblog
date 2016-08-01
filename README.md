@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ZsLinw/codeblog.svg?branch=master)](https://travis-ci.org/ZsLinw/codeblog)&nbsp;&nbsp;[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ec93b3f8640740878a48e07f38aa6c25/badge.svg)](https://www.quantifiedcode.com/app/project/ec93b3f8640740878a48e07f38aa6c25)&nbsp;&nbsp;[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/codeblog?branch=master)
+[![Build Status](https://travis-ci.org/ZsLinw/codeblog.svg?branch=master)](https://travis-ci.org/ZsLinw/codeblog)&nbsp;&nbsp;[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/codeblog?branch=master)&nbsp;&nbsp;[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ec93b3f8640740878a48e07f38aa6c25/badge.svg)](https://www.quantifiedcode.com/app/project/ec93b3f8640740878a48e07f38aa6c25)
 # About CodeBlog
 
 [Codelog](https://github.com/ZsLinw/codeblog) is powered by [Flask](http://flask.pocoo.org/).
@@ -18,7 +18,7 @@ Codeblog aims to do it better, its features are as follow:
 
 ## Demo
 
-[CodeBlog](http://linw-codeblog.daoapp.io)
+[CodeBlog](http://web-log.daoapp.io)
 
 ## Dependency
 
@@ -42,13 +42,6 @@ Codeblog aims to do it better, its features are as follow:
 - BootStrap
     - [Bootswatch paper theme](http://bootswatch.com/paper/)
 - [Editor.md](https://github.com/pandao/editor.md)
-
-## How to run CodeBlog ?
-
-### Run from source code
-
-If you want to see more about the source code, checkout the [source code readme](app)
-
 
 ## License
 
