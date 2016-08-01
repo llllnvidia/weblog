@@ -89,7 +89,9 @@ def neighbourhood():
             resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
             resp.set_cookie('category', cur_category, path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query = Category.query.filter_by(name=cur_category).first().posts_query(query)
+        category_instance = Category.query.filter_by(name=cur_category).first()
+        if category_instance:
+            query = category_instance.posts_query(query)
     if category_disable:
         resp = make_response(redirect(url_for('main.neighbourhood')))
         resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
@@ -114,7 +116,9 @@ def neighbourhood():
     elif not tag_disable:
         for tag in cur_tags:
             if tag:
-                query = Tag.query.filter_by(content=tag).first().posts_query(query)
+                tag_instance = Tag.query.filter_by(content=tag).first()
+                if tag_instance:
+                    query = tag_instance.posts_query(query)
     if tag_disable:
         resp = make_response(redirect(url_for('main.neighbourhood')))
         resp.set_cookie('tags', '', path=url_for('main.neighbourhood'), max_age=0)
@@ -136,10 +140,13 @@ def neighbourhood():
         return resp
 
     # query
-    pagination = query.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['POSTS_PER_PAGE'],
-        error_out=False)
-    posts = pagination.items
+    pagination = None
+    posts = None
+    if query:
+        pagination = query.order_by(Post.timestamp.desc()).paginate(
+            page, per_page=current_app.config['POSTS_PER_PAGE'],
+            error_out=False)
+        posts = pagination.items
     return render_template('neighbourhood.html', time=date(2016, 5, 6), User=User, posts=posts,
                            categories=categories_list, tags=tags, cur_tags=cur_tags,
                            cur_category=cur_category, key=cur_key,
@@ -194,7 +201,9 @@ def user(username):
             resp.set_cookie('category', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
             resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
             return resp
-        query = Category.query.filter_by(name=cur_category).first().posts_query(query)
+        category_instance = Category.query.filter_by(name=cur_category).first()
+        if category_instance:
+            query = category_instance.posts_query(query)
     if category_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
         resp.set_cookie('category', '', path=url_for('main.user', username=username), max_age=0)
@@ -219,7 +228,9 @@ def user(username):
     elif not tag_disable:
         for tag in cur_tags:
             if tag:
-                query = Tag.query.filter_by(content=tag).first().posts_query(query)
+                tag_instance = Tag.query.filter_by(content=tag).first()
+                if tag_instance:
+                    query = tag_instance.posts_query(query)
     if tag_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
         resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
@@ -241,10 +252,13 @@ def user(username):
         return resp
 
     # query
-    pagination = query.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
-        error_out=False)
-    posts = pagination.items
+    pagination = None
+    posts = None
+    if query:
+        pagination = query.order_by(Post.timestamp.desc()).paginate(
+            page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
+            error_out=False)
+        posts = pagination.items
     return render_template('user.html', user=user_showed, posts=posts, query_category_count=query_category_count,
                            tags=tags, query_tag_count=query,
                            cur_tags=cur_tags, cur_category=cur_category, key=cur_key,

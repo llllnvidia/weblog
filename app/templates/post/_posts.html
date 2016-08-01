@@ -1,3 +1,4 @@
+{% if posts %}
 {% for post in posts if post %}
     <div class="well well-lg {% if post.is_draft and request.endpoint != 'post.article'%}post-draft{% else %}post-default{% endif %}">
         {% if request.endpoint != 'post.article' %}
@@ -64,8 +65,9 @@
     {{ post.summary | markdown | safe }}
 {% endif %}
     </div>
+{% endfor %}
 {% else %}
     <div class="well well-lg post-default">
     <h3 align="center">无文章</h3>
     </div>
-{% endfor %}
+{% endif %}
