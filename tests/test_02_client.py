@@ -105,7 +105,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         response = self.client.get('/auth/confirm',
                                    follow_redirects=True)
         self.assertIn('一封新的包含身份确认链接的邮件已发往你的邮箱', response.data)
-        token = user.generate_confirmation_token()
+        token = user.generate_confirmation_token('email_confirm')
         response = self.client.get('/auth/confirm/%s' % token, follow_redirects=True)
         self.assertIn('已确认你的身份，欢迎加入我们', response.data)
         response = self.client.get('/auth/confirm/%s' % token, follow_redirects=True)
@@ -168,7 +168,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         token = r"\x87\xb7t\xcc\x84\x1e\xff"
         response = self.client.get('/auth/reset/email/%s' % token, follow_redirects=True)
         self.assertIn('确认链接非法或已过期', response.data)
-        token = user.generate_confirmation_token()
+        token = user.generate_confirmation_token('change_email_confirm')
         response = self.client.get('/auth/reset/email/%s' % token)
         self.assertIn('修改邮箱地址', response.data)
         response = self.client.post('/auth/reset/email/%s' % token, data={
@@ -184,8 +184,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         }, follow_redirects=True)
         self.assertIn('修改成功', response.data)
         self.assertIn('一封包含身份确认链接的邮件已发往你的新邮箱', response.data)
-        token = user.generate_confirmation_token()
-        sleep(0.5)
+        token = user.generate_confirmation_token('email_confirm')
         response = self.client.get('/auth/confirm/%s' % token, follow_redirects=True)
         self.assertIn('已确认你的身份，欢迎加入我们', response.data)
 
@@ -241,7 +240,7 @@ class FlaskClientTestCase00(unittest.TestCase):
             'password2': 'cat_cat'
         }, follow_redirects=True)
         self.assertIn('重设失败', response.data)
-        token = user.generate_reset_token()
+        token = user.generate_confirmation_token('reset_password')
         response = self.client.post('/auth/reset/password/%s' % token, data={
             'email': 'john_example.com',
             'password': 'cat_cat',

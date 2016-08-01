@@ -41,7 +41,7 @@ def register():
                     password=form.password.data,
                     member_since=datetime.utcnow())
         user.save()
-        token = user.generate_confirmation_token()
+        token = user.generate_confirmation_token('email_confirm')
         send_email(user.email, '账户确认',
                    'auth/email/confirm', user=user, token=token)
         flash('一封包含身份确认链接的邮件已发往你的邮箱。')
@@ -69,7 +69,7 @@ def unconfirmed():
 def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
-    if current_user.confirm(token):
+    if current_user.confirm(token, 'email_confirm'):
         current_user.confirmed = True
         current_user.save()
         current_app.logger.info('新用户 %s : %s', current_user.email, current_user.username)
@@ -82,7 +82,7 @@ def confirm(token):
 @auth.route('/confirm')
 @login_required
 def resend_confirmation():
-    token = current_user.generate_confirmation_token()
+    token = current_user.generate_confirmation_token('email_confirm')
     send_email(current_user.email, '账户确认',
                'auth/email/confirm', user=current_user, token=token)
     flash('一封新的包含身份确认链接的邮件已发往你的邮箱。')
@@ -92,7 +92,7 @@ def resend_confirmation():
 @auth.route('/reset/email')
 @login_required
 def send_confirmation_email():
-    token = current_user.generate_confirmation_token()
+    token = current_user.generate_confirmation_token('change_email_confirm')
     send_email(current_user.email, '账户确认',
                'auth/email/email_change_confirm', user=current_user, token=token)
     flash("确认邮件已发送，请确认。")
@@ -103,18 +103,18 @@ def send_confirmation_email():
 @login_required
 def email_change_confirm(token):
     form = ChangeEmailForm()
-    if form.validate_on_submit() and current_user.confirm(token):
+    if not current_user.confirm(token, 'change_email_confirm'):
+        flash('确认链接非法或已过期。')
+        return redirect(url_for('main.index'))
+    if form.validate_on_submit():
         current_user.email = form.email.data
         current_user.confirmed = False
         current_user.save()
         flash('修改成功。')
-        token = current_user.generate_confirmation_token()
+        token = current_user.generate_confirmation_token('email_confirm')
         send_email(current_user.email, '账户确认',
                    'auth/email/confirm', user=current_user, token=token)
         flash('一封包含身份确认链接的邮件已发往你的新邮箱。')
-        return redirect(url_for('main.index'))
-    if not current_user.confirm(token):
-        flash('确认链接非法或已过期。')
         return redirect(url_for('main.index'))
     return render_template('auth/change_email.html', form=form)
 
@@ -143,7 +143,7 @@ def password_reset_request():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            token = user.generate_reset_token()
+            token = user.generate_confirmation_token('reset_password')
             send_email(user.email, '密码重设',
                        'auth/email/reset_password',
                        user=user, token=token,

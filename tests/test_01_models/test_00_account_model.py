@@ -49,28 +49,28 @@ class UserModelTestCase(unittest.TestCase):
     def test_04_valid_confirmation_token(self):
         u = User(username='john', password='cat')
         u.save()
-        token = u.generate_confirmation_token()
-        self.assertTrue(u.confirm(token))
+        token = u.generate_confirmation_token('something_need_confirm')
+        self.assertTrue(u.confirm(token, 'something_need_confirm'))
 
     def test_05_invalid_confirmation_token(self):
         u1 = User(username='john', password='cat')
         u2 = User(username='jack', password='dog')
         u1.save()
         u2.save()
-        token = u1.generate_confirmation_token()
-        self.assertFalse(u2.confirm(token))
+        token = u1.generate_confirmation_token('something_need_confirm')
+        self.assertFalse(u2.confirm(token, 'something_need_confirm'))
 
     def test_06_expired_confirmation_token(self):
         u = User(username='john', password='cat')
         u.save()
-        token = u.generate_confirmation_token(1)
+        token = u.generate_confirmation_token('something_need_confirm', 1)
         time.sleep(2)
-        self.assertFalse(u.confirm(token))
+        self.assertFalse(u.confirm(token, 'something_need_confirm'))
 
     def test_07_valid_reset_token(self):
         u = User(username='john', password='cat')
         u.save()
-        token = u.generate_reset_token()
+        token = u.generate_confirmation_token('reset_password')
         self.assertTrue(u.reset_password(token, 'dog'))
         self.assertTrue(u.verify_password('dog'))
 
@@ -79,7 +79,7 @@ class UserModelTestCase(unittest.TestCase):
         u2 = User(username='jack', password='dog')
         u1.save()
         u2.save()
-        token = u1.generate_reset_token()
+        token = u1.generate_confirmation_token('reset_password')
         self.assertFalse(u2.reset_password(token, 'horse'))
         self.assertTrue(u2.verify_password('dog'))
 

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login_manager
@@ -201,35 +201,27 @@ class User(UserMixin, db.Model):
 
     confirmed = db.Column(db.Boolean, default=False)
 
-    def generate_confirmation_token(self, expiration=3600):
+    def generate_confirmation_token(self, confirm_type, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'confirm': self.id})
+        return s.dumps({confirm_type: self.id})
 
-    def confirm(self, token):
+    def confirm(self, token, confirm_type):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
-        except:
+        except (AttributeError, BadSignature):
             return False
-        if data.get('confirm') != self.id:
+        if data.get(confirm_type) != self.id:
             return False
         return True
-
-    def generate_reset_token(self, expiration=3600):
-        s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'reset': self.id})
 
     def reset_password(self, token, new_password):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        try:
-            data = s.loads(token)
-        except Exception:
+        if self.confirm(token, 'reset_password'):
+            self.password = new_password
+            self.save()
+            return True
+        else:
             return False
-        if data.get('reset') != self.id:
-            return False
-        self.password = new_password
-        self.save()
-        return True
 
     def follow(self, user):
         if not self.is_following(user):
