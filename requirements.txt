@@ -12,5 +12,3 @@ Markdown>=2.6.6
 coverage==4.1
 selenium==2.53.2
 livereload==2.4.1
-numpy==1.11.0
-scipy==0.17.1
