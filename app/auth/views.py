@@ -19,7 +19,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect(request.args.get('next') or url_for('main.index'))
+            return redirect(request.args.get('next') or url_for('main.neighbourhood'))
         flash('无效的用户名或密码')
     return render_template('auth/login.html', form=form)
 
@@ -45,7 +45,7 @@ def register():
         send_email(user.email, '账户确认',
                    'auth/email/confirm', user=user, token=token)
         flash('一封包含身份确认链接的邮件已发往你的邮箱。')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.neighbourhood'))
     return render_template('auth/register.html', form=form)
 
 
@@ -60,7 +60,7 @@ def before_request():
 @auth.route('/unconfirmed')
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.neighbourhood'))
     return render_template('auth/unconfirmed.html')
 
 
@@ -68,7 +68,7 @@ def unconfirmed():
 @login_required
 def confirm(token):
     if current_user.confirmed:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.neighbourhood'))
     if current_user.confirm(token, 'email_confirm'):
         current_user.confirmed = True
         current_user.save()
@@ -76,7 +76,7 @@ def confirm(token):
         flash('已确认你的身份，欢迎加入我们。')
     else:
         flash('确认链接非法或已过期。')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.neighbourhood'))
 
 
 @auth.route('/confirm')
@@ -86,7 +86,7 @@ def resend_confirmation():
     send_email(current_user.email, '账户确认',
                'auth/email/confirm', user=current_user, token=token)
     flash('一封新的包含身份确认链接的邮件已发往你的邮箱。')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.neighbourhood'))
 
 
 @auth.route('/reset/email')
@@ -105,7 +105,7 @@ def email_change_confirm(token):
     form = ChangeEmailForm()
     if not current_user.confirm(token, 'change_email_confirm'):
         flash('确认链接非法或已过期。')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.neighbourhood'))
     if form.validate_on_submit():
         current_user.email = form.email.data
         current_user.confirmed = False
@@ -115,7 +115,7 @@ def email_change_confirm(token):
         send_email(current_user.email, '账户确认',
                    'auth/email/confirm', user=current_user, token=token)
         flash('一封包含身份确认链接的邮件已发往你的新邮箱。')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.neighbourhood'))
     return render_template('auth/change_email.html', form=form)
 
 
@@ -165,5 +165,5 @@ def password_reset(token):
             return redirect(url_for('auth.login'))
         else:
             flash('重设失败。')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.neighbourhood'))
     return render_template('auth/reset_password.html', form=form)

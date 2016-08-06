@@ -16,6 +16,7 @@ from ..decorators import permission_required
 
 @main.after_app_request
 def after_request(response):
+    """logging db slow query"""
     for query_inspected in get_debug_queries():
         if query_inspected.duration >= current_app.config['DB_QUERY_TIMEOUT']:
             current_app.logger.warning(
@@ -26,13 +27,9 @@ def after_request(response):
     return response
 
 
-@main.route('/', methods=['GET', 'POST'])
-def index():
-    return render_template('index.html')
-
-
-@main.route('/neighbourhood', methods=['GET'])
+@main.route('/', methods=['GET'])
 def neighbourhood():
+    """articles show"""
     categories_list = Category.query.filter_by(parent_id=1).all()
     tags = Tag.query.all()
 
@@ -156,6 +153,7 @@ def neighbourhood():
 
 @main.route('/user/<username>')
 def user(username):
+    """user's articles show"""
     user_showed = User.query.filter_by(username=username).first()
     if user_showed is None:
         abort(404)

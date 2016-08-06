@@ -26,11 +26,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_00_home_page(self):
-        response = self.client.get('/')
-        self.assertIn('去社区看看', response.data)
-
-    def test_01_register(self):
+    def test_register(self):
         # register a new account
         response = self.client.get('/auth/register')
         self.assertIn('Email', response.data)
@@ -58,7 +54,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         self.assertIn('Email已被占用', response.data)
         self.assertIn('用户名已被占用', response.data)
 
-    def test_02_login(self):
+    def test_login(self):
         # login with the new account
         User(email='john@example.com',
              password='cat_cat',
@@ -88,7 +84,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         self.assertIn('你好', response.data)
         self.assertIn('你还没有进行身份认证', response.data)
 
-    def test_03_confirm(self):
+    def test_confirm(self):
         # send a confirmation token
         user = User(email='john@example.com',
                     password='cat_cat',
@@ -109,11 +105,11 @@ class FlaskClientTestCase00(unittest.TestCase):
         response = self.client.get('/auth/confirm/%s' % token, follow_redirects=True)
         self.assertIn('已确认你的身份，欢迎加入我们', response.data)
         response = self.client.get('/auth/confirm/%s' % token, follow_redirects=True)
-        self.assertIn('去社区看看', response.data)
+        self.assertIn('栏目', response.data)
         response = self.client.get('/auth/unconfirmed', follow_redirects=True)
-        self.assertIn('去社区看看', response.data)
+        self.assertIn('栏目', response.data)
 
-    def test_04_change_password(self):
+    def test_change_password(self):
         # change password
         User(email='john@example.com',
              password='cat_cat',
@@ -151,7 +147,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         }, follow_redirects=True)
         self.assertIn('个人', response.data)
 
-    def test_05_change_email(self):
+    def test_change_email(self):
         # change email
         user = User(email='john@example.com',
                     password='cat_cat',
@@ -188,7 +184,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         response = self.client.get('/auth/confirm/%s' % token, follow_redirects=True)
         self.assertIn('已确认你的身份，欢迎加入我们', response.data)
 
-    def test_06_logout(self):
+    def test_logout(self):
         # log out
         User(email='john@example.com',
              password='cat_cat',
@@ -202,7 +198,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         response = self.client.get('/auth/logout', follow_redirects=True)
         self.assertIn('已注销', response.data)
 
-    def test_07_reset_password(self):
+    def test_reset_password(self):
         # reset password
         user = User(email='john@example.com',
                     password='cat_cat',
@@ -268,7 +264,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         }, follow_redirects=True)
         self.assertIn('个人', response.data)
 
-    def test_08_error_handler(self):
+    def test_error_handler(self):
         response = self.client.get('/forbidden')
         self.assertEqual(response.status_code, 403)
         self.assertIn('Forbidden', response.data)
@@ -279,7 +275,7 @@ class FlaskClientTestCase00(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         self.assertIn('Internal Server Error', response.data)
 
-    def test_09_shutdown(self):
+    def test_shutdown(self):
         self.app.testing = False
         response = self.client.get('/shutdown')
         self.assertIn('NOT FOUND', response.data)
@@ -327,7 +323,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         }, follow_redirects=True)
         self.assertIn('发文成功', response.data)
 
-    def test_01_post(self):
+    def test_post(self):
         # login
         self.login(username='Admin', password='1234')
         # new post with worry tags
@@ -413,7 +409,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertTrue(Post.query.count() == 0)
         self.assertIn('已删除', response.data)
 
-    def test_02_post_is_draft(self):
+    def test_post_is_draft(self):
         self.login(username='Admin', password='1234')
         response = self.client.post('/new/article', data={
             'title': 'title',
@@ -424,7 +420,7 @@ class FlaskClientTestCase01(unittest.TestCase):
             'is_draft': True
         }, follow_redirects=True)
         self.assertIn('发文成功', response.data)
-        response = self.client.get('/neighbourhood')
+        response = self.client.get('/')
         self.assertIn('无文章', response.data)
         response = self.client.get('/user/Admin')
         self.assertNotIn('无文章', response.data)
@@ -433,13 +429,13 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.login(username='user', password='1234')
         response = self.client.get('/article/1', follow_redirects=True)
         self.assertEqual(response.status_code, 404)
-        response = self.client.get('/neighbourhood')
+        response = self.client.get('/')
         self.assertIn('无文章', response.data)
         response = self.client.get('/user/Admin')
         self.assertIn('无文章', response.data)
         self.assertNotIn('test again', response.data)
 
-    def test_03_comment(self):
+    def test_comment(self):
         # login
         self.login(username='Admin', password='1234')
         # new post
@@ -457,7 +453,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         }, follow_redirects=True)
         self.assertIn('请先登录', response.data)
 
-    def test_04_neighbourhood(self):
+    def test_neighbourhood(self):
         response = self.client.get(url_for('main.neighbourhood'))
         self.assertIn('无栏目', response.data)
         self.assertIn('无标签', response.data)
@@ -487,13 +483,13 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('test', response.data)
         self.assertNotIn('article_body', response.data)
         # get key
-        response = self.client.get('/neighbourhood?key=article', follow_redirects=True)
+        response = self.client.get('/?key=article', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('article_summary', response.data)
         self.assertIn('tag_one', response.data)
         self.assertIn('other', response.data)
         self.assertIn('test', response.data)
-        response = self.client.get('/neighbourhood?key=ABC', follow_redirects=True)
+        response = self.client.get('/?key=ABC', follow_redirects=True)
         self.assertNotIn('article_title', response.data)
         self.assertNotIn('article_summary', response.data)
         self.assertNotIn('tag_one', response.data)
@@ -501,54 +497,54 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('test', response.data)
         self.assertIn('无标签', response.data)
         self.assertIn('无文章', response.data)
-        response = self.client.get('/neighbourhood?key_disable=1', follow_redirects=True)
+        response = self.client.get('/?key_disable=1', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         # get category
-        response = self.client.get('/neighbourhood?category=other', follow_redirects=True)
+        response = self.client.get('/?category=other', follow_redirects=True)
         self.assertNotIn('article_title', response.data)
         self.assertNotIn('tag_one', response.data)
         self.assertIn('无标签', response.data)
         self.assertIn('无文章', response.data)
-        response = self.client.get('/neighbourhood?category=test', follow_redirects=True)
+        response = self.client.get('/?category=test', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
-        response = self.client.get('/neighbourhood?category_disable=1', follow_redirects=True)
+        response = self.client.get('/?category_disable=1', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         # show followed
         self.login(username='Admin', password='1234')
-        response = self.client.get('/neighbourhood?show_followed=1', follow_redirects=True)
+        response = self.client.get('/?show_followed=1', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.logout()
         # get tag
-        self.client.get('/neighbourhood')
-        response = self.client.get('/neighbourhood?tag=tag_one', follow_redirects=True)
+        self.client.get('/')
+        response = self.client.get('/?tag=tag_one', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         self.assertIn('tag_two', response.data)
-        response = self.client.get('/neighbourhood?tag=tag_two', follow_redirects=True)
+        response = self.client.get('/?tag=tag_two', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         self.assertIn('tag_two', response.data)
-        self.client.get('/neighbourhood?tag=tag_one', follow_redirects=True)
-        response = self.client.get('/neighbourhood?tag=tag_two', follow_redirects=True)
+        self.client.get('/?tag=tag_one', follow_redirects=True)
+        response = self.client.get('/?tag=tag_two', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         self.assertIn('tag_two', response.data)
-        response = self.client.get('/neighbourhood?tag_disable=1', follow_redirects=True)
+        response = self.client.get('/?tag_disable=1', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         # get something with prev_url
-        response = self.client.get('/neighbourhood?tag=tag_one&prev_url=/article', follow_redirects=True)
+        response = self.client.get('/?tag=tag_one&prev_url=/article', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
         self.assertNotIn('无标签', response.data)
-        response = self.client.get('/neighbourhood?category=test&prev_url=/article', follow_redirects=True)
+        response = self.client.get('/?category=test&prev_url=/article', follow_redirects=True)
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
 
-    def test_05_user_page(self):
+    def test_user_page(self):
         response = self.client.get(url_for('main.user', username='Nobody'))
         self.assertIn('NOT FOUND', response.data)
         response = self.client.get(url_for('main.user', username='Admin'))
@@ -635,7 +631,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('article_title', response.data)
         self.assertIn('tag_one', response.data)
 
-    def test_06_follow(self):
+    def test_follow(self):
         self.login(username='Admin', password='1234')
         response = self.client.get(url_for('main.follow', username='test'), follow_redirects=True)
         self.assertIn('NOT FOUND', response.data)
@@ -660,7 +656,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('main.not_follow', username='tester'), follow_redirects=True)
         self.assertIn('你没有关注过tester', response.data)
 
-    def test_07_edit_profile(self):
+    def test_edit_profile(self):
         self.login(username='user', password='1234')
         response = self.client.get(url_for('main.edit_profile'))
         self.assertIn('修改资料', response.data)
@@ -673,7 +669,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('Susan', response.data)
         self.assertIn('city', response.data)
 
-    def test_08_message(self):
+    def test_message(self):
         self.login(username='user', password='1234')
         response = self.client.get(url_for('main.dialogues'))
         self.assertIn('系统消息', response.data)
@@ -704,7 +700,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('main.new_dialogue', username='tester2'), follow_redirects=True)
         self.assertIn('tester2', response.data)
 
-    def test_09_users(self):
+    def test_users(self):
         # worry user
         self.login(username='user', password='1234')
         response = self.client.get(url_for('admin_manager.users'))
@@ -769,7 +765,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('用户创建成功', response.data)
         self.assertIn('tester', response.data)
 
-    def test_10_moderate(self):
+    def test_moderate(self):
         self.login(username='Admin', password='1234')
         response = self.client.get(url_for('admin_manager.moderate'))
         self.assertIn('所有评论', response.data)
@@ -785,7 +781,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get(url_for('admin_manager.moderate_enable', comment_id=1), follow_redirects=True)
         self.assertIn('解禁成功', response.data)
 
-    def test_11_categories(self):
+    def test_categories(self):
         self.login(username='Admin', password='1234')
         response = self.client.get(url_for('admin_manager.categories'))
         self.assertIn('所有栏目', response.data)
@@ -809,7 +805,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         response = self.client.get('/admin_manager/categories/delete/2', follow_redirects=True)
         self.assertNotIn('测试', response.data)
 
-    def test_13_articles(self):
+    def test_articles(self):
         self.login(username='Admin', password='1234')
         self.new_post()
         response = self.client.get(url_for('admin_manager.articles'))
@@ -820,7 +816,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('所有博文', response.data)
         self.assertNotIn('summary', response.data)
 
-    def test_14_tags(self):
+    def test_tags(self):
         self.login(username='Admin', password='1234')
         self.new_post()
         response = self.client.get(url_for('admin_manager.tags'))

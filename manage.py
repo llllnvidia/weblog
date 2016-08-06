@@ -24,6 +24,7 @@ manager = Manager(app)
 
 
 def make_shell_context():
+    """add the shell context"""
     return dict(app=app, db=db, User=User, Role=Role, Post=Post, Category=Category)
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
@@ -38,6 +39,7 @@ manager.add_command("runserver", Server(
 
 @manager.command
 def dev():
+    """for automatically refreshing web page when something changes"""
     from livereload import Server
     live_server = Server(app.wsgi_app)
     live_server.watch('app')
@@ -81,6 +83,7 @@ def deploy():
 
 @manager.command
 def init_migrations():
+    """debug only"""
     from flask_migrate import init
     if not os.path.isdir(os.getenv('MIGRATIONS', basedir+'/migrations')):
         init(directory=os.getenv('MIGRATIONS',  basedir+'/migrations'))
@@ -91,6 +94,7 @@ def init_migrations():
 
 @manager.command
 def migrate_migrations():
+    """debug only"""
     from flask_migrate import migrate
     if os.path.exists(os.getenv('MIGRATIONS', basedir + '/migrations')):
         migrate(directory=os.getenv('MIGRATIONS', basedir + '/migrations'),message=str(datetime.utcnow()))
@@ -101,6 +105,7 @@ def migrate_migrations():
 
 @manager.command
 def upgrade_migrations():
+    """debug only"""
     from flask_migrate import upgrade
     if os.path.exists(os.getenv('MIGRATIONS', basedir+'/migrations')):
         upgrade(directory=os.getenv('MIGRATIONS', basedir+'/migrations'))
@@ -111,6 +116,7 @@ def upgrade_migrations():
 
 @manager.command
 def downgrade_migrations():
+    """debug only"""
     from flask_migrate import downgrade
     if os.path.exists(os.getenv('MIGRATIONS', basedir+'/migrations')):
         downgrade(directory=os.getenv('MIGRATIONS', basedir+'/migrations'))

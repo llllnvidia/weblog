@@ -59,13 +59,7 @@ class SeleniumTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_00_home_page(self):
-        self.client.get(self.base_url + '/')
-        self.assertTrue(re.search('CodeBlog', self.client.page_source))
-
-        self.assertTrue('登陆' in self.client.page_source)
-
-    def test_01_register_and_login(self):
+    def test_register_and_login(self):
 
         self.client.get(self.base_url + '/auth/register')
         self.assertTrue('注册' in self.client.page_source)
@@ -81,14 +75,14 @@ class SeleniumTestCase(unittest.TestCase):
         self.client.find_element_by_name('email').send_keys('susan@example.com')
         self.client.find_element_by_name('password').send_keys('123456')
         self.client.find_element_by_name('submit').click()
-        self.assertTrue('你好, susan' in self.client.page_source)
+        self.assertIn('你好, susan', self.client.page_source)
 
         user_susan = User.query.filter_by(username='susan').first()
         token = user_susan.generate_confirmation_token('email_confirm')
         self.client.get(self.base_url + '/auth/confirm/' + token)
-        self.assertTrue('已确认你的身份，欢迎加入我们' in self.client.page_source)
-        self.assertTrue(re.search('Demo', self.client.page_source))
-        self.assertTrue('个人' in self.client.page_source)
+        self.assertIn('已确认你的身份，欢迎加入我们', self.client.page_source)
+        self.assertIn('栏目', self.client.page_source)
+        self.assertIn('个人', self.client.page_source)
 
 
 if __name__ == '__main__':

@@ -14,11 +14,9 @@ body{
 }
 .post-default{
     background-color: rgb(255, 255, 255);
-    border-radius: 10px;
 }
 .post-draft{
     background-color: rgb(240, 240, 240);
-    border-radius: 10px;
 }
 .small-font{
      color: darkgrey;

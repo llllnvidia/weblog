@@ -14,7 +14,7 @@ body{
     margin-right: -15px;
 }
 .editormd-preview-container, .editormd-html-preview{
-    padding: 0px;
+    padding: 0;
 }
 .post-default{
     background-color: rgb(255, 255, 255);

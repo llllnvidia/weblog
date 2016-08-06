@@ -8,6 +8,7 @@ from app.models.account import Permission
 
 
 def permission_required(permission):
+    """decorator for user permission"""
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -19,4 +20,5 @@ def permission_required(permission):
 
 
 def admin_required(f):
+    """decorator for admin permission"""
     return permission_required(Permission.ADMINISTER)(f)

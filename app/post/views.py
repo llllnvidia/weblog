@@ -134,4 +134,4 @@ def delete_post(post_id):
     if next_url:
         return redirect(next_url)
     else:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.neighbourhood'))

@@ -11,7 +11,7 @@
     <p>
         {%- if user.name %}{{ user.name }}{%- endif %}
         {%- if user.location %}
-            From <a href="http://api.map.baidu.com/geocoder?address={{ user.location }}&output=html" target="_blank">
+            From <a  class="small-font" href="http://api.map.baidu.com/geocoder?address={{ user.location }}&output=html" target="_blank">
                {{ user.location }}
             </a>
         {%- endif %}
@@ -35,18 +35,18 @@
     {%- if current_user.can(Permission.FOLLOW) and user != current_user %}
         {%- if not current_user.is_following(user) %}
             <a href="{{ url_for('main.follow',username=user.username) }}"
-                class="btn btn-primary">关注</a>
+                class="btn btn-default">关注</a>
         {%- else %}
             <a href="{{ url_for('main.not_follow',username=user.username) }}"
                 class="btn btn-warning">取消关注</a>
         {%- endif %}
             <a href="{{ url_for('main.new_dialogue',username=user.username) }}"
-               class="btn btn-primary">发消息</a>
+               class="btn btn-default">发消息</a>
     {%- endif %}
         &nbsp;
-        <a href="{{ url_for('.followers',username=user.username) }}#user">粉丝</a>: <span class="badge">{{ user.followers.count() - 1 }}</span>&nbsp;
-        <a href="{{ url_for('.followed_by',username=user.username) }}#user">关注</a>: <span class="badge">{{ user.followed.count() - 1 }}</span>&nbsp;
-        <a href="{{ url_for('main.user',username=user.username) }}#user">文章</a>: <span class="badge">{{ user.posts.count() }}</span>
+        <a class="small-font" href="{{ url_for('.followers',username=user.username) }}#user">粉丝</a>: <span class="badge">{{ user.followers.count() - 1 }}</span>&nbsp;
+        <a class="small-font" href="{{ url_for('.followed_by',username=user.username) }}#user">关注</a>: <span class="badge">{{ user.followed.count() - 1 }}</span>&nbsp;
+        <a class="small-font" href="{{ url_for('main.user',username=user.username) }}#user">文章</a>: <span class="badge">{{ user.posts.count() }}</span>
         {%- if current_user.is_authenticated and user != current_user and
             user.is_following(current_user) %}
           | <span class="label label-default">正在关注你</span>
@@ -56,23 +56,29 @@
     <div class="row" id='user'>
         <aside class="col-md-3 hidden-xs hidden-sm">
         <form role="search" method="get" id="searchform" action="">
-        <div class="well well-sm input-group" style="background-color: rgba(255, 255, 255, 1);border-radius: 5px">
+        <div class="well well-sm input-group" style="background-color: rgba(255, 255, 255, 1)">
             <input type="text" name='key' id="search" value="{%- if key %}{{ key }}{%- endif %}" class="form-control">
             <span class="input-group-btn">
             {%- if key %}
-                <a type="button" class="btn btn-primary" href="?key_disable=1#user">
+                <a type="button" class="btn btn-default" href="?key_disable=1#user">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
             {%- else %}
-                <button type="submit" id="searchsubmit" class="btn btn-primary">
+                <button type="submit" id="searchsubmit" class="btn btn-default">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
             {%- endif %}
             </span>
         </div>
         </form>
-        <div class="panel panel-primary">
-            <div class="panel-heading"><i class="fa fa-filter fa-lg"></i>&nbsp;栏目<a href="?category_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><i class="fa fa-filter fa-lg"></i>&nbsp;栏目
+            {% if cur_category %}
+            <a href="?category_disable=1#user">
+            <span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #000000;margin: 5px;margin-right: 0px"></span>
+            </a>
+            {% endif %}
+            </div>
             <ul class="list-group" id="listcontrol">
             {%- for category in categories if category.posts_count(query_category_count) %}
             {%- if category.son_categories %}
@@ -101,12 +107,18 @@
             {%- endfor %}
             </ul>
         </div>
-        <div class="panel panel-primary">
-            <div class="panel-heading"><i class="fa fa-tags fa-lg"></i>&nbsp;标签<a href="?tag_disable=1#user"><span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #fdfdfd"></span></a></div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><i class="fa fa-tags fa-lg"></i>&nbsp;标签
+            {% if not cur_tags.__len__() <= 1%}
+            <a href="?tag_disable=1#user">
+            <span class="glyphicon glyphicon-remove rm-filter pull-right" aria-hidden="true" style="color: #000000;margin: 5px;margin-right: 0px"></span>
+            </a>
+            {% endif %}
+            </div>
             <div class="panel-body">
             {%- for tag in tags if tag.posts_count(query_tag_count)%}
                 {%- if tag.content in cur_tags %}
-                <a href="?tag={{tag.content}}#user" class="btn btn-primary btn-sm" style= "margin: 4px">
+                <a href="?tag={{tag.content}}#user" class="btn btn-default btn-sm" style= "margin: 4px">
                     {{ tag.content }}
                     <span class="glyphicon glyphicon-remove small rm-filter" aria-hidden="true"></span>
                 </a>
