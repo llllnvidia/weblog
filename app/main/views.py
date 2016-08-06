@@ -167,13 +167,13 @@ def user(username):
     prev_url = request.args.get('prev_url', '')
     page = request.args.get('page', 1, type=int)
     cur_category = request.args.get('category', '')
-    cur_category_cookie = request.cookies.get('category', '')
+    cur_category_cookie = request.cookies.get('category_user', '')
     category_disable = request.args.get('category_disable', '')
     cur_tag = request.args.get('tag', '')
-    cur_tag_cookie = request.cookies.get('tags', '')
+    cur_tag_cookie = request.cookies.get('tags_user', '')
     tag_disable = request.args.get('tag_disable', '')
     cur_key = request.args.get('key', '')
-    cur_key_cookie = request.cookies.get('key', '')
+    cur_key_cookie = request.cookies.get('key_user', '')
     key_disable = request.args.get('key_disable', '')
 
     # 处理从post.article栏目&标签跳转
@@ -184,10 +184,9 @@ def user(username):
             resp = make_response(redirect(url_for('main.user', username=username, tag=cur_tag)))
         else:
             resp = make_response(redirect(url_for('main.user', username=username)))
-        resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
-        resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
-        resp.set_cookie('category', '', path=url_for('main.user', username=username), max_age=0)
-        resp.set_cookie('key', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('tags_user', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('category_user', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('key_user', '', path=url_for('main.user', username=username), max_age=0)
         return resp
 
     # category
@@ -196,17 +195,16 @@ def user(username):
     if cur_category:
         if not cur_category_cookie or cur_category_cookie != cur_category:
             resp = make_response(redirect(url_for('main.user', username=username)))
-            resp.set_cookie('category', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
-            resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
+            resp.set_cookie('category_user', cur_category, path=url_for('main.user', username=username), max_age=60 * 3)
+            resp.set_cookie('tags_user', '', path=url_for('main.user', username=username), max_age=0)
             return resp
         category_instance = Category.query.filter_by(name=cur_category).first()
         if category_instance:
             query = category_instance.posts_query(query)
     if category_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
-        resp.set_cookie('category', '', path=url_for('main.user', username=username), max_age=0)
-        resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
-        resp.set_cookie('show_talk', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('category_user', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('tags_user', '', path=url_for('main.user', username=username), max_age=0)
         return resp
     # tag
     cur_tags = cur_tag_cookie.split(',')
@@ -215,13 +213,13 @@ def user(username):
             cur_tags.append(cur_tag)
             cur_tags = ','.join(cur_tags)
             resp = make_response(redirect(url_for('main.user', username=username)))
-            resp.set_cookie('tags', cur_tags, path=url_for('main.user', username=username), max_age=60 * 3)
+            resp.set_cookie('tags_user', cur_tags, path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
         elif cur_tag in cur_tags:
             cur_tags.remove(cur_tag)
             cur_tags = ','.join(cur_tags)
             resp = make_response(redirect(url_for('main.user', username=username)))
-            resp.set_cookie('tags', cur_tags, path=url_for('main.user', username=username), max_age=60 * 3)
+            resp.set_cookie('tags_user', cur_tags, path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
     elif not tag_disable:
         for tag in cur_tags:
@@ -231,7 +229,7 @@ def user(username):
                     query = tag_instance.posts_query(query)
     if tag_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
-        resp.set_cookie('tags', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('tags_user', '', path=url_for('main.user', username=username), max_age=0)
         return resp
 
     # key
@@ -240,13 +238,13 @@ def user(username):
     if cur_key:
         if cur_key_cookie != cur_key:
             resp = make_response(redirect(url_for('main.user', username=username)))
-            resp.set_cookie('key', cur_key, path=url_for('main.user', username=username), max_age=60 * 3)
+            resp.set_cookie('key_user', cur_key, path=url_for('main.user', username=username), max_age=60 * 3)
             return resp
         query = query.filter(Post.body.contains(cur_key) | Post.title.contains(cur_key) |
                              Post.summary.contains(cur_key))
     if key_disable:
         resp = make_response(redirect(url_for('main.user', username=username)))
-        resp.set_cookie('key', '', path=url_for('main.user', username=username), max_age=0)
+        resp.set_cookie('key_user', '', path=url_for('main.user', username=username), max_age=0)
         return resp
 
     # query
