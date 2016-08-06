@@ -31,7 +31,7 @@ def article(post_id):
         post_show.author.get_message_from_admin(content=u'你收到了一条评论。', link_id=post_show.id, link_type='comment')
         comment.save()
         flash('你的评论已提交。')
-        return redirect(url_for('post.article', post_id=post_show.id))
+        return redirect(url_for('post.article', post_id=post_show.id, page=-1))
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post_show.comments.count() - 1) / \
