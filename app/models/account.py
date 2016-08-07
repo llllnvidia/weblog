@@ -254,7 +254,7 @@ class User(UserMixin, db.Model):
 
     def get_message_from_admin(self, content, link_id=None, link_type=None):
         admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
-        if self.id == admin.id or not admin:
+        if not admin or self.id == admin.id :
             admin_list = User.query.filter_by(role=Role.query.filter_by(name='Administrator').first()).all()
             for admin_new in admin_list:
                 if admin_new != admin:
