@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date
+from datetime import date,datetime
 
 from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response, jsonify, send_file
@@ -398,9 +398,10 @@ def image_upload():
     if request.method == 'POST':
         try:
             f = request.files['editormd-image-file']
-            fname = secure_filename(f.filename)  # 获取一个安全的文件名，且仅仅支持ascii字符；
+
+            fname = secure_filename(str(datetime.utcnow()) + ' ' + f.filename)  # 获取一个安全的文件名，且仅仅支持ascii字符；
             f.save(os.path.join(current_app.config.get('IMG_PATH'), fname))
-            return jsonify(success=1, message="成功", url=url_for('main.images',picture_name=fname))
+            return jsonify(success=1, message="成功", url=url_for('main.images', picture_name=fname))
         except IOError:
             return jsonify(success=0, message="重名")
     else:
