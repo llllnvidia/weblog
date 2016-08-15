@@ -391,8 +391,8 @@ def new_dialogue(username):
         return redirect(url_for('main.dialogues', dialogue_id=dialogue.id))
 
 
-@csrf.exempt
 @main.route('/upload/images', methods=['GET', 'POST'])
+@csrf.exempt
 def image_upload():
     import os
     if request.method == 'POST':
@@ -409,12 +409,12 @@ def image_upload():
 
 @main.route('/images/<picture_name>')
 def images(picture_name):
-    import os
+    import os.path
     path = current_app.config.get('IMG_PATH')
     try:
-        return send_file(os.path.join(path,picture_name))
+        return send_file(os.path.join(path, picture_name))
     except IOError:
-        return send_file(path+'/app/static/background.png')
+        return send_file(os.path.join(path, '404.png'))
 
 
 @main.route('/forbidden')
