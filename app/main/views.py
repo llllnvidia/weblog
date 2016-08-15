@@ -2,10 +2,11 @@
 from datetime import date
 
 from flask import render_template, redirect, url_for, current_app, flash, \
-    request, abort, make_response
+    request, abort, make_response, jsonify, send_file
+from werkzeug.utils import secure_filename
 from flask_login import current_user, login_required
 from flask_sqlalchemy import get_debug_queries
-from app import cache
+from app import cache, csrf
 from app.models.account import Permission, User
 from app.models.message import Dialogue
 from app.models.post import Post, Category, Tag
@@ -388,6 +389,32 @@ def new_dialogue(username):
     else:
         dialogue = Dialogue(current_user, user_visit)
         return redirect(url_for('main.dialogues', dialogue_id=dialogue.id))
+
+
+@csrf.exempt
+@main.route('/upload/images', methods=['GET', 'POST'])
+def image_upload():
+    import os
+    if request.method == 'POST':
+        try:
+            f = request.files['editormd-image-file']
+            fname = secure_filename(f.filename)  # 获取一个安全的文件名，且仅仅支持ascii字符；
+            f.save(os.path.join(current_app.config.get('IMG_PATH'), fname))
+            return jsonify(success=1, message="成功", url=url_for('main.images',picture_name=fname))
+        except IOError:
+            return jsonify(success=0, message="重名")
+    else:
+        return render_template('upload.html')
+
+
+@main.route('/images/<picture_name>')
+def images(picture_name):
+    import os
+    path = current_app.config.get('IMG_PATH')
+    try:
+        return send_file(os.path.join(path,picture_name))
+    except IOError:
+        return send_file(path+'/app/static/background.png')
 
 
 @main.route('/forbidden')

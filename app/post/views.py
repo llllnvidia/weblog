@@ -3,7 +3,7 @@ from flask import flash, redirect, url_for, request, current_app, render_templat
 from flask_login import current_user, login_required
 
 from . import post
-from .forms import ArticleForm, TalkForm, CommentForm
+from .forms import ArticleForm, CommentForm
 from app.models.account import Permission
 from app.models.post import Post, Comment, Category, Tag
 

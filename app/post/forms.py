@@ -24,11 +24,6 @@ class ArticleForm(Form):
         self.category.choices = [(cg.id, cg.name) for cg in Category.query.all()]
 
 
-class TalkForm(Form):
-    body = TextAreaField("", validators=[DataRequired(), Length(1, 200, message="太长了。")])
-    submit = SubmitField("说一说")
-
-
 class CommentForm(Form):
     body = StringField('', validators=[DataRequired(), Length(1, 200, message="太长了。")])
     submit = SubmitField('提交')

@@ -77,6 +77,7 @@ class Comment(db.Model):
 
 
 class Category(db.Model):
+    __tablename__ = 'category'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id'))
