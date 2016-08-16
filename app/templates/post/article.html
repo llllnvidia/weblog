@@ -8,12 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/editor.md/css/') }}editormd.preview.css" />
 {%- endblock %}
 {%- block page_content %}
-    <div id="float-top">
-        <a href="#" type="button">
-        <i class="fa fa-chevron-circle-up fa-5x" aria-hidden="true"></i>
-        </a>
-    </div>
-    <div style="clear: both"></div>
 {%- include 'post/_posts.html' %}
 <h4 id='comments'>评论</h4>
 {{ wtf.quick_form(form) }}

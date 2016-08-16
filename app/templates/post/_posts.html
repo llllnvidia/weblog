@@ -4,6 +4,12 @@
         {% if request.endpoint != 'post.article' %}
         <a href="{{ url_for('post.article', post_id=post.id, prev_url=request.url) }}"><h3>{{ post.title }}</h3></a>
         {% else %}
+            <div id="float-top">
+                <a href="#" type="button">
+                <i class="fa fa-chevron-circle-up fa-5x" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div style="clear: both"></div>
         <h3>
             {{ post.title }}
             {% if request.endpoint == 'post.article' %}

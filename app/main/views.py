@@ -391,7 +391,7 @@ def new_dialogue(username):
         return redirect(url_for('main.dialogues', dialogue_id=dialogue.id))
 
 
-@main.route('/upload/images', methods=['GET', 'POST'])
+@main.route('/upload/images', methods=['POST'])
 @csrf.exempt
 def image_upload():
     import os
@@ -404,8 +404,6 @@ def image_upload():
             return jsonify(success=1, message="成功", url=url_for('main.images', picture_name=fname))
         except IOError:
             return jsonify(success=0, message="重名")
-    else:
-        return render_template('upload.html')
 
 
 @main.route('/images/<picture_name>')
