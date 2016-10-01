@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZsLinw/weblog.git"
+    "url": "git+https://github.com/linw1995/weblog.git"
   },
   "author": "815750986%qq.com",
   "license": "",
   "bugs": {
-    "url": "https://github.com/ZsLinw/weblog/issues"
+    "url": "https://github.com/linw1995/weblog/issues"
   },
-  "homepage": "https://github.com/ZsLinw/weblog#readme"
+  "homepage": "https://github.com/linw1995/weblog#readme"
 }
