@@ -303,7 +303,7 @@ class FlaskClientTestCase01(unittest.TestCase):
 
     def login(self, username, password):
         response = self.client.post(url_for('auth.login'), data={
-            'email': '%s@CodeBlog.com' % username,
+            'email': '%s@weblog.com' % username,
             'password': '%s' % password,
             'remember_me': True
         }, follow_redirects=True)
@@ -713,9 +713,9 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('Admin', response.data)
         # edit profile
         response = self.client.get(url_for('admin_manager.edit_profile_admin', user_id=2))
-        self.assertIn('user@CodeBlog.com', response.data)
+        self.assertIn('user@weblog.com', response.data)
         response = self.client.post(url_for('admin_manager.edit_profile_admin', user_id=2), data={
-            'email': 'Admin@CodeBlog.com',
+            'email': 'Admin@weblog.com',
             'username': 'Admin',
             'confirmed': True,
             'role': 1,
@@ -726,7 +726,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('邮箱地址已被使用', response.data)
         self.assertIn('用户名已被使用', response.data)
         response = self.client.post(url_for('admin_manager.edit_profile_admin', user_id=2), data={
-            'email': 'tester@CodeBlog.com',
+            'email': 'tester@weblog.com',
             'username': 'tester?',
             'confirmed': True,
             'role': 1,
@@ -735,7 +735,7 @@ class FlaskClientTestCase01(unittest.TestCase):
             'about_me': ''
         }, follow_redirects=True)
         self.assertIn('资料已修改', response.data)
-        self.assertNotIn('user@CodeBlog.com', response.data)
+        self.assertNotIn('user@weblog.com', response.data)
         self.assertIn('tester?', response.data)
         # delete user
         response = self.client.get(url_for('admin_manager.delete_user', user_id=2), follow_redirects=True)
@@ -743,7 +743,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertNotIn('tester?', response.data)
         # new user
         response = self.client.post(url_for('admin_manager.edit_profile_admin'), data={
-            'email': 'Admin@CodeBlog.com',
+            'email': 'Admin@weblog.com',
             'username': 'Admin',
             'confirmed': True,
             'role': 1,
@@ -754,7 +754,7 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.assertIn('邮箱地址已被使用', response.data)
         self.assertIn('用户名已被使用', response.data)
         response = self.client.post(url_for('admin_manager.edit_profile_admin'), data={
-            'email': 'tester@CodeBlog.com',
+            'email': 'tester@weblog.com',
             'username': 'tester',
             'confirmed': True,
             'role': 1,

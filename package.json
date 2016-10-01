@@ -1,5 +1,5 @@
 {
-  "name": "codeblog",
+  "name": "weblog",
   "version": "1.0.0",
   "description": "",
   "main": "",
@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZsLinw/codeblog.git"
+    "url": "git+https://github.com/ZsLinw/weblog.git"
   },
   "author": "815750986%qq.com",
   "license": "",
   "bugs": {
-    "url": "https://github.com/ZsLinw/codeblog/issues"
+    "url": "https://github.com/ZsLinw/weblog/issues"
   },
-  "homepage": "https://github.com/ZsLinw/codeblog#readme"
+  "homepage": "https://github.com/ZsLinw/weblog#readme"
 }

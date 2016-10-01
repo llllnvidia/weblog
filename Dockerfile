@@ -31,7 +31,7 @@ RUN pip install -r requirements.txt
 COPY . /usr/src/app
 RUN bower install --allow-root
 
-RUN ln -s /usr/src/app/codeblog_nginx.conf /etc/nginx/sites-enabled
+RUN ln -s /usr/src/app/weblog_nginx.conf /etc/nginx/sites-enabled
 
 EXPOSE 8000 25
 

@@ -148,7 +148,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def add_admin():
-        admin = User(email=u'Admin@CodeBlog.com',
+        admin = User(email=u'Admin@weblog.com',
                      username=u'Admin',
                      password=u'1234',
                      confirmed=True,
@@ -158,7 +158,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def add_test_user():
-        user = User(email=u'user@CodeBlog.com',
+        user = User(email=u'user@weblog.com',
                     username=u'tester',
                     password=u'1234',
                     confirmed=True,

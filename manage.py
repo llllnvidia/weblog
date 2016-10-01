@@ -17,7 +17,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-app = create_app(os.getenv('CODEBLOG_CONFIG', 'default'))
+app = create_app(os.getenv('weblog_CONFIG', 'default'))
 
 migrate = Migrate(app, db)
 manager = Manager(app)
@@ -65,7 +65,7 @@ def deploy():
         User.add_admin()
         User.add_test_user()
         print 'add admin :'\
-            '\nemail=Admin@CodeBlog.com'\
+            '\nemail=Admin@weblog.com'\
             '\npassword=1234'
         Category.add_none()
         print 'Category insert None.'

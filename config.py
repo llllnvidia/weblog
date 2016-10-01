@@ -10,8 +10,8 @@ class Config:
     SQLALCEMY_COMMIT_ON_TEARDOWN = True
     DB_QUERY_TIMEOUT = 2
     ADMIN = os.environ.get('ADMIN', 'Admin')
-    MAIL_SUBJECT_PREFIX = '[CodeBlog]'
-    MAIL_SENDER = str(ADMIN) + ' <' + str(os.environ.get('MAIL_USERNAME', 'admin@codeblog.com')) + '>'
+    MAIL_SUBJECT_PREFIX = '[weblog]'
+    MAIL_SENDER = str(ADMIN) + ' <' + str(os.environ.get('MAIL_USERNAME', 'admin@weblog.com')) + '>'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     POSTS_PER_PAGE = 10
     FOLLOWERS_PER_PAGE = 10

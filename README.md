@@ -1,11 +1,11 @@
-[![Build Status](https://travis-ci.org/ZsLinw/codeblog.svg?branch=master)](https://travis-ci.org/ZsLinw/codeblog)&nbsp;&nbsp;[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/codeblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/codeblog?branch=master)&nbsp;&nbsp;[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ec93b3f8640740878a48e07f38aa6c25/badge.svg)](https://www.quantifiedcode.com/app/project/ec93b3f8640740878a48e07f38aa6c25)
-# About CodeBlog
+[![Build Status](https://travis-ci.org/ZsLinw/weblog.svg?branch=master)](https://travis-ci.org/ZsLinw/weblog)&nbsp;&nbsp;[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/weblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/weblog?branch=master)&nbsp;&nbsp;[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ec93b3f8640740878a48e07f38aa6c25/badge.svg)](https://www.quantifiedcode.com/app/project/ec93b3f8640740878a48e07f38aa6c25)
+# About weblog
 
-[Codelog](https://github.com/ZsLinw/codeblog) is powered by [Flask](http://flask.pocoo.org/).
+[weblog](https://github.com/ZsLinw/weblog) is powered by [Flask](http://flask.pocoo.org/).
 
 It&#39;s started in 6 May, 2016
 
-Codeblog aims to do it better, its features are as follow:
+weblog aims to do it better, its features are as follow:
 
 - multiple user
 - roles: admin, moderator, user
@@ -18,7 +18,7 @@ Codeblog aims to do it better, its features are as follow:
 
 ## Demo
 
-[CodeBlog](http://web-log.daoapp.io)
+[weblog](http://web-log.daoapp.io)
 
 ## Dependency
 
@@ -45,4 +45,4 @@ Codeblog aims to do it better, its features are as follow:
 
 ## License
 
-CodeBlog is under MIT
+weblog is under MIT

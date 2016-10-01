@@ -1,6 +1,6 @@
 亲爱的 {{ user.username }},
 
-      欢迎加入 CodeBlog！
+      欢迎加入 weblog！
 
       请用一下链接对你的身份进行验证：
 
