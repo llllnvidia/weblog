@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ZsLinw/weblog.svg?branch=master)](https://travis-ci.org/ZsLinw/weblog)&nbsp;&nbsp;[![Coverage Status](https://coveralls.io/repos/github/ZsLinw/weblog/badge.svg?branch=master)](https://coveralls.io/github/ZsLinw/weblog?branch=master)&nbsp;&nbsp;[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ec93b3f8640740878a48e07f38aa6c25/badge.svg)](https://www.quantifiedcode.com/app/project/ec93b3f8640740878a48e07f38aa6c25)
+[![Build Status](https://travis-ci.org/linw1995/weblog.svg?branch=master)](https://travis-ci.org/linw1995/weblog)&nbsp;&nbsp;[![Coverage Status](https://coveralls.io/repos/github/linw1995/weblog/badge.svg?branch=master)](https://coveralls.io/github/linw1995/weblog?branch=master)&nbsp;&nbsp;[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ec93b3f8640740878a48e07f38aa6c25/badge.svg)](https://www.quantifiedcode.com/app/project/ec93b3f8640740878a48e07f38aa6c25)
 # About weblog
 
 [weblog](https://github.com/ZsLinw/weblog) is powered by [Flask](http://flask.pocoo.org/).
