@@ -810,11 +810,11 @@ class FlaskClientTestCase01(unittest.TestCase):
         self.new_post()
         response = self.client.get(url_for('admin_manager.articles'))
         self.assertIn('所有博文', response.data)
-        self.assertIn('summary', response.data)
+        self.assertIn('TEST,test again', response.data)
         post = Post.query.first()
         response = self.client.get('/delete/post/%s?next=/admin_manager/articles' % post.id, follow_redirects=True)
         self.assertIn('所有博文', response.data)
-        self.assertNotIn('summary', response.data)
+        self.assertNotIn('TEST,test again', response.data)
 
     def test_tags(self):
         self.login(username='Admin', password='1234')
