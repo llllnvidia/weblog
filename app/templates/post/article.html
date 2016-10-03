@@ -4,47 +4,56 @@
 {%- block title %}weblog - Article{%- endblock %}
 
 {%- block head %}
-{{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/editor.md/css/') }}editormd.preview.css" />
+    {{ super() }}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='bower_components/editor.md/css/') }}editormd.preview.css"/>
 {%- endblock %}
 {%- block page_content %}
-{%- include 'post/_posts.html' %}
-<h4 id='comments'>评论</h4>
-{{ wtf.quick_form(form) }}
-<p></p>
-{%- include 'post/_comments.html' %}
-{%- if pagination and pagination.total//pagination.per_page %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.article', fragment='#comments', post_id=posts[0].id) }}
-</div>
-{%- endif %}
+    {%- include 'post/_posts.html' %}
+    <h4 id='comments'>评论</h4>
+    {{ wtf.quick_form(form) }}
+    <p></p>
+    {%- include 'post/_comments.html' %}
+    {%- if pagination and pagination.total//pagination.per_page %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, '.article', fragment='#comments', post_id=posts[0].id) }}
+        </div>
+    {%- endif %}
 {%- endblock %}
 
 {%- block scripts %}
-{{ super() }}
-<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}marked.min.js"></script>
-<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}prettify.min.js"></script>
-<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}raphael.min.js"></script>
-<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}underscore.min.js"></script>
-<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}sequence-diagram.min.js"></script>
-<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}flowchart.min.js"></script>
-<script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}jquery.flowchart.min.js"></script>
-<script src="{{ url_for('static', filename='bower_components/editor.md/') }}editormd.js"></script>
-<script type="text/javascript">
-    $(function() {
-        var EditormdView;
-        EditormdView = editormd.markdownToHTML("editormd-view", {
-            htmlDecode      : "iframe",  // you can filter tags decode
-            tocm            : true,
-            tocDropdown     : false,
-            codeFold        : true,
-            emoji           : true,
-            taskList        : true,
-            tex             : true,
-            pageBreak       : true,
-            flowChart       : true,
-            sequenceDiagram : true
-        });
-    });
-</script>
+    {{ super() }}
+    <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}marked.min.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}prettify.min.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}raphael.min.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}underscore.min.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}sequence-diagram.min.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}flowchart.min.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/editor.md/lib/') }}jquery.flowchart.min.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/editor.md/') }}editormd.js"></script>
+    <script type="text/javascript">
+            var EditormdView;
+            EditormdView = editormd.markdownToHTML("editormd-view", {
+                gfm: true,
+                toc: true,
+                tocm: true,
+                tocStartLevel: 1,
+                tocTitle: "目录",
+                tocDropdown: false,
+                tocContainer: "",
+                markdown: "",
+                markdownSourceCode: false,
+                htmlDecode: true,
+                autoLoadKaTeX: true,
+                pageBreak: true,
+                atLink: true,    // for @link
+                emailLink: true,    // for mail address auto link
+                tex: true,
+                taskList: true,   // Github Flavored Markdown task lists
+                emoji: true,
+                flowChart: true,
+                sequenceDiagram: true,
+                previewCodeHighlight: true
+            });
+    </script>
 {%- endblock %}
