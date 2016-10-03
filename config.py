@@ -17,7 +17,7 @@ class Config:
     FOLLOWERS_PER_PAGE = 10
     COMMENTS_PER_PAGE = 10
     DIALOGUE_PER_PAGE = 10
-    IMG_PATH = os.environ.get('IMG_PATH', basedir)
+    IMG_PATH = os.environ.get('IMG_PATH', basedir+"\app\static")
 
     @staticmethod
     def init_app(app):
