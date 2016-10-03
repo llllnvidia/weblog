@@ -166,10 +166,10 @@ class User(UserMixin, db.Model):
         user.save()
 
     @staticmethod
-    def add_admin_dialogue(id):
+    def add_admin_dialogue(user_id):
         for user in User.query.all():
-            if user.id != id:
-                Dialogue(User.query.get(id), user, name=u'系统消息')
+            if user.id != user_id:
+                Dialogue(User.query.get(user_id), user, name=u'系统消息')
 
     def can(self, permissions):
         return self.role is not None and \
