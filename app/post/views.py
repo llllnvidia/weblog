@@ -40,6 +40,8 @@ def article(post_id):
         page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
+    post_show.count += 1
+    post_show.save()
     return render_template('post/article.html', posts=[post_show], form=form, prev_url=prev_url,
                            comments=comments, pagination=pagination, page=page)
 

@@ -20,6 +20,7 @@ class Post(db.Model):
     title = db.Column(db.Text)
     summary = db.Column(db.Text)
     last_edit = db.Column(db.DateTime)
+    count = db.Column(db.BigInteger, default=0, index=True)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category',
                                foreign_keys=[category_id],
@@ -33,7 +34,7 @@ class Post(db.Model):
 
     def ping(self):
         self.last_edit = datetime.utcnow()
-        db.session.add(self)
+        self.save()
 
     def save(self):
         db.session.add(self)

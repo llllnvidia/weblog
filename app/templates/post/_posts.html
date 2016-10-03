@@ -26,6 +26,12 @@
         </h3>
         {% endif %}
         <div class="row">
+        <div class="col-lg-6 col-lg-4">
+            <i class="fa fa fa-eye" aria-hidden="true"></i>&nbsp;
+            <i class="small-font">{{ post.count }}</i>
+        </div>
+        </div>
+        <div class="row">
         <div class="col-xs-6 col-lg-4">
             <i class="fa fa-pencil fa-lg"></i>&nbsp;
             <i class="small-font">{{ moment(post.last_edit).fromNow() }}</i>

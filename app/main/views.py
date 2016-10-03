@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date,datetime
+from datetime import date, datetime
 
 from flask import render_template, redirect, url_for, current_app, flash, \
     request, abort, make_response, jsonify, send_file
@@ -70,13 +70,13 @@ def neighbourhood():
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '1', path=url_for('main.neighbourhood'), max_age=60 * 3)
             return resp
-        query_category_count = query = current_user.followed_posts.filter(Post.is_draft==False)
+        query_category_count = query = current_user.followed_posts.filter(Post.is_draft == False)
     else:
         if show_followed_cookie:
             resp = make_response(redirect(url_for('main.neighbourhood')))
             resp.set_cookie('show_followed', '', path=url_for('main.neighbourhood'), max_age=0)
             return resp
-        query_category_count = query = Post.query.filter(Post.is_draft==False)
+        query_category_count = query = Post.query.filter(Post.is_draft == False)
 
     # category
     if not cur_category and not category_disable:
@@ -141,7 +141,7 @@ def neighbourhood():
     pagination = None
     posts = None
     if query:
-        pagination = query.order_by(Post.timestamp.desc()).paginate(
+        pagination = query.order_by(Post.count.desc()).order_by(Post.timestamp.desc()).paginate(
             page, per_page=current_app.config['POSTS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
@@ -252,7 +252,7 @@ def user(username):
     pagination = None
     posts = None
     if query:
-        pagination = query.order_by(Post.timestamp.desc()).paginate(
+        pagination = query.order_by(Post.count.desc()).order_by(Post.timestamp.desc()).paginate(
             page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
             error_out=False)
         posts = pagination.items
@@ -358,8 +358,8 @@ def dialogues(dialogue_id=None):
             dialogue.show = False
             dialogue.save()
             return redirect(url_for('main.dialogues'))
-        dialogue.update_chats(current_user)     # 更新session.count
-        current_user.ping()     # 更新current_user.new_messages_count
+        dialogue.update_chats(current_user)  # 更新session.count
+        current_user.ping()  # 更新current_user.new_messages_count
         form = ChatForm()
         page = request.args.get('page', 1, type=int)
         pagination = dialogue.chats.filter_by().paginate(
@@ -417,19 +417,19 @@ def images(picture_name):
 
 
 @main.route('/forbidden')
-@cache.cached(timeout=60*60*24*30)
+@cache.cached(timeout=60 * 60 * 24 * 30)
 def forbidden():
     abort(403)
 
 
 @main.route('/page_not_found')
-@cache.cached(timeout=60*60*24*30)
+@cache.cached(timeout=60 * 60 * 24 * 30)
 def page_not_found():
     abort(404)
 
 
 @main.route('/internal_server_error')
-@cache.cached(timeout=60*60*24*30)
+@cache.cached(timeout=60 * 60 * 24 * 30)
 def internal_server_error():
     abort(500)
 
