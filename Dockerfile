@@ -2,10 +2,7 @@ FROM daocloud.io/library/ubuntu
 MAINTAINER "linw" <815750986@qq.com>
 
 RUN apt-get update && \
-    apt-get install -y curl wget tar bzip2 unzip vim && \
-    apt-get install -y nginx git build-essential && \
-    apt-get install -y python python-pip && \
-    apt-get install -y npm && \
+    apt-get install -y nginx build-essential python python-pip npm git wget && \
     apt-get clean all
 
 RUN npm install -g n && \
@@ -33,6 +30,6 @@ RUN bower install --allow-root
 
 RUN ln -s /usr/src/app/weblog_nginx.conf /etc/nginx/sites-enabled
 
-EXPOSE 8000 25
+EXPOSE 8000
 
 CMD ["/usr/local/bin/supervisord", "-n"]
