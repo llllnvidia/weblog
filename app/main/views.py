@@ -402,8 +402,8 @@ def image_upload():
             fname = secure_filename(str(datetime.utcnow()) + ' ' + f.filename)  # 获取一个安全的文件名，且仅仅支持ascii字符；
             f.save(os.path.join(current_app.config.get('IMG_PATH'), fname))
             return jsonify(success=1, message="成功", url=url_for('main.images', picture_name=fname))
-        except IOError:
-            return jsonify(success=0, message="重名")
+        except Exception:
+            return jsonify(success=0, message="失败")
 
 
 @main.route('/images/<picture_name>')
