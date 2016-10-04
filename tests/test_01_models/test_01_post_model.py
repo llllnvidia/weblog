@@ -114,6 +114,7 @@ class PostModelTestCase(unittest.TestCase):
         tag = Tag('test')
         self.assertTrue(Tag.query.count() == 0)
         tag.save()
+        self.assertEqual(tag.__repr__(), "Tag({id})".format(id=tag.id))
         post = Post(tags=[tag])
         post.save()
         self.assertTrue(Tag.query.count() == 1)

@@ -109,7 +109,7 @@ def edit_article(post_id):
                                 post_edit.author.username, current_user.username)
         flash('该文章已修改。')
         return redirect(url_for('post.article', post_id=post_id))
-    if request.method == 'POST':
+    if request.method == 'POST' and not form.validate():
         post_body = request.form['editor-markdown-doc']
     else:
         form.title.data = post_edit.title
