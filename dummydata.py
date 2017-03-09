@@ -6,18 +6,15 @@ from random import choice, randint
 
 from manage import app, db
 from app.models.post import Post, Category, Tag
-from app.models.account import Role, User
+from app.models.account import User
 
 sql_expression_rand = func.random if app.config.get("SQLALCHEMY_DATABASE_URI").startswith("sqlite") else func.rand
 
 
 def basic_deploy():
-    Role.insert_roles()
-    administrator = Role.query.filter_by(name="Administrator").first()
     admin = User(username="admin",
                  email="admin@weblog.com",
-                 password="admin",
-                 role=administrator)
+                 password="admin")
     admin.save()
     category_default_parent = Category(name="")
     category_default_parent.save()
@@ -71,7 +68,7 @@ def bootstrap_category(count=40, locale="en"):
     db.session.commit()
 
 
-def bootstrap_post(count=400, locale="en"):
+def bootstrap_post(count=390, locale="en"):
     text = Text(locale)
     box_summary_box = [1, 2, 3]
     box_article_box = [7, 8, 9]

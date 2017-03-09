@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% block head %}
-        <title>{% block title %}{% endblock %} - weblog</title>
-        {% include "partial/head.html" %}
-    {% endblock %}
+{% block head %}
+    <title>{% block title %}{% endblock %} - weblog</title>
+    {% include "partial/head.html" %}
+{% endblock %}
 </head>
 <body>
 <div id="page">
@@ -14,7 +14,7 @@
             <ul>
             {% for item in menu %}
                 <li class="nav-link">
-                    <a href="{{ url_for(item.endpoint) }}"{% if request.endpoint == item.endpoint %} class="active"{% endif %}>{{ item.name }}</a>
+                    <a href="{{ url_for(item) }}"{% if request.endpoint == item %} class="active"{% endif %}>{{ item.split(".")[1] | capitalize }}</a>
                 </li>
             {% endfor %}
             </ul>

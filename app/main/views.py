@@ -6,15 +6,6 @@ from . import main
 from ..models.post import Post
 
 
-@main.before_app_first_request
-def inject_context():
-    menu = [{"endpoint": "main.index", "name": "Home"},
-            {"endpoint": "main.archives", "name": "Archives"},
-            {"endpoint": "main.categories", "name": "Categories"},
-            {"endpoint": "main.tags", "name": "Tags"}]
-    current_app.context_processor(lambda: {"menu": menu})
-
-
 @main.route('/favicon.ico')
 def favicon():
     """favicon icon"""

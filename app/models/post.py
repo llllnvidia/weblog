@@ -29,7 +29,7 @@ class Post(db.Model):
                            backref=db.backref('posts', lazy='dynamic'))
 
     def __repr__(self):
-        return '<Post %s Author %s>' % (self.title, self.author.username)
+        return '<Post {} Author {}>'.format(self.title, self.author.username)
 
     def ping(self):
         self.last_edit = datetime.utcnow()
