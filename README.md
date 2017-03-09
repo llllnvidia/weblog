@@ -9,44 +9,36 @@ weblog aims to do it better, its features are as follow:
 
 - multiple user
 - roles: admin, moderator, user
-- posts, comments, tags, and categories
-- messages and mail
-- admin interface
+- posts, tags, and categories
+- messages
 - change configurations by configuration file or environment variable
-- Deploy with docker
 
 ## Demo
 
-[==> Portal to Demo <==](http://web-log.daoapp.io)
+![](README/20170309_160622.png)
 
-Using Dock to deploy on DaoCloud.
+![](README/20170309_160722.png)
 
-Related Doc : [python-docker](http://docs.daocloud.io/python-docker)
-
+![](README/20170309_160754.png)
 
 ## Dependency
 
 ### Backend
 
+        pip install -r requirements.txt
+
 - [Flask](https://github.com/pallets/flask)
     - [Flask-Script](https://github.com/smurfix/flask-script)
     - [Flask-Login](https://github.com/maxcountryman/flask-login)
-    - [Flask-WTF](https://github.com/lepture/flask-wtf)
-    - [Flask-Moment](https://github.com/miguelgrinberg/Flask-Moment)
     - [Flask-SQLAlchemy](https://github.com/mitsuhiko/flask-sqlalchemy)
-    - [Flask-Migrate](https://github.com/miguelgrinberg/Flask-Migrate)
-    - [Flask-Mail](https://github.com/mattupstate/flask-mail)
-    - [Flask-Bootstrap](https://github.com/mbr/flask-bootstrap)
-    - [Flask-Cache](https://github.com/thadeusb/flask-cache)
-- [WTForms](https://github.com/wtforms/wtforms)
 - [Markdown](http://daringfireball.net/projects/markdown/)
 
 ### Frontend
 
+download to `app/static/js`
+
 - [jQuery](https://github.com/jquery/jquery)
-- [Bootstrap](https://github.com/twbs/bootstrap)
-    - [Bootswatch paper theme](http://bootswatch.com/paper/)
-- [Editor.md](https://github.com/pandao/editor.md)
+- [Moment.js](https://momentjs.com/)
 
 ## License
 

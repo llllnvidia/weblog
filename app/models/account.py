@@ -32,14 +32,14 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': (Permission.FOLLOW |
+            "User": (Permission.FOLLOW |
                      Permission.COMMENT |
                      Permission.WRITE_ARTICLES, True),
-            'Moderator': (Permission.FOLLOW |
+            "Moderator": (Permission.FOLLOW |
                           Permission.COMMENT |
                           Permission.WRITE_ARTICLES |
                           Permission.MODERATE_COMMENTS, False),
-            'Administrator': (0xff, False)
+            "Administrator": (0xff, False)
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
@@ -83,10 +83,6 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    name = db.Column(db.String(64))
-    location = db.Column(db.String(64))
-    about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     followed = db.relationship('Follow',
@@ -116,11 +112,6 @@ class User(UserMixin, db.Model):
             self.role = Role.query.filter_by(default=True).first()
         self.save()
         self.follow(self)
-        admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
-        if admin and admin != self:
-            Dialogue(admin, self, name=u'系统消息')
-        if not self.password_hash:
-            self.password = u'123456'
         self.save()
 
     def save(self):
@@ -138,38 +129,6 @@ class User(UserMixin, db.Model):
             session_delete.delete()
         db.session.delete(self)
         db.session.commit()
-
-    @staticmethod
-    def add_self_follows():
-        for user in User.query.all():
-            if not user.is_following(user):
-                user.follow(user)
-                user.save()
-
-    @staticmethod
-    def add_admin():
-        admin = User(email=u'Admin@weblog.com',
-                     username=u'Admin',
-                     password=u'1234',
-                     confirmed=True,
-                     member_since=datetime.utcnow())
-        admin.role = Role.query.filter_by(name='Administrator').first()
-        admin.save()
-
-    @staticmethod
-    def add_test_user():
-        user = User(email=u'user@weblog.com',
-                    username=u'tester',
-                    password=u'1234',
-                    confirmed=True,
-                    member_since=datetime.utcnow())
-        user.save()
-
-    @staticmethod
-    def add_admin_dialogue(user_id):
-        for user in User.query.all():
-            if user.id != user_id:
-                Dialogue(User.query.get(user_id), user, name=u'系统消息')
 
     def can(self, permissions):
         return self.role is not None and \
@@ -199,8 +158,6 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    confirmed = db.Column(db.Boolean, default=False)
-
     def generate_confirmation_token(self, confirm_type, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({confirm_type: self.id})
@@ -214,14 +171,6 @@ class User(UserMixin, db.Model):
         if data.get(confirm_type) != self.id:
             return False
         return True
-
-    def reset_password(self, token, new_password):
-        if self.confirm(token, 'reset_password'):
-            self.password = new_password
-            self.save()
-            return True
-        else:
-            return False
 
     def follow(self, user):
         if not self.is_following(user):
@@ -252,19 +201,17 @@ class User(UserMixin, db.Model):
         return Dialogue.query.join(Session, Session.dialogue_id == Dialogue.id) \
             .filter(Session.user_id == self.id)
 
-    def get_message_from_admin(self, content, link_id=None, link_type=None):
-        admin = User.query.filter_by(username=current_app.config['ADMIN']).first()
-        if not admin or self.id == admin.id :
-            admin_list = User.query.filter_by(role=Role.query.filter_by(name='Administrator').first()).all()
-            for admin_new in admin_list:
-                if admin_new != admin:
-                    admin = admin_new
-                    break
-        dialogue = Dialogue.get_dialogue(admin, self)
-        if link_id and link_type:
-            dialogue.new_chat(author=admin, content=content, link_id=link_id, link_type=link_type)
+    @property
+    def gravatar(self, size=100, default="identicon", rating="g"):
+        from flask import request
+        from hashlib import md5
+        if request.is_secure:
+            url = "https://secure.gravatar.com/avatar"
         else:
-            dialogue.new_chat(author=admin, content=content)
+            url = "http://www.gravatar.com/avatar"
+        hash_ = md5(self.email.encode("utf-8")).hexdigest()
+        return f"{url}/{hash_}?s={size}&d={default}&r={rating}"
+
 
 
 class AnonymousUser(AnonymousUserMixin):

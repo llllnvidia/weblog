@@ -3,9 +3,9 @@ from datetime import datetime
 
 from app import db
 
-posttags = db.Table('posttags',
-                    db.Column('tags_id', db.Integer, db.ForeignKey('tags.id')),
-                    db.Column('posts_id', db.Integer, db.ForeignKey('posts.id'))
+post_tag = db.Table('post_tag',
+                    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
+                    db.Column('post_id', db.Integer, db.ForeignKey('posts.id'))
                     )
 
 
@@ -16,17 +16,16 @@ class Post(db.Model):
     is_draft = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comments = db.relationship('Comment', backref='post', lazy='dynamic')
     title = db.Column(db.Text)
     summary = db.Column(db.Text)
     last_edit = db.Column(db.DateTime)
     count = db.Column(db.BigInteger, default=0, index=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
     category = db.relationship('Category',
                                foreign_keys=[category_id],
                                backref=db.backref('posts', lazy='dynamic'))
     tags = db.relationship('Tag',
-                           secondary=posttags,
+                           secondary=post_tag,
                            backref=db.backref('posts', lazy='dynamic'))
 
     def __repr__(self):
@@ -41,9 +40,6 @@ class Post(db.Model):
         db.session.commit()
 
     def delete(self):
-        if self.comments.count():
-            for comment_need_delete in self.comments:
-                comment_need_delete.delete()
         db.session.delete(self)
         db.session.commit()
 
@@ -59,52 +55,19 @@ class Post(db.Model):
         return tag in self.tags
 
 
-class Comment(db.Model):
-    __tablename__ = 'comments'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    disabled = db.Column(db.Boolean)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-
 class Category(db.Model):
-    __tablename__ = 'category'
+    __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    parent_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    parent_category = db.relationship('Category', uselist=False, remote_side=[id],
-                                      backref=db.backref('son_categories', uselist=True))
-
-    def __init__(self, name, parent_category=None):
-        self.name = name
-        self.parent_category = parent_category
+    name = db.Column(db.String(255))
+    parent_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+    parent = db.relationship('Category', uselist=False, remote_side=[id],
+                             backref=db.backref('children', uselist=True))
 
     def __repr__(self):
-        name = None
-        if self.parent_category:
-            name = Category.query.filter_by(id=self.parent_id).first().name
-        return '<Category %s Parent %s Son %s>' % (self.name,
-                                                   name,
-                                                   [cg.name for cg in self.son_categories])
-
-    @staticmethod
-    def add_none():
-        none = Category(name=u'None')
-        none.save()
-        for post in Post.query.all():
-            if post.category is None:
-                post.category = none
-                post.save()
+        name = self.name
+        parent_name = self.parent.name
+        sons_name = ",".join([cg.name for cg in self.son_categories])
+        return f"<Category {name} Parent {parent_name} Son {sons_name}>"
 
     def save(self):
         db.session.add(self)
@@ -112,7 +75,7 @@ class Category(db.Model):
 
     def delete(self):
         for post in self.posts:
-            post.category_id = 1
+            post.category_id = None
             post.save()
         db.session.delete(self)
         db.session.commit()
@@ -121,40 +84,37 @@ class Category(db.Model):
         if query:
             count = query.filter(Post.category == self).count()
             sum_posts_count = 0
-            for category in self.son_categories:
-                sum_posts_count = sum_posts_count + query.filter(Post.category == category).count()
+            for child in self.children:
+                sum_posts_count = sum_posts_count + query.filter(Post.category == child).count()
         else:
             count = self.posts.count()
             sum_posts_count = 0
-            for category in self.son_categories:
-                sum_posts_count = sum_posts_count + category.posts_count()
+            for child in self.children:
+                sum_posts_count = sum_posts_count + child.posts_count()
         count += sum_posts_count
         return count
 
     def posts_query(self, query=None):
         if query:
             posts = query.filter(Post.category == self)
-            if self.son_categories:
-                for son_category in self.son_categories:
-                    posts = posts.union(query.filter(Post.category == son_category))
+            if self.children:
+                for child in self.children:
+                    posts = posts.union(query.filter(Post.category == child))
         else:
             posts = Post.query.filter(Post.category == self)
-            if self.son_categories:
-                for son_category in self.son_categories:
-                    posts = posts.union(Post.query.filter(Post.category == son_category))
+            if self.children:
+                for child in self.children:
+                    posts = posts.union(Post.query.filter(Post.category == child))
         return posts
 
 
 class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(10), unique=True)
-
-    def __init__(self, content):
-        self.content = content
+    name = db.Column(db.String(255), unique=True)
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.id)
+        return "<Tag {}>".format(self.name)
 
     def save(self):
         db.session.add(self)

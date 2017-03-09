@@ -1,0 +1,21 @@
+{% extends "partial/layout.html" %}
+{% block title %}{{ error_title }}{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style>
+        footer {
+            position: absolute;
+            top:90%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div id="ERROR">
+<h1 class="error">ERROR {{ error_title }}</h1>
+<p class="important">
+    {{ error_msg }}
+</p>
+</div>
+{% endblock %}

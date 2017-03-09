@@ -1,0 +1,19 @@
+{% extends "partial/layout.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+    <h1 class="title">
+    {{ post.title }}
+    </h1>
+    <div class="post-time"></div>
+    <div class="post-summary">
+    {{ post.summary }}
+    </div>
+    <div class="post-text">
+    {{ post.body }}
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".post-time").html(moment("{{ post.timestamp }}").format("LL"));
+        });
+    </script>
+{% endblock %}

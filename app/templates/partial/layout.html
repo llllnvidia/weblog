@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+        <title>{% block title %}{% endblock %} - weblog</title>
+        {% include "partial/head.html" %}
+    {% endblock %}
+</head>
+<body>
+<div id="page">
+    <header>
+        <a href="/" class="logo">Weblog</a>
+        <nav class="navigation">
+            <ul>
+            {% for item in menu %}
+                <li class="nav-link">
+                    <a href="{{ url_for(item.endpoint) }}"{% if request.endpoint == item.endpoint %} class="active"{% endif %}>{{ item.name }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </nav>
+    </header>
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div id="OTPAuth" style="display: none">
+        <div class="form-group">
+        <label for="OTP">One-Time Password</label>
+        <input id="OTP" name="OTP" type="password" size="6" onkeydown="if(event.keyCode == 13){ login(); }">
+        </div>
+        <script type="text/javascript">
+            function login() {
+                var otp = $("#OTP").val();
+                $.post("{{ url_for("api.auth") }}", {"password": otp}, function (data) {
+                    setCookie("token", data["token"], 600);
+                    $("#OTPAuth").hide();
+                });
+            }
+        </script>
+    </div>
+    <footer>
+        {% block footer %}
+            <section class="copyright">
+                <p>Github:<a href="https://github.com/linw1995" target="_blank">@linw1995</a></p>
+                <p>&copy; 2017 by linw1995</p>
+            </section>
+        {% endblock %}
+    </footer>
+</div>
+</body>
+</html>
