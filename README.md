@@ -15,11 +15,11 @@ weblog aims to do it better, its features are as follow:
 
 ## Demo
 
-![](README/20170309_160622.png)
+![](README/01.png)
 
-![](README/20170309_160722.png)
+![](README/02.png)
 
-![](README/20170309_160754.png)
+![](README/03.png)
 
 ## Dependency
 

@@ -3,3 +3,5 @@ omit =
     */migrations/*
     */tests/*
     */templates/*
+    */static/*
+    dummydata.py

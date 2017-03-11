@@ -13,7 +13,7 @@ a {
 }
 
 body {
-    background: lightyellow;
+    font-family: Georgia, serif;
     margin: 0;
     height: 100%;
     width: 100%;
@@ -68,7 +68,6 @@ footer .copyright {
 .navigation {
     float: right;
     margin-top: 0;
-    font-family: Athelas, Times New Roman, STHeiti, Microsoft Yahei, serif;
 }
 
 .nav-link {
@@ -147,11 +146,13 @@ li#cur.active_next{
 }
 
 .avatar img{
-    border-radius: 100px;
+    border-radius: 50px;
+    width: 50px;
 }
 
 .author {
     font-size: 1.5em;
+    padding-top: 10px;
 }
 
 .post {

@@ -11,6 +11,7 @@ class Config:
     COMMENTS_PER_PAGE = 10
     DIALOGUE_PER_PAGE = 10
     IMG_PATH = os.environ.get("IMG_PATH", basedir + r"\app\static")
+    BUNDLE_ERRORS = True
 
     @staticmethod
     def init_app(app):
@@ -34,7 +35,6 @@ class DebugConfig(DevelopmentConfig):
 class TestingConfig(Config):
     TESTING = True
     SERVER_NAME = '127.0.0.1:5000'
-    WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL") or \
                               r"sqlite:///" + os.path.join(basedir, 'data-test-temporary.sqlite')
     SQLALCHEMY_TRACK_MODIFICATIONS = True

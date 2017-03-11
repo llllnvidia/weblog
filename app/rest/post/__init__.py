@@ -2,10 +2,10 @@
 from flask import current_app, abort
 from flask_restful import Resource, marshal_with
 
-from ..parsers import parser_post_get
-from ..fields import post_get_fields, tag_fields
-from ...models.post import Post, Category, Tag
+from .fields import post_get_fields, tag_fields
+from .parsers import parser_post_get
 from ...models.account import User
+from ...models.post import Post, Category, Tag
 
 
 class PostApi(Resource):
@@ -72,10 +72,6 @@ class PostApi(Resource):
 
         # todo:完善PostApi delete method
         post_delete = Post.query.get_or_404(post_id)
-
-    def head(self, post_id=None):
-        # todo:完善PostApi head method
-        pass
 
 
 class TagApi(Resource):
