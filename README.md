@@ -8,9 +8,8 @@ It&#39;s started in 6 May, 2016
 weblog aims to do it better, its features are as follow:
 
 - multiple user
-- roles: admin, moderator, user
 - posts, tags, and categories
-- messages
+- restful api
 - change configurations by configuration file or environment variable
 
 ## Demo
@@ -29,9 +28,8 @@ weblog aims to do it better, its features are as follow:
 
 - [Flask](https://github.com/pallets/flask)
     - [Flask-Script](https://github.com/smurfix/flask-script)
-    - [Flask-Login](https://github.com/maxcountryman/flask-login)
     - [Flask-SQLAlchemy](https://github.com/mitsuhiko/flask-sqlalchemy)
-- [Markdown](http://daringfireball.net/projects/markdown/)
+    - [Flask-Restful](https://github.com/flask-restful/flask-restful)
 
 ### Frontend
 
