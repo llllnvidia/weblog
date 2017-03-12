@@ -30,7 +30,6 @@ weblog aims to do it better, its features are as follow:
     - [Flask-Script](https://github.com/smurfix/flask-script)
     - [Flask-SQLAlchemy](https://github.com/mitsuhiko/flask-sqlalchemy)
     - [Flask-Restful](https://github.com/flask-restful/flask-restful)
-    - [Flask-Login](https://github.com/maxcountryman/flask-login)
 
 ### Frontend
 

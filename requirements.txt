@@ -1,10 +1,9 @@
+coverage==4.3.4
+elizabeth==0.3.17
 Flask==0.12
 Flask-RESTful==0.3.5
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.2
-Flask-Login==0.4.0
-elizabeth==0.3.17
 Markdown==2.6.8
 PyMySQL==0.7.10
 selenium==3.0.2
-coverage==4.3.4
