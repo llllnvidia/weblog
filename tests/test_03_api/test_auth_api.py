@@ -49,8 +49,8 @@ class AuthApiTestCase(unittest.TestCase):
                                     content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
-        data = json.loads(response.data)
-        self.assertEqual(User.confirm("login", data["token"]).id, user.id)
+        token = response.headers.get("Authorization")
+        self.assertEqual(User.confirm("login", token).id, user.id)
 
         kwargs["password"] = self.person.password(16)
         response = self.client.post("/api/auth",
@@ -67,30 +67,23 @@ class AuthApiTestCase(unittest.TestCase):
 
         token_fake = json.dumps(dict(token=json.dumps(kwargs)))
         response = self.client.put("/api/auth",
-                                   data=token_fake,
+                                   headers=dict(Authorization=token_fake),
                                    content_type="application/json")
         self.assertEqual(response.status_code, 401)
 
         response = self.client.post("/api/auth",
                                     data=json.dumps(kwargs),
                                     content_type="application/json")
-        token_1 = json.loads(response.data)["token"]
+        token_1 = response.headers.get("Authorization")
         sleep(1)
         response = self.client.put("/api/auth",
-                                   data=json.dumps(dict(token=token_1)),
+                                   headers=dict(Authorization=token_1),
                                    content_type="application/json")
-        token_2 = json.loads(response.data)["token"]
-        sleep(3)
-        response = self.client.get("/api/auth",
-                                   query_string=dict(token=token_1))
-        token_3 = json.loads(response.data)["token"]
+        token_2 = response.headers.get("Authorization")
 
         self.assertNotEqual(token_1, token_2)
-        self.assertNotEqual(token_2, token_3)
-        self.assertNotEqual(token_3, token_1)
         self.assertEqual(User.confirm("login", token_1).id, user.id)
         self.assertEqual(User.confirm("login", token_2).id, user.id)
-        self.assertEqual(User.confirm("login", token_3).id, user.id)
 
 
 if __name__ == "__main__":
