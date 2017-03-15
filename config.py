@@ -44,6 +44,5 @@ config = {
     'development': DevelopmentConfig,
     'debug': DebugConfig,
     'testing': TestingConfig,
-
     'default': DevelopmentConfig
 }

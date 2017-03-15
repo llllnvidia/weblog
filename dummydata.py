@@ -8,13 +8,12 @@ from manage import app, db
 from app.models.post import Post, Category, Tag
 from app.models.account import User
 
-sql_expression_rand = func.random if app.config.get("SQLALCHEMY_DATABASE_URI").startswith("sqlite") else func.rand
+sql_expression_rand = func.random if app.config.get(
+    "SQLALCHEMY_DATABASE_URI").startswith("sqlite") else func.rand
 
 
 def basic_deploy():
-    admin = User(username="admin",
-                 email="admin@weblog.com",
-                 password="admin")
+    admin = User(username="admin", email="admin@weblog.com", password="admin")
     admin.save()
     category_default_parent = Category(name="")
     category_default_parent.save()
@@ -31,9 +30,7 @@ def bootstrap_user(count=60, locale="en"):
             if User.query.filter_by(username=username).first() is None:
                 break
         email = username.replace(" ", "_") + "@weblog.com"
-        new = User(username=username,
-                   email=email,
-                   password=person.password())
+        new = User(username=username, email=email, password=person.password())
         db.session.add(new)
     db.session.commit()
 
@@ -79,19 +76,28 @@ def bootstrap_post(count=390, locale="en"):
     category_default = Category.query.filter_by(name="其它").first()
 
     for _ in range(count):
-        timestamp = datetime(year=randint(1995, 2017), month=randint(1, 12), day=randint(1, 28), hour=randint(0, 23),
-                             minute=randint(0, 59), second=randint(0, 59), microsecond=randint(0, 999999))
+        timestamp = datetime(
+            year=randint(1995, 2017),
+            month=randint(1, 12),
+            day=randint(1, 28),
+            hour=randint(0, 23),
+            minute=randint(0, 59),
+            second=randint(0, 59),
+            microsecond=randint(0, 999999))
         if _ % author_count == 0:
-            authors = User.query.order_by(sql_expression_rand()).limit(author_count).all()
+            authors = User.query.order_by(
+                sql_expression_rand()).limit(author_count).all()
         if _ % tag_count == 0:
-            tags = Tag.query.order_by(sql_expression_rand()).limit(tag_count).all()
-        new = Post(author=authors[_ % author_count],
-                   title=text.title(),
-                   summary=text.text(choice(box_summary_box)),
-                   body=text.text(choice(box_article_box)),
-                   timestamp=timestamp,
-                   last_edit=timestamp,
-                   count=randint(0, 10000))
+            tags = Tag.query.order_by(
+                sql_expression_rand()).limit(tag_count).all()
+        new = Post(
+            author=authors[_ % author_count],
+            title=text.title(),
+            summary=text.text(choice(box_summary_box)),
+            body=text.text(choice(box_article_box)),
+            timestamp=timestamp,
+            last_edit=timestamp,
+            count=randint(0, 10000))
         post_tags = [tag for no, tag in enumerate(tags) if no < _ % 4]
         new.tags.extend(post_tags)
         if _ % 3 == 0:

@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from datetime import datetime, timedelta
 from flask_restful import Resource
 
 from ...models.account import User
@@ -14,20 +15,28 @@ class AuthApi(Resource):
         is_valid = user.verify_password(password)
         if is_valid:
             user.ping()
-            return {"token": user.generate_token("login")}
+            token = user.generate_token("login")
+            expires_time = datetime.utcnow() + timedelta(0, 3600)
+            expires = expires_time.strftime("%A %d-%b-%y %H:%M:%S UTC")
+            headers = {"Set-Cookie":
+                       f"token={token}; path=/; expires={expires}; HttpOnly"}
+            return {"token": token}, 200, headers
         else:
-            return {"msg": "invalid username or password"}, 401
+            return ({"message": "invalid username or password"},
+                    401, {"Set-Cookie": "token=; path=/; Max-Age: 0;"})
 
-    def __refresh(self):
+    def get(self):
         args = parser_auth_refresh.parse_args(strict=True)
         token = args.get("token")
         user = User.confirm("login", token)
         if user:
             user.ping()
-            return {"token": user.generate_token("login")}
+            token = user.generate_token("login")
+            expires_time = datetime.utcnow() + timedelta(0, 3600)
+            expires = expires_time.strftime("%A %d-%b-%y %H:%M:%S UTC")
+            headers = {"Set-Cookie":
+                       f"token={token}; path=/; expires={expires}; HttpOnly"}
+            return {"token": token}, 200, headers
         else:
-            return {"msg": "invalid token"}, 401
-
-    get = __refresh
-    put = __refresh
-
+            return ({"message": "invalid token"},
+                    401, {"Set-Cookie": "token=; path=/; Max-Age: 0;"})

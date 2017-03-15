@@ -45,12 +45,16 @@ class PostApi(Resource):
                     post_selected = tag.posts_query(post_selected)
 
         # paginate
-        post_selected = post_selected.paginate(page=page_no,
-                                               per_page=current_app.config.get("POSTS_PER_PAGE", 10), error_out=False)
-        return {"page": page_no,
-                "pagesize": post_selected.pages,
-                "totalsize": post_selected.total,
-                "post": post_selected.items}, 200
+        post_selected = post_selected.paginate(
+            page=page_no,
+            per_page=current_app.config.get("POSTS_PER_PAGE", 10),
+            error_out=False)
+        return {
+            "page": page_no,
+            "pagesize": post_selected.pages,
+            "totalsize": post_selected.total,
+            "post": post_selected.items
+        }, 200
 
     def post(self, post_id=None):
         if post_id:
