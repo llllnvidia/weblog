@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
+from flask_restful import Resource
 from werkzeug.local import LocalProxy
 from datetime import datetime, timedelta
-from flask_restful import Resource
 from flask import abort, request, _request_ctx_stack
 
-from ...models.account import User
 from .parsers import parser_auth
+from ...models.account import User
 
 
 current_user = LocalProxy(lambda: _get_user())
@@ -21,11 +21,9 @@ def authenticate_required(func):
         token = token or token_from_cookie
 
         user = User.confirm("login", token)
-        is_valid = False
         if user:
             user.ping()
-            is_valid = True
-        if is_valid:
+            _request_ctx_stack.top.user = user
             response = func(*args, **kwargs)
             token = user.generate_token("login")
             expires_time = datetime.utcnow() + timedelta(0, 3600)
