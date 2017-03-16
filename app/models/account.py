@@ -26,6 +26,9 @@ class User(db.Model):
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
 
+    def __eq__(self, user):
+        return self.id == user.id
+
     def save(self):
         db.session.add(self)
         db.session.commit()
