@@ -23,37 +23,48 @@ parser_post_get.add_argument(
     dest="tags",
     type=str,
     action="append",
-    location=["json", "args", "headers"])
+    location=["args", "headers"])
 
 parser_post_post = reqparse.RequestParser()
 parser_post_post.add_argument(
     "title",
     type=str,
-    location=["json"],
+    location=["json", "args", "headers"],
     required=True,
     help="title is required")
 parser_post_post.add_argument(
     "summary",
     type=str,
-    location=["json"],
+    location=["json", "args", "headers"],
     required=True,
     help="summary is required")
 parser_post_post.add_argument(
     "body",
     type=str,
-    location=["json"],
+    location=["json", "args", "headers"],
     required=True,
     help="body is required")
 parser_post_post.add_argument(
     "category", type=category_check, location=["json"])
 parser_post_post.add_argument(
-    "tag", dest="tags", type=str, action="append", location=["json"])
+    "tag",
+    dest="tags",
+    type=str,
+    action="append",
+    location=["args", "headers"])
 
 parser_post_put = reqparse.RequestParser()
-parser_post_put.add_argument("title", type=str, location=["json"])
-parser_post_put.add_argument("summary", type=str, location=["json"])
-parser_post_put.add_argument("body", type=str, location=["json"])
 parser_post_put.add_argument(
-    "category", type=category_check, location=["json"])
+    "title", type=str, location=["json", "args", "headers"])
 parser_post_put.add_argument(
-    "tag", dest="tags", type=str, action="append", location=["json"])
+    "summary", type=str, location=["json", "args", "headers"])
+parser_post_put.add_argument(
+    "body", type=str, location=["json", "args", "headers"])
+parser_post_put.add_argument(
+    "category", type=category_check, location=["json", "args", "headers"])
+parser_post_put.add_argument(
+    "tag",
+    dest="tags",
+    type=str,
+    action="append",
+    location=["args", "headers"])
