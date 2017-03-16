@@ -80,22 +80,16 @@ class AuthApiTestCase(unittest.TestCase):
             "/api/auth",
             data=json.dumps(kwargs),
             content_type="application/json")
-        token_1_from_json = json.loads(response.data)["token"]
-        token_1_from_cookie = parse_cookie(
+        token_1 = parse_cookie(
             response.headers.getlist('Set-Cookie')[0])["token"]
-        self.assertEqual(token_1_from_cookie, token_1_from_json)
-
         sleep(1)
         response = self.client.get(
-            "/api/auth", query_string=dict(token=token_1_from_json))
-        token_2_from_json = json.loads(response.data)["token"]
-        token_2_from_cookie = parse_cookie(
+            "/api/auth", query_string=dict(token=token_1))
+        token_2 = parse_cookie(
             response.headers.getlist("Set-Cookie")[0])["token"]
-        self.assertEqual(token_2_from_cookie, token_2_from_json)
-
-        self.assertNotEqual(token_1_from_json, token_2_from_json)
-        self.assertEqual(User.confirm("login", token_1_from_json).id, user.id)
-        self.assertEqual(User.confirm("login", token_2_from_json).id, user.id)
+        self.assertNotEqual(token_1, token_2)
+        self.assertEqual(User.confirm("login", token_1).id, user.id)
+        self.assertEqual(User.confirm("login", token_2).id, user.id)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from flask_restful import Resource, marshal_with
 
 from .fields import post_get_fields, tag_fields
 from .parsers import parser_post_get
+from ..auth import authenticate_required
 from ...models.account import User
 from ...models.post import Post, Category, Tag
 
@@ -56,6 +57,7 @@ class PostApi(Resource):
             "post": post_selected.items
         }, 200
 
+    @authenticate_required
     def post(self, post_id=None):
         if post_id:
             abort(405)
@@ -63,6 +65,7 @@ class PostApi(Resource):
         # todo:完善PostApi post method
         post_new = Post()
 
+    @authenticate_required
     def put(self, post_id=None):
         if not post_id:
             abort(400)
@@ -70,6 +73,7 @@ class PostApi(Resource):
         # todo:完善PostApi put method
         post_edit = Post.query.get_or_404(post_id)
 
+    @authenticate_required
     def delete(self, post_id=None):
         if not post_id:
             abort(400)
