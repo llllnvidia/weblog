@@ -89,7 +89,7 @@ class PostApi(Resource):
             abort(400)
 
         post_edit = Post.query.get_or_404(post_id)
-        if post_edit.user != current_user:
+        if post_edit.author != current_user:
             return {"message": "forbidden"}, 403
 
         # parse_args
@@ -126,7 +126,7 @@ class PostApi(Resource):
             abort(400)
 
         post_delete = Post.query.get_or_404(post_id)
-        if post_delete.user == current_user:
+        if post_delete.author == current_user:
             post_delete.delete()
             return {"message": "delelet success"}, 204
         else:
