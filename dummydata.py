@@ -15,10 +15,6 @@ sql_expression_rand = func.random if app.config.get(
 def basic_deploy():
     admin = User(username="admin", email="admin@weblog.com", password="admin")
     admin.save()
-    category_default_parent = Category(name="")
-    category_default_parent.save()
-    category_default = Category(name="Other", parent=category_default_parent)
-    category_default.save()
 
 
 def bootstrap_user(count=60, locale="en"):
@@ -49,7 +45,6 @@ def bootstrap_tag(count=80, locale="en"):
 
 def bootstrap_category(count=40, locale="en"):
     text = Text(locale)
-    default_parent = Category.query.get(1)
     for _ in range(count):
         while True:
             name = text.word()
@@ -59,8 +54,6 @@ def bootstrap_category(count=40, locale="en"):
         if _ % 2:
             parent = Category.query.order_by(sql_expression_rand()).first()
             new.parent_category = parent
-        else:
-            new.parent_category = default_parent
         db.session.add(new)
     db.session.commit()
 
@@ -73,7 +66,6 @@ def bootstrap_post(count=390, locale="en"):
     tag_count = int(Tag.query.count() / 4)
     authors = list()
     tags = list()
-    category_default = Category.query.filter_by(name="其它").first()
 
     for _ in range(count):
         timestamp = datetime(
@@ -103,8 +95,6 @@ def bootstrap_post(count=390, locale="en"):
         if _ % 3 == 0:
             category = Category.query.order_by(sql_expression_rand()).first()
             new.category = category
-        else:
-            new.category = category_default
         db.session.add(new)
     db.session.commit()
 
