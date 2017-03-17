@@ -7,9 +7,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(16)
     POSTS_PER_PAGE = 10
-    FOLLOWERS_PER_PAGE = 10
-    COMMENTS_PER_PAGE = 10
-    DIALOGUE_PER_PAGE = 10
     IMG_PATH = os.environ.get("IMG_PATH", basedir + r"\app\static")
     BUNDLE_ERRORS = True
 
