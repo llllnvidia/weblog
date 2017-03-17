@@ -31,6 +31,7 @@ def tag_parser(value):
 
 
 parser_post_get = reqparse.RequestParser()
+parser_post_get.add_argument("page", type=int, location=["args"])
 parser_post_get.add_argument("desc", type=bool, location=["args"])
 parser_post_get.add_argument("author", type=str, location=["args"])
 parser_post_get.add_argument("category", type=str, location=["args"])

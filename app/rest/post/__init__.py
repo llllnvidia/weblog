@@ -19,9 +19,9 @@ class PostApi(Resource):
             return post, 200
 
         # args parser
-        args = parser_post_get.parse_args(strict=True)
+        args = parser_post_get.parse_args()
         is_desc = args.get("desc") or False
-        page_no = args.get("page")
+        page_no = args.get("page") or 1
         author_name = args.get("author")
         category_name = args.get("category")
         tags = args.get("tags") or []
