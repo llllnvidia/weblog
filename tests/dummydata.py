@@ -17,7 +17,7 @@ def basic_deploy():
     admin.save()
 
 
-def bootstrap_user(count=60, locale="en"):
+def generate_user(count=60, locale="en"):
     person = Personal(locale)
     genders = ["male", "female"]
     for _ in range(count):
@@ -31,7 +31,7 @@ def bootstrap_user(count=60, locale="en"):
     db.session.commit()
 
 
-def bootstrap_tag(count=80, locale="en"):
+def generate_tag(count=80, locale="en"):
     text = Text(locale)
     for _ in range(count):
         while True:
@@ -43,7 +43,7 @@ def bootstrap_tag(count=80, locale="en"):
     db.session.commit()
 
 
-def bootstrap_category(count=40, locale="en"):
+def generate_category(count=40, locale="en"):
     text = Text(locale)
     for _ in range(count):
         while True:
@@ -58,7 +58,7 @@ def bootstrap_category(count=40, locale="en"):
     db.session.commit()
 
 
-def bootstrap_post(count=390, locale="en"):
+def generate_post(count=390, locale="en"):
     text = Text(locale)
     box_summary_box = [1, 2, 3]
     box_article_box = [7, 8, 9]
@@ -103,7 +103,7 @@ with app.app_context():
     db.drop_all()
     db.create_all()
     basic_deploy()
-    bootstrap_user()
-    bootstrap_tag()
-    bootstrap_category()
-    bootstrap_post()
+    generate_user()
+    generate_tag()
+    generate_category()
+    generate_post()

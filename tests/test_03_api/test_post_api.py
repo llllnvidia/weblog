@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 import unittest
 import json
+from math import ceil
+from random import choice
 from elizabeth import Text, Personal
 from werkzeug.exceptions import BadRequest
 
@@ -8,6 +10,8 @@ from app import create_app, db
 from app.models.account import User
 from app.models.post import Post, Category, Tag
 from app.rest.post.parsers import parser_post_post
+from tests.dummydata import (basic_deploy, generate_user, generate_tag,
+                             generate_category, generate_post)
 
 
 class PostApiTestCase(unittest.TestCase):
@@ -103,6 +107,7 @@ class PostApiTestCase(unittest.TestCase):
                 content_type="application/json"):
             with self.assertRaises(BadRequest):
                 parser_post_post.parse_args()
+
             category = Category(name=category)
             category.save()
             args = parser_post_post.parse_args()
@@ -155,6 +160,7 @@ class PostApiTestCase(unittest.TestCase):
             category=category,
             tag=tag)
         self.assertEqual(len(post.tags), 1)
+
         response = self.client.put(
             "/api/post/1",
             data=json.dumps(data),
@@ -167,7 +173,100 @@ class PostApiTestCase(unittest.TestCase):
         self.assertEqual(len(post.tags), 3)
 
     def test_05_post_delete(self):
-        pass
+        self.new_post()
+        self.assertEqual(Post.query.count(), 1)
+
+        response = self.client.delete("/api/post/1")
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(Post.query.count(), 1)
+
+        self.login()
+        response = self.client.delete("/api/post/1")
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Post.query.count(), 0)
+
+    def test_06_post_get(self):
+        basic_deploy()
+        generate_user()
+        generate_tag()
+        generate_category()
+        generate_post()
+        self.assertNotEqual(Post.query.count(), 0)
+
+        authors = User.query.all()
+        tags = Tag.query.all()
+        categories = Category.query.all()
+        page_size = self.app.config.get("POSTS_PER_PAGE", 10)
+
+        def asserts():
+            self.assertEqual(page_size
+                             if post_count >= page_size else post_count,
+                             len(data["post"]))
+            self.assertEqual(ceil(post_count / page_size), data["pagesize"])
+
+        author = choice(authors)
+        response = self.client.get(
+            "/api/post", query_string=dict(author=author.username))
+        data = json.loads(response.data)
+        post_count = author.posts.count()
+        asserts()
+
+        tag = choice(tags)
+        response = self.client.get(
+            "/api/post", query_string=dict(tag="'" + tag.name + "'"))
+        data = json.loads(response.data)
+        post_count = tag.posts.count()
+        asserts()
+
+        category = choice(categories)
+        response = self.client.get(
+            "/api/post", query_string=dict(category=category.name))
+        data = json.loads(response.data)
+        post_count = category.posts.count()
+        asserts()
+
+        tags.remove(tag)
+        tag_two = choice(tags)
+        response = self.client.get(
+            "/api/post",
+            query_string=dict(tag=",".join("'" + t.name + "'"
+                                           for t in [tag, tag_two])))
+        data = json.loads(response.data)
+        post_count = tag.posts_count(tag_two.posts)
+        asserts()
+
+        response = self.client.get(
+            "/api/post",
+            query_string=dict(
+                author=author.username, tag="'" + tag.name + "'"))
+        data = json.loads(response.data)
+        post_count = tag.posts_count(author.posts)
+        asserts()
+
+        response = self.client.get(
+            "/api/post",
+            query_string=dict(author=author.username, category=category.name))
+        data = json.loads(response.data)
+        post_count = category.posts_count(author.posts)
+        asserts()
+
+        response = self.client.get(
+            "/api/post",
+            query_string=dict(
+                category=category.name, tag="'" + tag.name + "'"))
+        data = json.loads(response.data)
+        post_count = category.posts_count(tag.posts)
+        asserts()
+
+        response = self.client.get(
+            "/api/post",
+            query_string=dict(
+                author=author.username,
+                tag="'" + tag.name + "'",
+                category=category.name))
+        data = json.loads(response.data)
+        post_count = category.posts_count(tag.posts_query(author.posts))
+        asserts()
 
 
 if __name__ == "__main__":
