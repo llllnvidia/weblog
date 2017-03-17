@@ -13,14 +13,15 @@ current_user = LocalProxy(lambda: _get_user())
 
 def authenticate_required(func):
     def wrapper(*args, **kwargs):
-        token_from_query_string = request.args.get("token", "")
-        token_from_cookie = request.cookies.get("token", "")
-        token_from_headers = request.headers.get("token", "")
+        token = request.args.get("token")
+        if token is None:
+            token = request.cookies.get("token")
+        if token is None:
+            token = request.headers.get("token")
 
-        token = token_from_query_string or token_from_headers
-        token = token or token_from_cookie
-
-        user = User.confirm("login", token)
+        user = None
+        if token:
+            user = User.confirm("login", token)
         if user:
             user.ping()
             _request_ctx_stack.top.user = user
