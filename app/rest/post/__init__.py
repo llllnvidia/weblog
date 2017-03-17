@@ -118,7 +118,7 @@ class PostApi(Resource):
                 tag.save()
             post_edit.tags.append(tag)
         post_edit.save()
-        return {"next", url_for("api.post", post_id=post_edit.id)}, 200
+        return {"next": url_for("api.post", post_id=post_edit.id)}, 200
 
     @authenticate_required
     def delete(self, post_id=None):
