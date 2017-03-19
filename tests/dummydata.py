@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 from datetime import datetime
-from elizabeth import Personal, Text
-from sqlalchemy.sql.expression import func
 from random import choice, randint
 
-from manage import app, db
-from app.models.post import Post, Category, Tag
+from elizabeth import Personal, Text
+from sqlalchemy.sql.expression import func
+
 from app.models.account import User
+from app.models.post import Category, Post, Tag
+from manage import app, db
 
 sql_expression_rand = func.random if app.config.get(
     "SQLALCHEMY_DATABASE_URI").startswith("sqlite") else func.rand

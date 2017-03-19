@@ -6,13 +6,13 @@ from . import main
 from ..models.post import Post
 
 
-@main.route('/favicon.ico')
+@main.route("/favicon.ico")
 def favicon():
     """favicon icon"""
     return send_file(path.join(current_app.static_folder, "favicon.ico"))
 
 
-@main.route('/', methods=['GET'])
+@main.route("/", methods=['GET'])
 def index():
     """main view"""
     return render_template("index.html")
@@ -39,7 +39,7 @@ def article(post_id):
     return render_template("article.html", post=post)
 
 
-@main.route('/images/<picture_name>')
+@main.route("/images/<picture_name>")
 def images(picture_name):
     import os.path
     path = current_app.config.get('IMG_PATH')

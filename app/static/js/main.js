@@ -1,7 +1,7 @@
-var get_post = function (args, markup_func) {
+var get_post = function(args, markup_func) {
     var url = "/api/post";
     url += urlEncode(args);
-    $.get(url, function (data, status) {
+    $.get(url, function(data, status) {
         if (status == "success") {
             $(".post-item").fadeOut("slow");
             var container = $("<ul></ul>");
@@ -11,14 +11,13 @@ var get_post = function (args, markup_func) {
             $("#post-container").html(container);
             $("#pagination-container").html(pagination_widget(data.page, data.pagesize, args, markup_func));
             $(".post-item").fadeIn("slow");
-        }
-        else {
+        } else {
             return ""
         }
     });
 };
-var get_tagscloud = function () {
-    $.get("/api/tag", function (data, status) {
+var get_tagscloud = function() {
+    $.get("/api/tag", function(data, status) {
         if (status == "success") {
             var container = $("#tagscloud");
             var alpha = 0;
@@ -35,27 +34,24 @@ var get_tagscloud = function () {
             var tags = $(".tag");
             tags.fadeIn("slow");
             $("#post-container").css("height", "600px");
-            tags.click(function () {
-                var name = $(this).html();
-                // tags.fadeOut("slow");
-                get_post({page: 1, tag: name}, archive_item_markup);
+            tags.click(function() {
+                var name = "'" + $(this).html() + "'";
+                get_post({ page: 1, tag: name }, archive_item_markup);
             });
         }
     });
 };
-var urlEncode = function (param, key, count) {
+var urlEncode = function(param, key, count) {
     if (param == null) return '';
     var paramStr = '';
-    var t = typeof (param);
+    var t = typeof(param);
     if (t == 'string' || t == 'number' || t == 'boolean') {
         if (count == 0) {
             paramStr += '?' + key + '=' + param;
-        }
-        else {
+        } else {
             paramStr += '&' + key + '=' + param;
         }
-    }
-    else {
+    } else {
         count = 0;
         for (var i in param) {
             var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
@@ -65,7 +61,7 @@ var urlEncode = function (param, key, count) {
     }
     return paramStr;
 };
-var pagination_widget = function (page, pagesize, args, markup_func) {
+var pagination_widget = function(page, pagesize, args, markup_func) {
     var pagination = $("<ul class='pagination'></ul>");
     pagination.append("<li id='prev' type='button'>&laquo;</li>");
     pagination.append("<li id='cur'>" + page + "/" + pagesize + "</li>");
@@ -73,7 +69,7 @@ var pagination_widget = function (page, pagesize, args, markup_func) {
     if (page > 1) {
         pagination.children("#prev").addClass("active");
         pagination.children("#cur").addClass("active_prev");
-        pagination.children("#prev").on("click", function () {
+        pagination.children("#prev").on("click", function() {
             args.page = page - 1;
             get_post(args, markup_func);
         });
@@ -81,14 +77,14 @@ var pagination_widget = function (page, pagesize, args, markup_func) {
     if (page < pagesize) {
         pagination.children("#next").addClass("active");
         pagination.children("#cur").addClass("active_next");
-        pagination.children("#next").on("click", function () {
+        pagination.children("#next").on("click", function() {
             args.page = page + 1;
             get_post(args, markup_func);
         });
     }
     return pagination
 };
-var tag_item_markup = function (data, alpha) {
+var tag_item_markup = function(data, alpha) {
     var content = $("<a></a>");
     content.attr("class", "tag");
     content.attr("href", "#post-container");
@@ -96,7 +92,7 @@ var tag_item_markup = function (data, alpha) {
     content.attr("style", "font-size: " + data.count * alpha + "px;display: none;");
     return content;
 };
-var post_item_markup = function (data) {
+var post_item_markup = function(data) {
     var item = $("<li class=\"post-item\" style='display: none;'></li>");
     var item_article = $("<article class=\"post\"></article>");
     item_article.append($("<span class=\"post-time\"></span>").html(moment(data.timestamp).format("LL")));
@@ -106,7 +102,7 @@ var post_item_markup = function (data) {
     item.append(item_article);
     return item;
 };
-var archive_item_markup = function (data) {
+var archive_item_markup = function(data) {
     var item = $("<li class=\"post-item\" style='display: none;'></li>");
     var item_article = $("<article class=\"archive-item\"></article>");
     item_article.append($("<div class=\"post-time\"></div>").html(moment(data.timestamp).format("DD MMM YY")));
@@ -114,13 +110,13 @@ var archive_item_markup = function (data) {
     item.append(item_article);
     return item;
 };
-var setCookie = function (c_name, value, expiredays) {
+var setCookie = function(c_name, value, expiredays) {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + expiredays);
     document.cookie = c_name + "=" + escape(value) +
         ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
 };
-var getCookie = function (c_name) {
+var getCookie = function(c_name) {
     if (document.cookie.length > 0) {
         c_start = document.cookie.indexOf(c_name + "=");
         if (c_start != -1) {

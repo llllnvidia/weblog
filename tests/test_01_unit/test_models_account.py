@@ -3,7 +3,6 @@ import unittest
 from time import sleep
 from elizabeth import Personal, Text
 
-
 from app import create_app, db
 from app.models.account import User
 
@@ -25,32 +24,30 @@ class ModelsAccountTestCase(unittest.TestCase):
         self.context.pop()
 
     def test_01_save_and_delete(self):
-        kwargs = {"username": self.person.name(),
-                  "email": self.person.email()}
+        kwargs = {"username": self.person.name(), "email": self.person.email()}
         self.assertEqual(User.query.count(), 0)
         user = User(**kwargs)
         user.save()
-        self.assertEqual(user.__repr__(), "<User {} ID {}>".format(kwargs["username"], 1))
+        self.assertEqual(user.__repr__(),
+                         "<User {} ID {}>".format(kwargs["username"], 1))
         self.assertEqual(User.query.count(), 1)
         user.delete()
         self.assertEqual(User.query.count(), 0)
 
     def test_02_password(self):
-        kwargs = {"username": self.person.name(),
-                  "email": self.person.email()}
+        kwargs = {"username": self.person.name(), "email": self.person.email()}
         password = self.person.password(16)
         user = User(**kwargs)
         self.assertIsNone(user.password_hash)
         with self.assertRaises(AttributeError):
-            _ = user.password
+            user.password
         user.password = password
         self.assertIsNotNone(user.password_hash)
         self.assertTrue(user.verify_password(password))
         self.assertFalse(user.verify_password(self.person.password(16)))
 
     def test_03_token(self):
-        kwargs = {"username": self.person.name(),
-                  "email": self.person.email()}
+        kwargs = {"username": self.person.name(), "email": self.person.email()}
         key_1, key_2 = self.text.words(2)
         user = User(**kwargs)
         user.save()
