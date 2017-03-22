@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from os import path
-from flask import current_app, send_file, render_template
+from flask import current_app, send_file, render_template, abort
 
 from . import main
-from ..models.post import Post
+from ..models.post import Post, Category
 
 
 @main.route("/favicon.ico")
@@ -29,8 +29,15 @@ def tags():
 
 
 @main.route("/categories")
-def categories():
-    return render_template("categories.html")
+@main.route("/categories/<category_name>")
+def categories(category_name=None):
+    if category_name is None:
+        return render_template(
+            "categories.html", categories=Category.query.all())
+    category = Category.query.filter_by(name=category_name).first()
+    if category is None:
+        abort(404)
+    return render_template("categories.html", category=category_name)
 
 
 @main.route("/article/<int:post_id>")
