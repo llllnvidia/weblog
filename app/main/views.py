@@ -17,19 +17,20 @@ def favicon():
 @main.route("/<int:page_no>")
 def index(page_no=1):
     """main view"""
-    posts = Post.query.paginate(
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
         page=page_no,
         per_page=current_app.config.get("POSTS_PER_PAGE", 10),
         error_out=False)
-    return render_template("index.html", posts=posts.items)
+    return render_template(
+        "index.html", posts=pagination.items, pagination=pagination)
 
 
 @main.route("/article/<int:post_id>")
 def article(post_id=None):
     if post_id is None:
         abort(404)
-    post = Post.query.getor404(post_id)
-    return render_template("article.html", post)
+    post = Post.query.get_or_404(post_id)
+    return render_template("article.html", post=post)
 
 
 @main.route("/images/<picture_name>")

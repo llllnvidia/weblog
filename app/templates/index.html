@@ -1,8 +1,5 @@
 {% extends "partial/layout.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-    <div id="post-container">
-        {% include "partial/post/container.html" %}
-    </div>
-    <div id="pagination-container"></div>
+    {% include "partial/containers/post.html" %}
 {% endblock %}

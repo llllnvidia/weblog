@@ -1,0 +1,12 @@
+{% import "partial/macros/post.html" as macro_post %}
+{% import "partial/macros/pagination.html" as macro_pagination %}
+<div class="post-container">
+<ul>
+    {%- for post in posts %}
+    {{ macro_post.post_item(post) }}
+    {% endfor -%}
+</ul>
+</div>
+<div class="pagination-container">
+    {{ macro_pagination.pagination_widget(pagination, request.endpoint)}}
+</div>
