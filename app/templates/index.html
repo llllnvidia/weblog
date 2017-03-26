@@ -1,9 +1,8 @@
 {% extends "partial/layout.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-    <div id="post-container"></div>
+    <div id="post-container">
+        {% include "partial/post/container.html" %}
+    </div>
     <div id="pagination-container"></div>
-    <script type="text/javascript">
-    $(document).ready(get_post({page:1, desc: 0}, post_item_markup));
-    </script>
 {% endblock %}
