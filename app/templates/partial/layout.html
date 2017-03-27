@@ -8,36 +8,10 @@
 </head>
 <body>
 <div id="page">
-    <header>
-        <a href="/" class="logo">Weblog</a>
-        <nav class="navigation">
-            <ul>
-            {% for item in menu %}
-                <li class="nav-link">
-                    <a href="{{ url_for(item) }}"{% if request.endpoint == item %} class="active"{% endif %}>{{ item.split(".")[1] | capitalize }}</a>
-                </li>
-            {% endfor %}
-            </ul>
-        </nav>
-    </header>
+    {% include "partial/header.html" %}
     <div id="content">
         {% block content %}
         {% endblock %}
-    </div>
-    <div id="OTPAuth" style="display: none">
-        <div class="form-group">
-        <label for="OTP">One-Time Password</label>
-        <input id="OTP" name="OTP" type="password" size="6" onkeydown="if(event.keyCode == 13){ login(); }">
-        </div>
-        <script type="text/javascript">
-            function login() {
-                var otp = $("#OTP").val();
-                $.post("{{ url_for("api.auth") }}", {"password": otp}, function (data) {
-                    setCookie("token", data["token"], 600);
-                    $("#OTPAuth").hide();
-                });
-            }
-        </script>
     </div>
     <footer>
         {% block footer %}

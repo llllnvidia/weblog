@@ -1,0 +1,14 @@
+<header>
+    <h1 class="logo">
+        <a href="/">Weblog</a>
+    </h1>
+    <nav class="navigation">
+        <ul>
+    {%- for item in menu -%}
+        <li class="nav-link{% if request.endpoint == item %} active{% endif %}">
+            <a href="{{ url_for(item) }}">{{ item.split(".")[1] | capitalize }}</a>
+        </li>
+    {%- endfor -%}
+        </ul>
+    </nav>
+</header>
