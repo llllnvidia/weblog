@@ -1,0 +1,14 @@
+{% import "partial/macros/post.html" as macro_post %}
+{% import "partial/macros/pagination.html" as macro_pagination %}{% for (y, m), posts in archive %}
+<h2 class="archive-time">{{ "{B}-{Y}".format(Y=y, B=m)}}</h2>
+<div class="post-container">
+    <ul>
+    {%- for post in posts %}
+        {{ macro_post.post_item(post) }}
+    {% endfor -%}
+    </ul>
+</div>
+{% endfor %}
+<div class="pagination-container">
+{{ macro_pagination.pagination_widget(pagination, request.endpoint)}}
+</div>

@@ -8,5 +8,5 @@ from . import views, errors
 
 @main.app_context_processor
 def inject_permissions():
-    menu = ["main.index"]
+    menu = ["main.index", "main.archive"]
     return dict(menu=menu)

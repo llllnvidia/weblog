@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from os import path
+from datetime import datetime
 
 from flask import current_app, render_template, send_file, abort
+from itertools import groupby
 
 from . import main
 from ..models.post import Post
@@ -23,6 +25,24 @@ def index(page_no=1):
         error_out=False)
     return render_template(
         "index.html", posts=pagination.items, pagination=pagination)
+
+
+@main.route("/archive")
+@main.route("/archive/<int:page_no>")
+def archive(page_no=1):
+    """archive view"""
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page=page_no,
+        per_page=current_app.config.get("POSTS_PER_PAGE", 10),
+        error_out=False)
+
+    def group(item):
+        return item.timestamp.year, item.timestamp.month
+
+    return render_template(
+        "archive.html",
+        archive=groupby(pagination.items, group),
+        pagination=pagination)
 
 
 @main.route("/article/<int:post_id>")
