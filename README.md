@@ -13,6 +13,9 @@ weblog aims to do it better, its features are as follow:
 
 ## Demo
 
+![Index](/README/01.png)
+![Archive](/README/02.png)
+
 ## Dependency
 
 ### Backend
@@ -24,6 +27,8 @@ weblog aims to do it better, its features are as follow:
     - [Flask-SQLAlchemy](https://github.com/mitsuhiko/flask-sqlalchemy)
 
 ### Frontend
+
+None
 
 ## License
 
