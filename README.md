@@ -9,16 +9,9 @@ weblog aims to do it better, its features are as follow:
 
 - multiple user
 - posts, tags, and categories
-- restful api
 - change configurations by configuration file or environment variable
 
 ## Demo
-
-![](README/01.png)
-
-![](README/02.png)
-
-![](README/03.png)
 
 ## Dependency
 
@@ -29,14 +22,8 @@ weblog aims to do it better, its features are as follow:
 - [Flask](https://github.com/pallets/flask)
     - [Flask-Script](https://github.com/smurfix/flask-script)
     - [Flask-SQLAlchemy](https://github.com/mitsuhiko/flask-sqlalchemy)
-    - [Flask-Restful](https://github.com/flask-restful/flask-restful)
 
 ### Frontend
-
-download to `app/static/js`
-
-- [jQuery](https://github.com/jquery/jquery)
-- [Moment.js](https://momentjs.com/)
 
 ## License
 
