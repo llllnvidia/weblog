@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-{% block head %}
+<head>{% block head %}
     <title>{% block title %}{% endblock %} - weblog</title>
     {% include "partial/head.html" %}
-{% endblock %}
+    <style>
+    {% block styles %}
+    {% endblock %}
+    </style>{% endblock %}
 </head>
 <body>
 <div id="page">
     <header>
         {% include "partial/header.html" %}
     </header>
-    <div id="content">
-        {% block content %}
-        {% endblock %}
-    </div>
-    <footer>
-        {% block footer %}
+    <div id="content">{% block content %}
+    {% endblock %}</div>
+    <footer>{% block footer %}
         {% include "partial/footer.html" %} 
-        {% endblock %}
-    </footer>
+    {% endblock %}</footer>
 </div>
 </body>
 </html>

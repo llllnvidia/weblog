@@ -15,7 +15,6 @@ def create_app(config_name):
     config[config_name].init_app(app)
 
     db.init_app(app)
-    app.jinja_env.trim_blocks = True
 
     from .main import main as blueprint_main
     app.register_blueprint(blueprint_main)

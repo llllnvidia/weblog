@@ -6,6 +6,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer,
                           BadSignature,
                           SignatureExpired)
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import cached_property
 
 from app import db
 
@@ -74,7 +75,7 @@ class User(db.Model):
 
         return None
 
-    @property
+    @cached_property
     def gravatar(self, size=100, default="identicon", rating="g"):
         from flask import request
         from hashlib import md5

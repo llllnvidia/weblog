@@ -44,12 +44,14 @@ header {
 
 nav.navigation>ul>li.active {
     font-size: 2em;
+    padding-right: 0;
 }
 
 nav.navigation {
     font-size: 1em;
     position: fixed;
     right: 10px;
+    text-align: right;
 }
 
 nav.navigation>ul {

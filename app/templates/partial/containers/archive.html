@@ -4,7 +4,12 @@
 <div class="post-container">
     <ul>
     {%- for post in posts %}
-        {{ macro_post.post_item(post) }}
+        <li class="post-item">
+            <article class="post">
+                <span class="author">{{post.author.username}}</span>
+                <h3 class="post-title"><a href="{{ url_for("main.article", post_id=post.id)}}">{{post.title}}</a></h3>
+            </article>
+        </li>
     {% endfor -%}
     </ul>
 </div>
